@@ -133,18 +133,19 @@ class TaxaForm extends React.Component<{}, {
     private submitTaxon = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const iTaxon = this.state.iTaxonSearched;
-        // tslint:disable-next-line:no-console
-        console.assert(iTaxon >= 0 && iTaxon < scoresBmwp.length, "Out of bounds")
-        const iFound = this.state.found.findIndex((foundEl:any) => foundEl.iTaxon === iTaxon);
+        // NOTE: avoids adding for invalid search
+        if (this.state.search.length && iTaxon >= 0 && iTaxon < scoresBmwp.length) {
+            const iFound = this.state.found.findIndex((foundEl: any) => foundEl.iTaxon === iTaxon);
 
-        if(iFound === -1) { // new taxon
-            this.setState({ found: [...this.state.found, { iTaxon, count: 1 }] });
-            // tslint:disable-next-line:no-console
-            console.log(scoresBmwp[iTaxon]);
-        } else {
-            const found = this.state.found;
-            found[iFound].count++;
-            this.setState({ found });
+            if (iFound === -1) { // new taxon
+                this.setState({ found: [...this.state.found, { iTaxon, count: 1 }] });
+                // tslint:disable-next-line:no-console
+                console.log(scoresBmwp[iTaxon]);
+            } else {
+                const found = this.state.found;
+                found[iFound].count++;
+                this.setState({ found });
+            }
         }
     }
 }
