@@ -1,17 +1,15 @@
 import * as React from 'react';
 import scoresBmwp from './BMWPfamily'
 
-class TaxaAutocompleteOptions extends React.Component<{matchingTaxa:any[]}, {}> {
-    public render() {
-        const selectTaxon = this.props.matchingTaxa[0];
-        const remainingTaxa = this.props.matchingTaxa.slice(1);
-        return (
-            <ul>
-                <li style={{fontWeight:'bold'}} key={selectTaxon.family}>{selectTaxon.family}</li> 
-                {remainingTaxa.map(taxon => <li key={taxon.family}>{taxon.family}</li> )}
-            </ul>
-        )
-    }
+const TaxaAutocompleteOptions: React.SFC<{ matchingTaxa: any[] }> = (props) => {
+    const selectTaxon = props.matchingTaxa[0];
+    const remainingTaxa = props.matchingTaxa.slice(1);
+    return (
+        <ul>
+            <li style={{ fontWeight: 'bold' }} key={selectTaxon.family}>{selectTaxon.family}</li>
+            {remainingTaxa.map(taxon => <li key={taxon.family}>{taxon.family}</li>)}
+        </ul>
+    )
 }
 
 // tslint:disable-next-line:interface-name
@@ -19,6 +17,22 @@ interface FoundTaxon {
     count:number,
     iTaxon:number,
 }
+
+// tslint:disable-next-line:one-variable-per-declaration
+const TaxaFound: React.SFC<{ taxon: any, count: number }> = (props) => (
+    <div>
+        <span>{props.taxon.family}({props.count})</span> - <span>{props.taxon.score}</span>
+    </div>
+)
+
+
+// tslint:disable-next-line:one-variable-per-declaration
+const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[]}> = (props) => (
+    <ul>
+        {props.foundTaxa.map((t: FoundTaxon) => <li key={t.iTaxon}><TaxaFound taxon={scoresBmwp[t.iTaxon]} count={t.count} /></li>)}
+    </ul>
+)
+
 
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
@@ -44,6 +58,7 @@ class TaxaForm extends React.Component<{}, {
                     ? <TaxaAutocompleteOptions  matchingTaxa={this.state.matchingTaxa} />
                     : <p>Start entering the name of a scoring BMWP family</p>
                 }
+                <TaxaFoundList foundTaxa={this.state.found} />
             </div>
         );
     }
@@ -81,4 +96,4 @@ class TaxaForm extends React.Component<{}, {
     }
 }
 
-export default TaxaForm;
+export default TaxaForm
