@@ -27,9 +27,10 @@ const TaxaFound: React.SFC<{ taxon: any, count: number, addToCount: (add:number)
     const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount( 1) }
     return (
         <div>
-            <span>{props.taxon.family}({props.count})</span> - <span>{props.taxon.score}</span>
             <button onClick={dec}>-</button>
             <button onClick={inc}>+</button>
+            {props.count}
+            <span style={{marginLeft: '2rem'}}>{props.taxon.family}: {props.taxon.score}</span>
         </div>
     )
 }
@@ -83,16 +84,16 @@ class TaxaForm extends React.Component<{}, {
         return (
             <div>
                 <TaxaScore foundTaxa={this.state.found} />
-                <input
-                    type='text'
-                    placeholder='Start writing a taxon name'
-                    id='form-input'
-                    value={this.state.search}
-                    onChange={this.searchTextUpdate}
-                    onKeyDown={this.changeAutoCompleteSelect}/>
-                <button onClick={this.addToFound}>
-                    Add Taxon
-                </button>
+                <form onSubmit={this.submitTaxon}>
+                    <input
+                        type='text'
+                        placeholder='Start writing a taxon name'
+                        id='form-input'
+                        value={this.state.search}
+                        onChange={this.searchTextUpdate}
+                        onKeyDown={this.changeAutoCompleteSelect} />
+                    <input type='submit' value='Add Taxon' />
+                </form>
                 {this.state.matchingTaxa.length
                     ? <TaxaAutocompleteOptions matchingTaxa={this.state.matchingTaxa} iSelect={this.state.iPreselect} />
                     : <p>Start entering the name of a scoring BMWP family</p>
@@ -129,7 +130,8 @@ class TaxaForm extends React.Component<{}, {
         this.updatePreselection(0);
     }
 
-    private addToFound = () => {
+    private submitTaxon = (e:React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         const iTaxon = this.state.iTaxonSearched;
         // tslint:disable-next-line:no-console
         console.assert(iTaxon >= 0 && iTaxon < scoresBmwp.length, "Out of bounds")
