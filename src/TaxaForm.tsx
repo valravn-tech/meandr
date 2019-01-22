@@ -18,7 +18,7 @@ const TaxaAutocompleteOptions: React.SFC<{ matchingTaxa: any[], iSelect: number 
 // tslint:disable-next-line:interface-name
 interface FoundTaxon {
     count:number,
-    iTaxon:number,
+    name:string,
 }
 
 // tslint:disable-next-line:one-variable-per-declaration
@@ -43,8 +43,8 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number,
             props.foundTaxa.map((t, i) => {
                 const addToIndex = (add:number) => (props.addToCount(add, i));
                 return (
-                    <li key={t.iTaxon}>
-                        <TaxaFound taxon={scoresBmwp[t.iTaxon]} count={t.count} addToCount={addToIndex} />
+                    <li key={t.name}>
+                        <TaxaFound taxon={scoresBmwp.find((sc) => sc.family === t.name)} count={t.count} addToCount={addToIndex} />
                     </li>
                 )
             })
@@ -53,7 +53,7 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number,
 )
 
 const calcBmwp = (foundTaxa:FoundTaxon[]): number =>
-( foundTaxa.reduce((score, t) => (score + scoresBmwp[t.iTaxon].score), 0) ) 
+( foundTaxa.reduce((score, t) => (score + scoresBmwp.find((sc) => sc.family === t.name).score), 0) ) 
 
 const calcAspt = (foundTaxa:FoundTaxon[]): number =>
 ( foundTaxa.length
@@ -65,11 +65,11 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) =>
 
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
-        found: FoundTaxon[],
-        iTaxonSearched:number,
-        iPreselect:number,
-        matchingTaxa:any[],
-        search: string,
+        found:          FoundTaxon[],
+        taxonPreselect: string,
+        iPreselect:     number,
+        matchingTaxa:   any[],
+        search:         string,
     }> {
 
     public render() {
@@ -103,11 +103,13 @@ class TaxaForm extends React.Component<{}, {
         );
     }
 
-    public componentWillMount() { this.setState({found:[] as FoundTaxon[], iTaxonSearched:-1, iPreselect:0, matchingTaxa:[] as any[], search:''}) };
+    public componentWillMount() { this.setState({found:[] as FoundTaxon[], taxonPreselect:'', iPreselect:0, matchingTaxa:[] as any[], search:''}) };
 
     private updatePreselection = (iPreselect:number) => {
-        const iTaxonSearched = scoresBmwp.indexOf(this.state.matchingTaxa[iPreselect]);
-        this.setState({iPreselect, iTaxonSearched})
+        const taxonPreselect = (iPreselect !== -1 && this.state.matchingTaxa.length)
+            ? this.state.matchingTaxa[iPreselect].family
+            : '';
+        this.setState({iPreselect, taxonPreselect})
     }
 
     private changeAutoCompleteSelect = (e: React.KeyboardEvent) => {
@@ -123,29 +125,24 @@ class TaxaForm extends React.Component<{}, {
 
     private searchTextUpdate = (e: React.FormEvent<HTMLInputElement>) => {
         const search = e.currentTarget.value;
-        const matchingTaxa = search.length
+        const matchingTaxa = (search.length)
             ? scoresBmwp.filter(taxon => taxon.family.toLowerCase() .includes(search.toLowerCase()))
             : [];
-        this.setState({ matchingTaxa, search });
-        this.updatePreselection(0);
+        this.setState({ matchingTaxa, search },
+        () => this.updatePreselection(0)); // callback needed because setState does not update state immediately
     }
 
     private submitTaxon = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const iTaxon = this.state.iTaxonSearched;
+        const preselect = this.state.taxonPreselect;
         // NOTE: avoids adding for invalid search
-        if (this.state.search.length && iTaxon >= 0 && iTaxon < scoresBmwp.length) {
-            const iFound = this.state.found.findIndex((foundEl: any) => foundEl.iTaxon === iTaxon);
+        if (this.state.search.length && preselect.length) {
+            const iFound = this.state.found.findIndex((foundEl: any) => foundEl.name === preselect);
 
-            if (iFound === -1) { // new taxon
-                this.setState({ found: [...this.state.found, { iTaxon, count: 1 }] });
-                // tslint:disable-next-line:no-console
-                console.log(scoresBmwp[iTaxon]);
-            } else {
-                const found = this.state.found;
-                found[iFound].count++;
-                this.setState({ found });
-            }
+            const found = this.state.found;
+            if (iFound === -1) { found.push({ name:preselect, count: 1 }); }
+            else               { found[iFound].count++; }
+            this.setState({ found });
         }
     }
 }
