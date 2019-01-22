@@ -1,13 +1,16 @@
 import * as React from 'react';
 import scoresBmwp from './BMWPfamily'
 
-const TaxaAutocompleteOptions: React.SFC<{ matchingTaxa: any[] }> = (props) => {
-    const selectTaxon = props.matchingTaxa[0];
-    const remainingTaxa = props.matchingTaxa.slice(1);
+const TaxaAutocompleteOptions: React.SFC<{ matchingTaxa: any[], iSelect: number }> = (props) => {
+    const taxaBefore  = props.matchingTaxa.slice(0, props.iSelect);
+    const selectTaxon = props.matchingTaxa[props.iSelect];
+    const taxaAfter   = props.matchingTaxa.slice(props.iSelect + 1);
+    const listTaxa = (taxa:any[]) => (taxa.map(taxon => <li key={taxon.family}>{taxon.family}</li>));
     return (
         <ul>
+            { listTaxa(taxaBefore) }
             <li style={{ fontWeight: 'bold' }} key={selectTaxon.family}>{selectTaxon.family}</li>
-            {remainingTaxa.map(taxon => <li key={taxon.family}>{taxon.family}</li>)}
+            { listTaxa(taxaAfter) }
         </ul>
     )
 }
@@ -18,13 +21,10 @@ interface FoundTaxon {
     iTaxon:number,
 }
 
-type CountAdder = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, add: number) => void 
-type IndexedCountAdder = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, add: number, i: number) => void 
-
 // tslint:disable-next-line:one-variable-per-declaration
-const TaxaFound: React.SFC<{ taxon: any, count: number, addToCount: CountAdder }> = (props) => {
-    const dec = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(e, -1) }
-    const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(e,  1) }
+const TaxaFound: React.SFC<{ taxon: any, count: number, addToCount: (add:number) => void  }> = (props) => {
+    const dec = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(-1) }
+    const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount( 1) }
     return (
         <div>
             <span>{props.taxon.family}({props.count})</span> - <span>{props.taxon.score}</span>
@@ -36,11 +36,11 @@ const TaxaFound: React.SFC<{ taxon: any, count: number, addToCount: CountAdder }
 
 
 // tslint:disable-next-line:one-variable-per-declaration
-const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: IndexedCountAdder }> = (props) => (
+const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number, i:number) => void }> = (props) => (
     <ul>
         {
             props.foundTaxa.map((t, i) => {
-                const addToIndex: CountAdder = (e, add) => props.addToCount(e, add, i);
+                const addToIndex = (add:number) => (props.addToCount(add, i));
                 return (
                     <li key={t.iTaxon}>
                         <TaxaFound taxon={scoresBmwp[t.iTaxon]} count={t.count} addToCount={addToIndex} />
@@ -54,19 +54,25 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: IndexedCount
 const calcBmwp = (foundTaxa:FoundTaxon[]): number =>
 ( foundTaxa.reduce((score, t) => (score + scoresBmwp[t.iTaxon].score), 0) ) 
 
+const calcAspt = (foundTaxa:FoundTaxon[]): number =>
+( foundTaxa.length
+    ? calcBmwp(foundTaxa) / foundTaxa.length
+    : 0)
+
 const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) =>
-( <h2>BMWP: {calcBmwp(p.foundTaxa)}</h2> )
+( <h2>BMWP: {calcBmwp(p.foundTaxa).toFixed(2)}, ASPT: {calcAspt(p.foundTaxa).toFixed(2)}</h2> )
 
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
         found: FoundTaxon[],
-        iTaxonSelected:number,
+        iTaxonSearched:number,
+        iPreselect:number,
         matchingTaxa:any[],
         search: string,
     }> {
 
     public render() {
-        const modifyFound: IndexedCountAdder = (e, add, i) => {
+        const modifyFound = (add: number, i: number) => {
             const found = this.state.found;
             found[i].count += add;
             if(found[i].count === 0)
@@ -82,12 +88,13 @@ class TaxaForm extends React.Component<{}, {
                     placeholder='Start writing a taxon name'
                     id='form-input'
                     value={this.state.search}
-                    onChange={this.searchTextUpdate} />
+                    onChange={this.searchTextUpdate}
+                    onKeyDown={this.changeAutoCompleteSelect}/>
                 <button onClick={this.addToFound}>
                     Add Taxon
                 </button>
                 {this.state.matchingTaxa.length
-                    ? <TaxaAutocompleteOptions matchingTaxa={this.state.matchingTaxa} />
+                    ? <TaxaAutocompleteOptions matchingTaxa={this.state.matchingTaxa} iSelect={this.state.iPreselect} />
                     : <p>Start entering the name of a scoring BMWP family</p>
                 }
                 <TaxaFoundList foundTaxa={this.state.found} addToCount={modifyFound} />
@@ -95,19 +102,35 @@ class TaxaForm extends React.Component<{}, {
         );
     }
 
-    public componentWillMount() { this.setState({found:[] as FoundTaxon[], iTaxonSelected:-1, matchingTaxa:[] as any[], search:''}) };
+    public componentWillMount() { this.setState({found:[] as FoundTaxon[], iTaxonSearched:-1, iPreselect:0, matchingTaxa:[] as any[], search:''}) };
+
+    private updatePreselection = (iPreselect:number) => {
+        const iTaxonSearched = scoresBmwp.indexOf(this.state.matchingTaxa[iPreselect]);
+        this.setState({iPreselect, iTaxonSearched})
+    }
+
+    private changeAutoCompleteSelect = (e: React.KeyboardEvent) => {
+        const iPreselect = this.state.iPreselect;
+        switch(e.key) {
+            case "ArrowDown": if(iPreselect < this.state.matchingTaxa.length - 1)
+            { this.updatePreselection(iPreselect + 1); } break;
+
+            case "ArrowUp"  : if(iPreselect > 0)
+            { this.updatePreselection(iPreselect - 1); } break;
+        }
+    }
 
     private searchTextUpdate = (e: React.FormEvent<HTMLInputElement>) => {
         const search = e.currentTarget.value;
         const matchingTaxa = search.length
             ? scoresBmwp.filter(taxon => taxon.family.toLowerCase() .includes(search.toLowerCase()))
             : [];
-        const iTaxonSelected = scoresBmwp.indexOf(matchingTaxa[0]);
-        this.setState({ iTaxonSelected, matchingTaxa, search });
+        this.setState({ matchingTaxa, search });
+        this.updatePreselection(0);
     }
 
     private addToFound = () => {
-        const iTaxon = this.state.iTaxonSelected;
+        const iTaxon = this.state.iTaxonSearched;
         // tslint:disable-next-line:no-console
         console.assert(iTaxon >= 0 && iTaxon < scoresBmwp.length, "Out of bounds")
         const iFound = this.state.found.findIndex((foundEl:any) => foundEl.iTaxon === iTaxon);
