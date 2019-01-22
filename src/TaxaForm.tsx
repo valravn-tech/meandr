@@ -18,18 +18,36 @@ interface FoundTaxon {
     iTaxon:number,
 }
 
+type CountAdder = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, add: number) => void 
+type IndexedCountAdder = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, add: number, i: number) => void 
+
 // tslint:disable-next-line:one-variable-per-declaration
-const TaxaFound: React.SFC<{ taxon: any, count: number }> = (props) => (
-    <div>
-        <span>{props.taxon.family}({props.count})</span> - <span>{props.taxon.score}</span>
-    </div>
-)
+const TaxaFound: React.SFC<{ taxon: any, count: number, addToCount: CountAdder }> = (props) => {
+    const dec = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(e, -1) }
+    const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(e,  1) }
+    return (
+        <div>
+            <span>{props.taxon.family}({props.count})</span> - <span>{props.taxon.score}</span>
+            <button onClick={dec}>-</button>
+            <button onClick={inc}>+</button>
+        </div>
+    )
+}
 
 
 // tslint:disable-next-line:one-variable-per-declaration
-const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[]}> = (props) => (
+const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: IndexedCountAdder }> = (props) => (
     <ul>
-        {props.foundTaxa.map((t: FoundTaxon) => <li key={t.iTaxon}><TaxaFound taxon={scoresBmwp[t.iTaxon]} count={t.count} /></li>)}
+        {
+            props.foundTaxa.map((t, i) => {
+                const addToIndex: CountAdder = (e, add) => props.addToCount(e, add, i);
+                return (
+                    <li key={t.iTaxon}>
+                        <TaxaFound taxon={scoresBmwp[t.iTaxon]} count={t.count} addToCount={addToIndex} />
+                    </li>
+                )
+            })
+        }
     </ul>
 )
 
@@ -48,6 +66,14 @@ class TaxaForm extends React.Component<{}, {
     }> {
 
     public render() {
+        const modifyFound: IndexedCountAdder = (e, add, i) => {
+            const found = this.state.found;
+            found[i].count += add;
+            if(found[i].count === 0)
+            { found.splice(i, 1); }
+            this.setState({ found })
+        }
+
         return (
             <div>
                 <TaxaScore foundTaxa={this.state.found} />
@@ -56,15 +82,15 @@ class TaxaForm extends React.Component<{}, {
                     placeholder='Start writing a taxon name'
                     id='form-input'
                     value={this.state.search}
-                    onChange={this.searchTextUpdate}/>
+                    onChange={this.searchTextUpdate} />
                 <button onClick={this.addToFound}>
                     Add Taxon
                 </button>
-                { this.state.matchingTaxa.length
-                    ? <TaxaAutocompleteOptions  matchingTaxa={this.state.matchingTaxa} />
+                {this.state.matchingTaxa.length
+                    ? <TaxaAutocompleteOptions matchingTaxa={this.state.matchingTaxa} />
                     : <p>Start entering the name of a scoring BMWP family</p>
                 }
-                <TaxaFoundList foundTaxa={this.state.found} />
+                <TaxaFoundList foundTaxa={this.state.found} addToCount={modifyFound} />
             </div>
         );
     }
@@ -82,23 +108,19 @@ class TaxaForm extends React.Component<{}, {
 
     private addToFound = () => {
         const iTaxon = this.state.iTaxonSelected;
+        // tslint:disable-next-line:no-console
+        console.assert(iTaxon >= 0 && iTaxon < scoresBmwp.length, "Out of bounds")
         const iFound = this.state.found.findIndex((foundEl:any) => foundEl.iTaxon === iTaxon);
 
         if(iFound === -1) { // new taxon
             this.setState({ found: [...this.state.found, { iTaxon, count: 1 }] });
             // tslint:disable-next-line:no-console
             console.log(scoresBmwp[iTaxon]);
+        } else {
+            const found = this.state.found;
+            found[iFound].count++;
+            this.setState({ found });
         }
-        
-        else {
-            alert("not found");
-        }
-        // NOTE: presence only for BMWP
-        // else {
-        //     const found = this.state.found;
-        //     found[iFound].count++;
-        //     this.setState({ found });
-        // }
     }
 }
 
