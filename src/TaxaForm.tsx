@@ -33,6 +33,11 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[]}> = (props) => (
     </ul>
 )
 
+const calcBmwp = (foundTaxa:FoundTaxon[]): number =>
+( foundTaxa.reduce((score, t) => (score + scoresBmwp[t.iTaxon].score), 0) ) 
+
+const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) =>
+( <h2>BMWP: {calcBmwp(p.foundTaxa)}</h2> )
 
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
@@ -45,6 +50,7 @@ class TaxaForm extends React.Component<{}, {
     public render() {
         return (
             <div>
+                <TaxaScore foundTaxa={this.state.found} />
                 <input
                     type='text'
                     placeholder='Start writing a taxon name'
