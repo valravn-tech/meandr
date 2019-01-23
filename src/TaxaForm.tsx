@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IScoreBMWP, scoresBmwp, scoresWhpt } from './scores';
+import { IScoreBMWP, IScoreWHPT, scoresBmwp, scoresWhpt } from './scores';
 
 const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: number }> = (props) => {
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
@@ -25,7 +25,8 @@ interface FoundTaxon {
 const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void  }> = (props) => {
     const dec = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(-1) }
     const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount( 1) }
-    const bmwp = scoresBmwp.get(props.taxon.name)
+    const bmwp = scoresBmwp.get(props.taxon.name);
+    const whpt = calcSingleWhpt(props.taxon);
     return (
         <div>
             <button onClick={dec}>-</button>
@@ -33,6 +34,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
             {props.taxon.count}
             <span style={{marginLeft: '2rem'}}>{props.taxon.name}</span> - 
             { (bmwp) ? ' BMWP: '+ bmwp.score_orig : null }
+            { (whpt !== undefined) ? ' WHPT: '+ whpt : null }
         </div>
     )
 }
@@ -54,6 +56,44 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number,
     </ul>
 )
 
+// 1-9    => 1
+// 10-99  => 2
+// 100-99 => 3
+// ...
+const logAbundance = (count: number): number => {
+    let result = 0;
+    while(count > 0) { 
+        count = Math.floor(count/10);
+        ++result;
+    }
+    return result;
+}
+
+// 1-10     => 1
+// 11-100   => 2
+// 101-1000 => 3
+// ...
+const logAbundanceWhpt = (count: number): number => {
+    return logAbundance(count > 1 ? count - 1 : count)
+}
+
+const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
+    const whpt: IScoreWHPT | undefined = scoresWhpt.get(foundTaxon.name);
+    const iScore = logAbundanceWhpt(foundTaxon.count) - 1;
+    return (whpt && iScore >= 0)
+        ? whpt.scores[iScore]
+        : undefined;
+}
+
+const calcWhpt = (foundTaxa:FoundTaxon[]): { score:number, count:number } => (
+    foundTaxa.reduce((acc, taxon) => {
+        const taxonScore = calcSingleWhpt(taxon);
+        return (taxonScore)
+            ? { score: acc.score + taxonScore, count: acc.count + 1 }
+            : acc;
+    }, { score:0, count:0 })
+)
+
 const calcBmwp = (foundTaxa:FoundTaxon[]): { score:number, count:number } => (
     foundTaxa.reduce((acc, taxon) => {
         const bmwp: IScoreBMWP | undefined = scoresBmwp.get(taxon.name);
@@ -63,17 +103,20 @@ const calcBmwp = (foundTaxa:FoundTaxon[]): { score:number, count:number } => (
     }, { score:0, count:0 })
 ) 
 
-const calcScoreBmwp = (foundTaxa:FoundTaxon[]): number => ( calcBmwp(foundTaxa).score );
-
-const calcScoreAspt = (foundTaxa:FoundTaxon[]): number => {
+const calcAspt = (foundTaxa:FoundTaxon[]): number => {
     const bmwp = calcBmwp(foundTaxa);
     return (bmwp.count)
         ? bmwp.score / bmwp.count
         : 0;
 }
 
-const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) =>
-( <h2>BMWP: {calcScoreBmwp(p.foundTaxa).toFixed(2)}, ASPT: {calcScoreAspt(p.foundTaxa).toFixed(2)}</h2> )
+const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
+    <h2>
+        BMWP: { calcBmwp(p.foundTaxa).score.toFixed(2) },
+        ASPT: { calcAspt(p.foundTaxa).toFixed(2) },
+        WHPT: { calcWhpt(p.foundTaxa).score.toFixed(2) },
+    </h2>
+)
 
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
