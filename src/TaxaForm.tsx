@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IScoreBMWP, scoresBmwp } from './scores';
+import { IScoreBMWP, scoresBmwp, scoresWhpt } from './scores';
 
 const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: number }> = (props) => {
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
@@ -18,7 +18,7 @@ const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: numb
 // tslint:disable-next-line:interface-name
 interface FoundTaxon {
     count:number,
-    name:string,
+    name: string,
 }
 
 // tslint:disable-next-line:one-variable-per-declaration
@@ -77,19 +77,23 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) =>
 
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
-        found:          FoundTaxon[],
-        iPreselect:     number,
-        search:         string,
-        taxaAll:        string[],
-        taxaMatching:   string[],
-    }> {
-    public componentWillMount() { this.setState({
-        found:          [] as FoundTaxon[],
-        iPreselect:     0,
-        search:         '',
-        taxaAll:        [] as string[],
-        taxaMatching:   [] as string[],
-    })}
+    found: FoundTaxon[],
+    iPreselect: number,
+    search: string,
+    taxaAll: Set<string>,
+    taxaMatching: string[],
+}> {
+    public componentWillMount() {
+        const taxaAll = new Set([...Array.from(scoresBmwp.keys()), ...Array.from(scoresWhpt.keys())])
+        this.setState({
+            found: [] as FoundTaxon[],
+            iPreselect: 0,
+            search: '',
+            taxaAll,
+            taxaMatching: [] as string[],
+        });
+
+    }
 
     public render() {
         const modifyFound = (add: number, i: number) => {
@@ -137,7 +141,7 @@ class TaxaForm extends React.Component<{}, {
     private searchTextUpdate = (e: React.FormEvent<HTMLInputElement>) => {
         const search = e.currentTarget.value;
         const taxaMatching = (search.length)
-            ? Array.from(scoresBmwp.keys()) .filter(name => name.toLowerCase() .includes (search.toLowerCase()))
+            ? Array.from(this.state.taxaAll) .filter(name => name.toLowerCase() .includes (search.toLowerCase()))
             : [];
         const iPreselect = (taxaMatching.length)
             ? 0
