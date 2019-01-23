@@ -1,10 +1,10 @@
 import * as React from 'react';
-import scoresBmwp, { IScoreBMWP } from './BMWPfamily'
+import { IScoreBMWP, scoresBmwp } from './scores';
 
-const TaxaAutocompleteOptions: React.SFC<{ matchingTaxa: string[], iSelect: number }> = (props) => {
-    const taxaBefore  = props.matchingTaxa.slice(0, props.iSelect);   // \
-    const selectTaxon = props.matchingTaxa[props.iSelect];            //  |- could be useful utility if common pattern
-    const taxaAfter   = props.matchingTaxa.slice(props.iSelect + 1);  // /
+const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: number }> = (props) => {
+    const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
+    const selectTaxon = props.taxaMatching[props.iSelect];            //  |- could be useful utility if common pattern
+    const taxaAfter   = props.taxaMatching.slice(props.iSelect + 1);  // /
     const listTaxa = (taxa:string[]) => (taxa.map(taxon => <li key={taxon}>{taxon}</li>));
     return (
         <ul>
@@ -78,11 +78,18 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) =>
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
         found:          FoundTaxon[],
-        taxonPreselect: string,
         iPreselect:     number,
-        matchingTaxa:   string[],
         search:         string,
+        taxaAll:        string[],
+        taxaMatching:   string[],
     }> {
+    public componentWillMount() { this.setState({
+        found:          [] as FoundTaxon[],
+        iPreselect:     0,
+        search:         '',
+        taxaAll:        [] as string[],
+        taxaMatching:   [] as string[],
+    })}
 
     public render() {
         const modifyFound = (add: number, i: number) => {
@@ -106,8 +113,8 @@ class TaxaForm extends React.Component<{}, {
                         onKeyDown={this.changeAutoCompleteSelect} />
                     <input type='submit' value='Add Taxon' />
                 </form>
-                {this.state.matchingTaxa.length
-                    ? <TaxaAutocompleteOptions matchingTaxa={this.state.matchingTaxa} iSelect={this.state.iPreselect} />
+                {this.state.taxaMatching.length
+                    ? <TaxaAutocompleteOptions taxaMatching={this.state.taxaMatching} iSelect={this.state.iPreselect} />
                     : <p>Start entering the name of a scoring BMWP family</p>
                 }
                 <TaxaFoundList foundTaxa={this.state.found} addToCount={modifyFound} />
@@ -115,40 +122,35 @@ class TaxaForm extends React.Component<{}, {
         );
     }
 
-    public componentWillMount() { this.setState({found:[] as FoundTaxon[], taxonPreselect:'', iPreselect:0, matchingTaxa:[] as string[], search:''}) };
-
-    private updatePreselection = (iPreselect:number) => {
-        const taxonPreselect = (iPreselect !== -1 && this.state.matchingTaxa.length)
-            ? this.state.matchingTaxa[iPreselect]
-            : '';
-        this.setState({iPreselect, taxonPreselect})
-    }
 
     private changeAutoCompleteSelect = (e: React.KeyboardEvent) => {
         const iPreselect = this.state.iPreselect;
         switch(e.key) {
-            case "ArrowDown": if(iPreselect < this.state.matchingTaxa.length - 1)
-            { this.updatePreselection(iPreselect + 1); } break;
+            case "ArrowDown": if(iPreselect < this.state.taxaMatching.length - 1)
+            { this.setState({ iPreselect: iPreselect + 1 }); } break;
 
             case "ArrowUp"  : if(iPreselect > 0)
-            { this.updatePreselection(iPreselect - 1); } break;
+            { this.setState({ iPreselect: iPreselect - 1 }); } break;
         }
     }
 
     private searchTextUpdate = (e: React.FormEvent<HTMLInputElement>) => {
         const search = e.currentTarget.value;
-        const matchingTaxa = (search.length)
+        const taxaMatching = (search.length)
             ? Array.from(scoresBmwp.keys()) .filter(name => name.toLowerCase() .includes (search.toLowerCase()))
             : [];
-        this.setState({ matchingTaxa, search },
-        () => this.updatePreselection(0)); // callback needed because setState does not update state immediately
+        const iPreselect = (taxaMatching.length)
+            ? 0
+            : -1;
+        this.setState({ iPreselect, taxaMatching, search });
     }
 
     private submitTaxon = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const preselect = this.state.taxonPreselect;
+        const iPreselect = this.state.iPreselect;
         // NOTE: avoids adding for invalid search
-        if (this.state.search.length && preselect.length) {
+        if (this.state.search.length && iPreselect >= 0) {
+            const preselect = this.state.taxaMatching[iPreselect];
             const iFound = this.state.found.findIndex((foundEl: FoundTaxon) => foundEl.name === preselect);
 
             const found = this.state.found;
