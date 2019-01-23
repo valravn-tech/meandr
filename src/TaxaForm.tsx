@@ -1,15 +1,15 @@
 import * as React from 'react';
 import scoresBmwp, { IScoreBMWP } from './BMWPfamily'
 
-const TaxaAutocompleteOptions: React.SFC<{ matchingTaxa: IScoreBMWP[], iSelect: number }> = (props) => {
-    const taxaBefore  = props.matchingTaxa.slice(0, props.iSelect);
-    const selectTaxon = props.matchingTaxa[props.iSelect];
-    const taxaAfter   = props.matchingTaxa.slice(props.iSelect + 1);
-    const listTaxa = (taxa:IScoreBMWP[]) => (taxa.map(taxon => <li key={taxon.family}>{taxon.family}</li>));
+const TaxaAutocompleteOptions: React.SFC<{ matchingTaxa: string[], iSelect: number }> = (props) => {
+    const taxaBefore  = props.matchingTaxa.slice(0, props.iSelect);   // \
+    const selectTaxon = props.matchingTaxa[props.iSelect];            //  |- could be useful utility if common pattern
+    const taxaAfter   = props.matchingTaxa.slice(props.iSelect + 1);  // /
+    const listTaxa = (taxa:string[]) => (taxa.map(taxon => <li key={taxon}>{taxon}</li>));
     return (
         <ul>
             { listTaxa(taxaBefore) }
-            <li style={{ fontWeight: 'bold' }} key={selectTaxon.family}>{selectTaxon.family}</li>
+            <li style={{ fontWeight: 'bold' }} key={selectTaxon}>{selectTaxon}</li>
             { listTaxa(taxaAfter) }
         </ul>
     )
@@ -22,15 +22,17 @@ interface FoundTaxon {
 }
 
 // tslint:disable-next-line:one-variable-per-declaration
-const TaxaFound: React.SFC<{ taxon: IScoreBMWP, count: number, addToCount: (add:number) => void  }> = (props) => {
+const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void  }> = (props) => {
     const dec = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(-1) }
     const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount( 1) }
+    const bmwp = scoresBmwp.get(props.taxon.name)
     return (
         <div>
             <button onClick={dec}>-</button>
             <button onClick={inc}>+</button>
-            {props.count}
-            <span style={{marginLeft: '2rem'}}>{props.taxon.family}: {props.taxon.score_orig}</span>
+            {props.taxon.count}
+            <span style={{marginLeft: '2rem'}}>{props.taxon.name}</span> - 
+            { (bmwp) ? ' BMWP: '+ bmwp.score_orig : null }
         </div>
     )
 }
@@ -40,31 +42,24 @@ const TaxaFound: React.SFC<{ taxon: IScoreBMWP, count: number, addToCount: (add:
 const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number, i:number) => void }> = (props) => (
     <ul>
         {
-            props.foundTaxa
-                .map((foundTaxon) => ( {taxon: scoresBmwp.find((sc) => sc.family === foundTaxon.name), count: foundTaxon.count} ))
-                // .filter((score) => score.taxon !== undefined)
-                .map((calc: {taxon:IScoreBMWP, count:number}, i) =>
-                {
-                    const addToIndex = (add: number) => (props.addToCount(add, i));
-                    return (
-                        <li key={i}>
-                            <TaxaFound taxon={calc.taxon} count={calc.count} addToCount={addToIndex} />
-                        </li>
-                    )
-                })
+            props.foundTaxa.map((taxon, i) => {
+                const addToIndex = (add: number) => (props.addToCount(add, i));
+                return (
+                    <li key={i}>
+                        <TaxonFound taxon={taxon} addToCount={addToIndex} />
+                    </li>
+                )
+            })
         }
     </ul>
 )
 
 const calcBmwp = (foundTaxa:FoundTaxon[]): { score:number, count:number } => (
-    foundTaxa.reduce((calc, t) => {
-        const taxon = scoresBmwp.find((sc) => sc.family === t.name);
-        const result = calc;
-        if(taxon) {
-            result.score += taxon.score_orig;
-            result.count++;
-        }
-        return result;
+    foundTaxa.reduce((acc, taxon) => {
+        const bmwp: IScoreBMWP | undefined = scoresBmwp.get(taxon.name);
+        return (bmwp)
+            ? { score: acc.score + bmwp.score_orig, count: acc.count + 1 }
+            : acc;
     }, { score:0, count:0 })
 ) 
 
@@ -85,7 +80,7 @@ class TaxaForm extends React.Component<{}, {
         found:          FoundTaxon[],
         taxonPreselect: string,
         iPreselect:     number,
-        matchingTaxa:   IScoreBMWP[],
+        matchingTaxa:   string[],
         search:         string,
     }> {
 
@@ -120,11 +115,11 @@ class TaxaForm extends React.Component<{}, {
         );
     }
 
-    public componentWillMount() { this.setState({found:[] as FoundTaxon[], taxonPreselect:'', iPreselect:0, matchingTaxa:[] as IScoreBMWP[], search:''}) };
+    public componentWillMount() { this.setState({found:[] as FoundTaxon[], taxonPreselect:'', iPreselect:0, matchingTaxa:[] as string[], search:''}) };
 
     private updatePreselection = (iPreselect:number) => {
         const taxonPreselect = (iPreselect !== -1 && this.state.matchingTaxa.length)
-            ? this.state.matchingTaxa[iPreselect].family
+            ? this.state.matchingTaxa[iPreselect]
             : '';
         this.setState({iPreselect, taxonPreselect})
     }
@@ -143,7 +138,7 @@ class TaxaForm extends React.Component<{}, {
     private searchTextUpdate = (e: React.FormEvent<HTMLInputElement>) => {
         const search = e.currentTarget.value;
         const matchingTaxa = (search.length)
-            ? scoresBmwp.filter(taxon => taxon.family.toLowerCase() .includes(search.toLowerCase()))
+            ? Array.from(scoresBmwp.keys()) .filter(name => name.toLowerCase() .includes (search.toLowerCase()))
             : [];
         this.setState({ matchingTaxa, search },
         () => this.updatePreselection(0)); // callback needed because setState does not update state immediately
