@@ -1,14 +1,14 @@
-// export interface IScoreBMWP {
-//     common_name:        string,
-//     family:             string,
-//     score:              number | null,
-//     score_orig:         number | null,
-//     score_riffles:      number | null,
-//     score_riffle_pools: number | null,
-//     score_pools:        number | null,
-// }
+export interface IScoreBMWP {
+    common_name:        string,
+    family:             string,
+    score_orig:         number,
+    score:              number | null,
+    score_riffles:      number | null,
+    score_riffle_pools: number | null,
+    score_pools:        number | null,
+}
 
-const scoresBmwp: any[] = [
+const scoresBmwp: IScoreBMWP[] = [
 	{"common_name":"Flatworms",           "family":"Planariidae",       "score":4.2,  "score_orig":5,  "score_riffles":4.5,  "score_riffle_pools":4.1,  "score_pools":3.7},
 	{"common_name":"Flatworms",           "family":"Dendrocoelidae",    "score":3.1,  "score_orig":5,  "score_riffles":2.3,  "score_riffle_pools":4.1,  "score_pools":3.1},
 	{"common_name":"Snails",              "family":"Neritidae",         "score":7.5,  "score_orig":6,  "score_riffles":6.7,  "score_riffle_pools":8.1,  "score_pools":9.3},
