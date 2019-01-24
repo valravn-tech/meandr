@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IScoreBMWP, IScoreWHPT, scoresBmwp, scoresWhpt } from './scores';
+import { IScoreBMWP, IScorePsiFam, IScoreWHPT, scoresBmwp, scoresPsiFamily, scoresPsiGroups, scoresWhpt } from './scores';
 
 const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: number }> = (props) => {
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
@@ -25,16 +25,18 @@ interface FoundTaxon {
 const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void  }> = (props) => {
     const dec = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(-1) }
     const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount( 1) }
-    const bmwp = scoresBmwp.get(props.taxon.name);
-    const whpt = calcSingleWhpt(props.taxon);
+    const bmwp   = scoresBmwp.get(props.taxon.name);
+    const whpt   = calcSingleWhpt(props.taxon);
+    const psiFam = calcSinglePsiFamily(props.taxon);
     return (
         <div>
             <button onClick={dec}>-</button>
             <button onClick={inc}>+</button>
             {props.taxon.count}
             <span style={{marginLeft: '2rem'}}>{props.taxon.name}</span> - 
-            { (bmwp) ? ' BMWP: '+ bmwp.score_orig : null }
-            { (whpt !== undefined) ? ' WHPT: '+ whpt : null }
+            { (bmwp)                 ? ' BMWP: '+ bmwp.score_orig : null }
+            { (whpt   !== undefined) ? ' WHPT: '+ whpt            : null }
+            { (psiFam !== undefined) ? ' PSI: ' + psiFam          : null }
         </div>
     )
 }
@@ -110,11 +112,31 @@ const calcAspt = (foundTaxa:FoundTaxon[]): number => {
         : 0;
 }
 
+const calcSinglePsiFamily = (foundTaxon:FoundTaxon): number | undefined => {
+    const psi: IScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
+    if(! (psi && foundTaxon.count) )
+    {   return undefined;    }
+    else {
+        const iScore = logAbundance(foundTaxon.count) - 1;
+        return scoresPsiGroups[psi.fssr].scores[iScore];
+    }
+}
+
+const calcPsiFamily = (foundTaxa:FoundTaxon[]): { score:number, count:number } => (
+    foundTaxa.reduce((acc, taxon) => {
+        const taxonScore = calcSinglePsiFamily(taxon);
+        return (taxonScore)
+            ? { score: acc.score + taxonScore, count: acc.count + 1 }
+            : acc;
+    }, { score:0, count:0 })
+)
+
 const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
     <h2>
-        BMWP: { calcBmwp(p.foundTaxa).score.toFixed(2) },
-        ASPT: { calcAspt(p.foundTaxa).toFixed(2) },
-        WHPT: { calcWhpt(p.foundTaxa).score.toFixed(2) },
+        BMWP: { calcBmwp     (p.foundTaxa).score.toFixed(2) },
+        ASPT: { calcAspt     (p.foundTaxa)      .toFixed(2) },
+        WHPT: { calcWhpt     (p.foundTaxa).score.toFixed(2) },
+        PSI:  { calcPsiFamily(p.foundTaxa).score.toFixed(2) },
     </h2>
 )
 
