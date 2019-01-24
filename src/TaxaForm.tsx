@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IScoreBMWP, IScorePsiFam, IScoreWHPT, scoresBmwp, scoresPsiFamily, scoresPsiGroups, scoresWhpt } from './scores';
+import { IScoreBMWP, IScoreLifeFam, IScorePsiFam, IScoreWHPT, scoresBmwp, scoresLifeFamily, scoresLifeGroups, scoresPsiFamily, scoresPsiGroups, scoresWhpt } from './scores';
 
 const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: number }> = (props) => {
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
@@ -25,18 +25,20 @@ interface FoundTaxon {
 const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void  }> = (props) => {
     const dec = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(-1) }
     const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount( 1) }
-    const bmwp   = scoresBmwp.get(props.taxon.name);
-    const whpt   = calcSingleWhpt(props.taxon);
-    const psiFam = calcSinglePsiFamily(props.taxon);
+    const bmwp    = scoresBmwp.get(props.taxon.name);
+    const whpt    = calcSingleWhpt(props.taxon);
+    const psiFam  = calcSinglePsiFamily(props.taxon);
+    const lifeFam = calcSingleLifeFamily(props.taxon);
     return (
         <div>
             <button onClick={dec}>-</button>
             <button onClick={inc}>+</button>
             {props.taxon.count}
             <span style={{marginLeft: '2rem'}}>{props.taxon.name}</span> - 
-            { (bmwp)                 ? ' BMWP: '+ bmwp.score_orig : null }
-            { (whpt   !== undefined) ? ' WHPT: '+ whpt            : null }
-            { (psiFam !== undefined) ? ' PSI: ' + psiFam          : null }
+            { (bmwp)                  ? ' BMWP: '+ bmwp.score_orig : null }
+            { (whpt    !== undefined) ? ' WHPT: '+ whpt            : null }
+            { (psiFam  !== undefined) ? ' PSI: ' + psiFam          : null }
+            { (lifeFam !== undefined) ? ' LIFE: '+ lifeFam         : null }
         </div>
     )
 }
@@ -131,12 +133,32 @@ const calcPsiFamily = (foundTaxa:FoundTaxon[]): { score:number, count:number } =
     }, { score:0, count:0 })
 )
 
+const calcSingleLifeFamily = (foundTaxon:FoundTaxon): number | undefined => {
+    const life: IScoreLifeFam | undefined = scoresLifeFamily.get(foundTaxon.name);
+    if(! (life && foundTaxon.count) )
+    {   return undefined;    }
+    else {
+        const iScore = logAbundance(foundTaxon.count) - 1;
+        return scoresLifeGroups[life.flow].scores[iScore];
+    }
+}
+
+const calcLifeFamily = (foundTaxa:FoundTaxon[]): { score:number, count:number } => (
+    foundTaxa.reduce((acc, taxon) => {
+        const taxonScore = calcSingleLifeFamily(taxon);
+        return (taxonScore)
+            ? { score: acc.score + taxonScore, count: acc.count + 1 }
+            : acc;
+    }, { score:0, count:0 })
+)
+
 const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
     <h2>
-        BMWP: { calcBmwp     (p.foundTaxa).score.toFixed(2) },
-        ASPT: { calcAspt     (p.foundTaxa)      .toFixed(2) },
-        WHPT: { calcWhpt     (p.foundTaxa).score.toFixed(2) },
-        PSI:  { calcPsiFamily(p.foundTaxa).score.toFixed(2) },
+        BMWP: { calcBmwp      (p.foundTaxa).score.toFixed(2) },
+        ASPT: { calcAspt      (p.foundTaxa)      .toFixed(2) },
+        WHPT: { calcWhpt      (p.foundTaxa).score.toFixed(2) },
+        PSI:  { calcPsiFamily (p.foundTaxa).score.toFixed(2) },
+        LIFE: { calcLifeFamily(p.foundTaxa).score.toFixed(2) },
     </h2>
 )
 
