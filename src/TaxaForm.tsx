@@ -81,37 +81,19 @@ const logAbundanceWhpt = (count: number): number => {
     return logAbundance(count > 1 ? count - 1 : count)
 }
 
+const calcSingleBmwp = (foundTaxon:FoundTaxon): number | undefined => {
+    const bmwp: IScoreBMWP | undefined = scoresBmwp.get(foundTaxon.name);
+    return (bmwp)
+        ? bmwp.score_orig
+        : undefined;
+}
+
 const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
     const whpt: IScoreWHPT | undefined = scoresWhpt.get(foundTaxon.name);
     const iScore = logAbundanceWhpt(foundTaxon.count) - 1;
     return (whpt && iScore >= 0)
         ? whpt.scores[iScore]
         : undefined;
-}
-
-const calcWhpt = (foundTaxa:FoundTaxon[]): { score:number, count:number } => (
-    foundTaxa.reduce((acc, taxon) => {
-        const taxonScore = calcSingleWhpt(taxon);
-        return (taxonScore)
-            ? { score: acc.score + taxonScore, count: acc.count + 1 }
-            : acc;
-    }, { score:0, count:0 })
-)
-
-const calcBmwp = (foundTaxa:FoundTaxon[]): { score:number, count:number } => (
-    foundTaxa.reduce((acc, taxon) => {
-        const bmwp: IScoreBMWP | undefined = scoresBmwp.get(taxon.name);
-        return (bmwp)
-            ? { score: acc.score + bmwp.score_orig, count: acc.count + 1 }
-            : acc;
-    }, { score:0, count:0 })
-) 
-
-const calcAspt = (foundTaxa:FoundTaxon[]): number => {
-    const bmwp = calcBmwp(foundTaxa);
-    return (bmwp.count)
-        ? bmwp.score / bmwp.count
-        : 0;
 }
 
 const calcSinglePsiFamily = (foundTaxon:FoundTaxon): number | undefined => {
@@ -124,15 +106,6 @@ const calcSinglePsiFamily = (foundTaxon:FoundTaxon): number | undefined => {
     }
 }
 
-const calcPsiFamily = (foundTaxa:FoundTaxon[]): { score:number, count:number } => (
-    foundTaxa.reduce((acc, taxon) => {
-        const taxonScore = calcSinglePsiFamily(taxon);
-        return (taxonScore)
-            ? { score: acc.score + taxonScore, count: acc.count + 1 }
-            : acc;
-    }, { score:0, count:0 })
-)
-
 const calcSingleLifeFamily = (foundTaxon:FoundTaxon): number | undefined => {
     const life: IScoreLifeFam | undefined = scoresLifeFamily.get(foundTaxon.name);
     if(! (life && foundTaxon.count) )
@@ -143,14 +116,26 @@ const calcSingleLifeFamily = (foundTaxon:FoundTaxon): number | undefined => {
     }
 }
 
-const calcLifeFamily = (foundTaxa:FoundTaxon[]): { score:number, count:number } => (
+const calcScore = (calcSingle: (t:FoundTaxon) => number | undefined, foundTaxa: FoundTaxon[]): { score:number, count:number } => (
     foundTaxa.reduce((acc, taxon) => {
-        const taxonScore = calcSingleLifeFamily(taxon);
+        const taxonScore = calcSingle(taxon);
         return (taxonScore)
             ? { score: acc.score + taxonScore, count: acc.count + 1 }
             : acc;
     }, { score:0, count:0 })
 )
+
+const calcWhpt       = (foundTaxa:FoundTaxon[]) => calcScore(calcSingleWhpt,       foundTaxa);
+const calcBmwp       = (foundTaxa:FoundTaxon[]) => calcScore(calcSingleBmwp,       foundTaxa);
+const calcPsiFamily  = (foundTaxa:FoundTaxon[]) => calcScore(calcSinglePsiFamily,  foundTaxa);
+const calcLifeFamily = (foundTaxa:FoundTaxon[]) => calcScore(calcSingleLifeFamily, foundTaxa);
+
+const calcAspt = (foundTaxa:FoundTaxon[]): number => {
+    const bmwp = calcBmwp(foundTaxa);
+    return (bmwp.count)
+        ? bmwp.score / bmwp.count
+        : 0;
+}
 
 const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
     <h2>
