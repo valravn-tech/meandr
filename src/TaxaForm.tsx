@@ -37,10 +37,10 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
             <button onClick={inc}>+</button>
             {props.taxon.count}
             <span style={{marginLeft: '2rem'}}>{props.taxon.name}</span> - 
-            { (bmwp)                  ? ' BMWP: '+ bmwp.score_orig : null }
-            { (whpt    !== undefined) ? ' WHPT: '+ whpt            : null }
-            { (psiFam  !== undefined) ? ' PSI: ' + psiFam.score    : null }
-            { (lifeFam !== undefined) ? ' LIFE: '+ lifeFam         : null }
+            { (bmwp)                  ? ` BMWP: ${bmwp.score_orig}` : null }
+            { (whpt    !== undefined) ? ` WHPT: ${whpt}`            : null }
+            { (psiFam  !== undefined) ? ` PSI: ${psiFam.score} (${psiFam.fssr})`    : null }
+            { (lifeFam !== undefined) ? ` LIFE: ${lifeFam}`         : null }
         </div>
     )
 }
@@ -158,6 +158,16 @@ const calcSingleLifeFamily = (foundTaxon:FoundTaxon): number | undefined => {
     }
 }
 
+const calcLifeFamily = (foundTaxa:FoundTaxon[]) => {
+    const partial = foundTaxa.reduce((acc, taxon) => {
+        const taxonScore = calcSingleLifeFamily(taxon);
+        return (taxonScore)
+            ? { score: acc.score + taxonScore, count: acc.count + 1 }
+            : acc;
+    }, { score:0, count:0 })
+    return { score:div0(partial.score, partial.count), count:partial.count };
+}
+
 const calcScore = (calcSingle: (t:FoundTaxon) => number | undefined, foundTaxa: FoundTaxon[]): { score:number, count:number } => (
     foundTaxa.reduce((acc, taxon) => {
         const taxonScore = calcSingle(taxon);
@@ -169,7 +179,6 @@ const calcScore = (calcSingle: (t:FoundTaxon) => number | undefined, foundTaxa: 
 
 const calcWhpt       = (foundTaxa:FoundTaxon[]) => calcScore(calcSingleWhpt,       foundTaxa);
 const calcBmwp       = (foundTaxa:FoundTaxon[]) => calcScore(calcSingleBmwp,       foundTaxa);
-const calcLifeFamily = (foundTaxa:FoundTaxon[]) => calcScore(calcSingleLifeFamily, foundTaxa);
 
 const calcAspt = (foundTaxa:FoundTaxon[]): number => {
     const bmwp = calcBmwp(foundTaxa);
