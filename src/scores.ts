@@ -231,7 +231,8 @@ export const scoresWhpt: Map<string, IScoreWHPT> = new Map([
 // | D     | Highly     insensitive                  | 2   | 3     | 4       | 5     |
 // |-------+-----------------------------------------+-----+-------+---------+-------|
 
-export const scoresPsiGroups = { //         Log Abundance (1-9, 10-99...)
+//                                         Log Abundance (1-9, 10-99...)
+export const scoresPsiGroups: {[fssrGroup: string]: { description: string, scores: number[] }} = {
 	'A': { description: 'Highly sensitive',       scores: [2, 3, 4, 5] },
 	'B': { description: 'Moderately sensitive',   scores: [1, 2, 3, 4] },
 	'C': { description: 'Moderately insensitive', scores: [1, 2, 3, 4] },
@@ -347,7 +348,10 @@ export const scoresPsiFamily: Map<string, IScorePsiFam> = new Map([
 
 
 
-export const scoresLifeGroups = { //         Log Abundance (1-9, 10-99...)
+// TODO: enums?
+
+//                                        Log Abundance (1-9, 10-99...)
+export const scoresLifeGroups: {[flowGroup: string]: { description: string, scores: number[] }} = {
 	'I':   { description: 'Rapid',             scores: [9, 10, 11, 12] },
 	'II':  { description: 'Moderate-fast',     scores: [8, 9 , 10, 11] },
 	'III': { description: 'Slow-sluggish',     scores: [7, 7 , 7 , 7 ] },
@@ -355,6 +359,13 @@ export const scoresLifeGroups = { //         Log Abundance (1-9, 10-99...)
 	'V':   { description: 'Standing',          scores: [5, 4 , 3 , 2 ] },
 	'VI':  { description: 'Drought_resistant', scores: [4, 3 , 2 , 1 ] },
 }
+
+// score     description
+// 81–100    Minimally sedimented/unsedimented
+// 61– 80    Slightly sedimented
+// 41– 60    Moderately sedimented
+// 21– 40    Sedimented
+//  0– 20    Heavily sedimented
 
 export interface IScoreLifeFam {
     // family:   string,

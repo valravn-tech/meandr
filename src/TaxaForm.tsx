@@ -15,6 +15,8 @@ const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: numb
     )
 }
 
+const div0 = (dividend:number, divisor:number):number => ((divisor) ? dividend /divisor : 0);
+
 // tslint:disable-next-line:interface-name
 interface FoundTaxon {
     count:number,
@@ -37,7 +39,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
             <span style={{marginLeft: '2rem'}}>{props.taxon.name}</span> - 
             { (bmwp)                  ? ' BMWP: '+ bmwp.score_orig : null }
             { (whpt    !== undefined) ? ' WHPT: '+ whpt            : null }
-            { (psiFam  !== undefined) ? ' PSI: ' + psiFam          : null }
+            { (psiFam  !== undefined) ? ' PSI: ' + psiFam.score    : null }
             { (lifeFam !== undefined) ? ' LIFE: '+ lifeFam         : null }
         </div>
     )
@@ -96,14 +98,54 @@ const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
         : undefined;
 }
 
-const calcSinglePsiFamily = (foundTaxon:FoundTaxon): number | undefined => {
+
+interface IPartialScorePSI {
+    AB: number,
+    AD: number,
+}
+
+interface ISingleScorePSI {
+    fssr: string,
+    score: number,
+}
+
+const calcSinglePsiFamily = (foundTaxon:FoundTaxon): ISingleScorePSI | undefined => {
     const psi: IScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
     if(! (psi && foundTaxon.count) )
     {   return undefined;    }
     else {
         const iScore = logAbundance(foundTaxon.count) - 1;
-        return scoresPsiGroups[psi.fssr].scores[iScore];
+        const score = scoresPsiGroups[psi.fssr].scores[iScore]
+        return { score, fssr:psi.fssr }
     }
+}
+
+// TODO: is using && instead of ternary clear?
+const psiSingleToPartial = (single: ISingleScorePSI | undefined): IPartialScorePSI | undefined => (
+    (single)
+    ? {
+        AB: (single.fssr === 'A' || single.fssr === 'B')
+            ? single.score
+            : 0,
+        AD: single.score
+    }
+    : undefined
+)
+
+const calcPsiFamily = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
+    const partial = foundTaxa.reduce((acc, taxon) => {
+        const taxonScore:IPartialScorePSI | undefined = psiSingleToPartial(calcSinglePsiFamily(taxon));
+        return (taxonScore)
+            ? {
+                count: acc.count + 1,
+                score: {
+                    AB: acc.score.AB + taxonScore.AB, AD: acc.score.AD + taxonScore.AD
+                },
+            }
+            : acc;
+    }, { score: { AB: 0, AD: 0 }, count: 0 });
+
+    return { count: partial.count, score: 100 * div0(partial.score.AB, partial.score.AD) }
 }
 
 const calcSingleLifeFamily = (foundTaxon:FoundTaxon): number | undefined => {
@@ -127,22 +169,20 @@ const calcScore = (calcSingle: (t:FoundTaxon) => number | undefined, foundTaxa: 
 
 const calcWhpt       = (foundTaxa:FoundTaxon[]) => calcScore(calcSingleWhpt,       foundTaxa);
 const calcBmwp       = (foundTaxa:FoundTaxon[]) => calcScore(calcSingleBmwp,       foundTaxa);
-const calcPsiFamily  = (foundTaxa:FoundTaxon[]) => calcScore(calcSinglePsiFamily,  foundTaxa);
 const calcLifeFamily = (foundTaxa:FoundTaxon[]) => calcScore(calcSingleLifeFamily, foundTaxa);
 
 const calcAspt = (foundTaxa:FoundTaxon[]): number => {
     const bmwp = calcBmwp(foundTaxa);
-    return (bmwp.count)
-        ? bmwp.score / bmwp.count
-        : 0;
+    return div0(bmwp.score, bmwp.count);
 }
+
 
 const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
     <h2>
         BMWP: { calcBmwp      (p.foundTaxa).score.toFixed(2) },
         ASPT: { calcAspt      (p.foundTaxa)      .toFixed(2) },
         WHPT: { calcWhpt      (p.foundTaxa).score.toFixed(2) },
-        PSI:  { calcPsiFamily (p.foundTaxa).score.toFixed(2) },
+        PSI:  { calcPsiFamily (p.foundTaxa).score.toFixed(2) }%,
         LIFE: { calcLifeFamily(p.foundTaxa).score.toFixed(2) },
     </h2>
 )
@@ -164,7 +204,6 @@ class TaxaForm extends React.Component<{}, {
             taxaAll,
             taxaMatching: [] as string[],
         });
-
     }
 
     public render() {
