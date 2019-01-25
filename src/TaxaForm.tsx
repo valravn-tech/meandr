@@ -1,16 +1,28 @@
 import * as React from 'react';
-import { IScoreBMWP, IScoreLifeFam, IScorePsiFam, IScoreWHPT, scoresBmwp, scoresLifeFamily, scoresLifeGroups, scoresPsiFamily, scoresPsiGroups, scoresWhpt } from './scores';
+import { IScoreBMWP, IScoreLifeFam, IScoreLifeSpc, IScorePsiFam, IScoreWHPT, scoresBmwp, scoresLifeFamily, scoresLifeGroups, scoresLifeSpecies, scoresPsiFamily, scoresPsiGroups, scoresWhpt } from './scores';
+
+const startsLower = (s:string):boolean => {
+    const first = s.charAt(0);
+    return first === first.toLowerCase() && first !== first.toUpperCase() // doesn't return true for numbers
+}
 
 const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: number }> = (props) => {
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
     const selectTaxon = props.taxaMatching[props.iSelect];            //  |- could be useful utility if common pattern
     const taxaAfter   = props.taxaMatching.slice(props.iSelect + 1);  // /
-    const listTaxa = (taxa:string[]) => (taxa.map(taxon => <li key={taxon}>{taxon}</li>));
+    const listTaxon = (taxon:string, style?:any) => (
+        <li
+            style={{ ...style, fontStyle: startsLower(taxon) ? 'italic' : 'normal' }}
+            key={taxon}>
+            {taxon}
+        </li>
+    );
+    const listTaxa = (taxa: string[]) => (taxa.map(taxon => listTaxon(taxon)));
     return (
         <ul>
-            { listTaxa(taxaBefore) }
-            <li style={{ fontWeight: 'bold' }} key={selectTaxon}>{selectTaxon}</li>
-            { listTaxa(taxaAfter) }
+            {listTaxa(taxaBefore)}
+            {listTaxon(selectTaxon, { fontWeight: 'bold' })}
+            {listTaxa(taxaAfter)}
         </ul>
     )
 }
@@ -31,16 +43,18 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
     const whpt    = calcSingleWhpt(props.taxon);
     const psiFam  = calcSinglePsiFamily(props.taxon);
     const lifeFam = calcSingleLifeFamily(props.taxon);
+    const lifeSpc = calcSingleLifeSpecies(props.taxon);
     return (
         <div>
             <button onClick={dec}>-</button>
             <button onClick={inc}>+</button>
             {props.taxon.count}
             <span style={{marginLeft: '2rem'}}>{props.taxon.name}</span> - 
-            { (bmwp)                  ? ` BMWP: ${bmwp.score_orig}` : null }
-            { (whpt    !== undefined) ? ` WHPT: ${whpt}`            : null }
-            { (psiFam  !== undefined) ? ` PSI: ${psiFam.score} (${psiFam.fssr})`    : null }
-            { (lifeFam !== undefined) ? ` LIFE: ${lifeFam}`         : null }
+            { (bmwp)                  ? ` BMWP: ${bmwp.score_orig}`                    : null }
+            { (whpt    !== undefined) ? ` WHPT: ${whpt}`                               : null }
+            { (psiFam  !== undefined) ? ` PSI: ${psiFam.score} (${psiFam.fssr})`       : null }
+            { (lifeFam !== undefined) ? <span> LIFE<sub>family</sub>:  {lifeFam}</span> : null }
+            { (lifeSpc !== undefined) ? <span> LIFE<sub>species</sub>: {lifeSpc}</span> : null }
         </div>
     )
 }
@@ -148,8 +162,8 @@ const calcPsiFamily = (foundTaxa: FoundTaxon[]): { score:number, count:number } 
     return { count: partial.count, score: 100 * div0(partial.score.AB, partial.score.AD) }
 }
 
-const calcSingleLifeFamily = (foundTaxon:FoundTaxon): number | undefined => {
-    const life: IScoreLifeFam | undefined = scoresLifeFamily.get(foundTaxon.name);
+const calcSingleLife = (foundTaxon:FoundTaxon, scoresTable:Map<string, IScoreLifeFam> | Map<string, IScoreLifeFam>): number | undefined => {
+    const life: IScoreLifeFam | IScoreLifeSpc | undefined = scoresTable.get(foundTaxon.name);
     if(! (life && foundTaxon.count) )
     {   return undefined;    }
     else {
@@ -158,15 +172,21 @@ const calcSingleLifeFamily = (foundTaxon:FoundTaxon): number | undefined => {
     }
 }
 
-const calcLifeFamily = (foundTaxa:FoundTaxon[]) => {
+const calcSingleLifeFamily  = (foundTaxon:FoundTaxon) => calcSingleLife(foundTaxon, scoresLifeFamily)
+const calcSingleLifeSpecies = (foundTaxon:FoundTaxon) => calcSingleLife(foundTaxon, scoresLifeSpecies)
+
+const calcLife = (foundTaxa:FoundTaxon[], scoresTable:Map<string, IScoreLifeFam> | Map<string, IScoreLifeFam>): { score: number, count: number } => {
     const partial = foundTaxa.reduce((acc, taxon) => {
-        const taxonScore = calcSingleLifeFamily(taxon);
+        const taxonScore = calcSingleLife(taxon, scoresTable);
         return (taxonScore)
             ? { score: acc.score + taxonScore, count: acc.count + 1 }
             : acc;
     }, { score:0, count:0 })
     return { score:div0(partial.score, partial.count), count:partial.count };
 }
+  
+const calcLifeFamily  = (foundTaxa:FoundTaxon[]) => calcLife(foundTaxa, scoresLifeFamily)
+const calcLifeSpecies = (foundTaxa:FoundTaxon[]) => calcLife(foundTaxa, scoresLifeSpecies)
 
 const calcScore = (calcSingle: (t:FoundTaxon) => number | undefined, foundTaxa: FoundTaxon[]): { score:number, count:number } => (
     foundTaxa.reduce((acc, taxon) => {
@@ -192,7 +212,8 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
         ASPT: { calcAspt      (p.foundTaxa)      .toFixed(2) },
         WHPT: { calcWhpt      (p.foundTaxa).score.toFixed(2) },
         PSI:  { calcPsiFamily (p.foundTaxa).score.toFixed(2) }%,
-        LIFE: { calcLifeFamily(p.foundTaxa).score.toFixed(2) },
+        LIFE<sub>family</sub>: { calcLifeFamily(p.foundTaxa).score.toFixed(2) },
+        LIFE<sub>species</sub>: { calcLifeSpecies(p.foundTaxa).score.toFixed(2) },
     </h2>
 )
 
@@ -205,7 +226,13 @@ class TaxaForm extends React.Component<{}, {
     taxaMatching: string[],
 }> {
     public componentWillMount() {
-        const taxaAll = new Set([...Array.from(scoresBmwp.keys()), ...Array.from(scoresWhpt.keys())])
+        const taxaAll = new Set([
+            ...Array.from(scoresBmwp       .keys()), 
+            ...Array.from(scoresLifeFamily .keys()),
+            ...Array.from(scoresLifeSpecies.keys()),
+            ...Array.from(scoresPsiFamily  .keys()),
+            ...Array.from(scoresWhpt       .keys()),
+        ])
         this.setState({
             found: [] as FoundTaxon[],
             iPreselect: 0,
