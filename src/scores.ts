@@ -1,4 +1,4 @@
-export interface IScoreBMWP {
+export interface ScoreBmwp {
     // family:            string,
     common_name:       string,
     score_orig:        number,
@@ -8,7 +8,7 @@ export interface IScoreBMWP {
     score_pool:        number | null,
 }
 
-export const scoresBmwp: Map<string, IScoreBMWP> = new Map([
+export const scoresBmwp: Map<string, ScoreBmwp> = new Map([
 	["Planariidae",           { "common_name":" Flatworms",           "score_orig":5,  "score_rev":4.2,  "score_riffle":4.5,  "score_riffle_pool":4.1,  "score_pool":3.7  }],
 	["Dendrocoelidae",        { "common_name":" Flatworms",           "score_orig":5,  "score_rev":3.1,  "score_riffle":2.3,  "score_riffle_pool":4.1,  "score_pool":3.1  }],
 	["Neritidae",             { "common_name":" Snails",              "score_orig":6,  "score_rev":7.5,  "score_riffle":6.7,  "score_riffle_pool":8.1,  "score_pool":9.3  }],
@@ -107,13 +107,13 @@ export const scoresBmwp: Map<string, IScoreBMWP> = new Map([
 // The Habitat Specific Scores are based on the following substrate compositions:
 // Riffles: >= 70% boulders and pebbles    Pool: >= 70% sand and silt    Riffle/Pool: the remainder
 
-export interface IScoreWHPT {
+export interface ScoreWhpt {
     // family:      string,
     score_presence: number,
     scores:         number[],
 }
 
-export const scoresWhpt: Map<string, IScoreWHPT> = new Map([
+export const scoresWhpt: Map<string, ScoreWhpt> = new Map([
 	["Planariidae",       { "score_presence": 4.9,  "scores": [4.7,  5.4,  5.4,  5.4 ] }],
 	["Dugesiidae",        { "score_presence": 2.9,  "scores": [2.8,  3.1,  3.1,  3.1 ] }],
 	["Dendrocoelidae",    { "score_presence": 3,    "scores": [3,    2.6,  2.6,  2.6 ] }],
@@ -239,14 +239,14 @@ export const scoresPsiGroups: {[fssrGroup: string]: { description: string, score
 	'D': { description: 'Highly insensitive',     scores: [2, 3, 4, 5] },
 }
 
-export interface IScorePsiFam {
+export interface ScorePsiFam {
     // family (+ Oligochaeta):            string,
 	class_order:          string,
 	suborder_superfamily: string,
 	fssr:                 string,
 }
 
-export const scoresPsiFamily: Map<string, IScorePsiFam> = new Map([
+export const scoresPsiFamily: Map<string, ScorePsiFam> = new Map([
 	["Spongillidae",      { "class_order":"Porifera",      "suborder_superfamily":"",                 "fssr":"B"}],
 	["Planariidae",       { "class_order":"Tricladida",    "suborder_superfamily":"",                 "fssr":"D"}],
 	["Dugesiidae",        { "class_order":"Tricladida",    "suborder_superfamily":"",                 "fssr":"D"}],
@@ -368,13 +368,13 @@ export const scoresLifeGroups: {[flowGroup: string]: { description: string, scor
 //  0– 20    Heavily sedimented
 
 // TODO: normalize the LIFE tables to allow both to use the same interface
-export interface IScoreLifeFam {
+export interface ScoreLifeFam {
     // family:   string,
 	major_group: string,
 	flow:        string,
 }
 
-export interface IScoreLifeSpc {
+export interface ScoreLifeSpc {
     // family:   string,
 	major_group: string,
 	genus:       string,
@@ -382,7 +382,7 @@ export interface IScoreLifeSpc {
 	flow:        string,
 }
 
-export const scoresLifeFamily: Map<string, IScoreLifeFam> = new Map([
+export const scoresLifeFamily: Map<string, ScoreLifeFam> = new Map([
 	["Planariidae",        { "major_group":"Tricladida",    "flow":"IV"  }],
 	["Dugesiidae",         { "major_group":"Tricladida",    "flow":"IV"  }],
 	["Dendrocoelidae",     { "major_group":"Tricladida",    "flow":"IV"  }],
@@ -487,7 +487,7 @@ export const scoresLifeFamily: Map<string, IScoreLifeFam> = new Map([
 	["Syrphidae",          { "major_group":"Diptera",       "flow":"V"   }],
 ]);
 
-export const scoresLifeSpecies: Map<string, IScoreLifeSpc> = new Map([
+export const scoresLifeSpecies: Map<string, ScoreLifeSpc> = new Map([
   ["torva",              { "by":"species", "genus":"Planaria",         "major_group":"Tricladida",    "flow":"IV"  }],
   ["nigra",              { "by":"species", "genus":"Polycelis",        "major_group":"Tricladida",    "flow":"IV"  }],
   ["tenuis",             { "by":"species", "genus":"Polycelis",        "major_group":"Tricladida",    "flow":"IV"  }],

@@ -1,18 +1,18 @@
 import * as React from 'react';
-import { allTaxa, ITaxa, TaxaCode } from './alltaxa';
+import { allTaxa, Taxa, TaxaCode } from './alltaxa';
 import {
-    IScoreBMWP,
-    IScoreLifeFam,
-    IScoreLifeSpc,
-    IScorePsiFam,
-    IScoreWHPT,
+    ScoreBmwp,
+    ScoreLifeFam,
+    ScoreLifeSpc,
+    ScorePsiFam,
     scoresBmwp,
     scoresLifeFamily,
     scoresLifeGroups,
     scoresLifeSpecies,
     scoresPsiFamily,
     scoresPsiGroups,
-    scoresWhpt
+    scoresWhpt,
+    ScoreWhpt
 } from './scores';
 
 
@@ -28,7 +28,7 @@ const taxonLevel = (taxon: TaxaCode): 'major_group' | 'family' | 'genus' | 'spec
 )
 const taxonPreciseName = (taxon: TaxaCode): string | undefined => {
     const type = taxonLevel(taxon);
-    const tx: ITaxa | undefined = allTaxa.get(taxon);
+    const tx: Taxa | undefined = allTaxa.get(taxon);
     return type && tx
         ? tx[type]
         : undefined;
@@ -162,16 +162,16 @@ const logAbundanceWhpt = (count: number): number => {
 }
 
 const calcSingleBmwp = (foundTaxon:FoundTaxon): number | undefined => {
-    const bmwp:    IScoreBMWP | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresBmwp);
-    // const bmwp: IScoreBMWP | undefined = scoresBmwp.get(foundTaxon.name);
+    const bmwp:    ScoreBmwp | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresBmwp);
+    // const bmwp: ScoreBMWP | undefined = scoresBmwp.get(foundTaxon.name);
     return (bmwp)
         ? bmwp.score_orig
         : undefined;
 }
 
 const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
-    const whpt: IScoreWHPT | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresWhpt);
-    // const whpt: IScoreWHPT | undefined = scoresWhpt.get(foundTaxon.name);
+    const whpt: ScoreWhpt | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresWhpt);
+    // const whpt: ScoreWHPT | undefined = scoresWhpt.get(foundTaxon.name);
     const iScore = logAbundanceWhpt(foundTaxon.count) - 1;
     return (whpt && iScore >= 0)
         ? whpt.scores[iScore]
@@ -179,19 +179,19 @@ const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
 }
 
 
-interface IPartialScorePSI {
+interface PartialScorePSI {
     AB: number,
     AD: number,
 }
 
-interface ISingleScorePSI {
+interface SingleScorePSI {
     fssr: string,
     score: number,
 }
 
-const calcSinglePsiFamily = (foundTaxon:FoundTaxon): ISingleScorePSI | undefined => {
-    const psi: IScorePsiFam | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresPsiFamily);
-    // const psi: IScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
+const calcSinglePsiFamily = (foundTaxon:FoundTaxon): SingleScorePSI | undefined => {
+    const psi: ScorePsiFam | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresPsiFamily);
+    // const psi: ScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
     if(! (psi && foundTaxon.count) )
     {   return undefined;    }
     else {
@@ -202,7 +202,7 @@ const calcSinglePsiFamily = (foundTaxon:FoundTaxon): ISingleScorePSI | undefined
 }
 
 // TODO: is using && instead of ternary clear?
-const psiSingleToPartial = (single: ISingleScorePSI | undefined): IPartialScorePSI | undefined => (
+const psiSingleToPartial = (single: SingleScorePSI | undefined): PartialScorePSI | undefined => (
     (single)
     ? {
         AB: (single.fssr === 'A' || single.fssr === 'B')
@@ -215,7 +215,7 @@ const psiSingleToPartial = (single: ISingleScorePSI | undefined): IPartialScoreP
 
 const calcPsiFamily = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
     const partial = foundTaxa.reduce((acc, taxon) => {
-        const taxonScore:IPartialScorePSI | undefined = psiSingleToPartial(calcSinglePsiFamily(taxon));
+        const taxonScore: PartialScorePSI | undefined = psiSingleToPartial(calcSinglePsiFamily(taxon));
         return (taxonScore)
             ? {
                 count: acc.count + 1,
@@ -229,9 +229,9 @@ const calcPsiFamily = (foundTaxa: FoundTaxon[]): { score:number, count:number } 
     return { count: partial.count, score: 100 * div0(partial.score.AB, partial.score.AD) }
 }
 
-const calcSingleLife = (foundTaxon:FoundTaxon, scoresTable:Map<string, IScoreLifeFam> | Map<string, IScoreLifeFam>): number | undefined => {
-    const life: IScoreLifeFam | IScoreLifeSpc | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresTable);
-    // const life: IScoreLifeFam | IScoreLifeSpc | undefined = scoresTable.get(foundTaxon.name);
+const calcSingleLife = (foundTaxon:FoundTaxon, scoresTable:Map<string, ScoreLifeFam> | Map<string, ScoreLifeFam>): number | undefined => {
+    const life: ScoreLifeFam | ScoreLifeSpc | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresTable);
+    // const life: ScoreLifeFam | ScoreLifeSpc | undefined = scoresTable.get(foundTaxon.name);
     if(! (life && foundTaxon.count) )
     {   return undefined;    }
     else {
@@ -243,7 +243,7 @@ const calcSingleLife = (foundTaxon:FoundTaxon, scoresTable:Map<string, IScoreLif
 const calcSingleLifeFamily  = (foundTaxon:FoundTaxon) => calcSingleLife(foundTaxon, scoresLifeFamily)
 const calcSingleLifeSpecies = (foundTaxon:FoundTaxon) => calcSingleLife(foundTaxon, scoresLifeSpecies)
 
-const calcLife = (foundTaxa:FoundTaxon[], scoresTable:Map<string, IScoreLifeFam> | Map<string, IScoreLifeFam>): { score: number, count: number } => {
+const calcLife = (foundTaxa:FoundTaxon[], scoresTable:Map<string, ScoreLifeFam> | Map<string, ScoreLifeFam>): { score: number, count: number } => {
     const partial = foundTaxa.reduce((acc, taxon) => {
         const taxonScore = calcSingleLife(taxon, scoresTable);
         return (taxonScore)
