@@ -2,10 +2,13 @@ import * as React from 'react';
 import { allTaxa, Taxa, TaxaCode } from './alltaxa';
 import {
     ScoreBmwp,
+    ScoreCci,
     ScoreLifeFam,
     ScoreLifeSpc,
     ScorePsiFam,
     scoresBmwp,
+    scoresCci,
+    scoresCciCommunity,
     scoresLifeFamily,
     scoresLifeGroups,
     scoresLifeSpecies,
@@ -84,11 +87,12 @@ interface FoundTaxon {
 const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void  }> = (props) => {
     const dec = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(-1) }
     const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount( 1) }
-    const bmwp    = scoresBmwp.get(props.taxon.name);
-    const whpt    = calcSingleWhpt(props.taxon);
-    const psiFam  = calcSinglePsiFamily(props.taxon);
-    const lifeFam = calcSingleLifeFamily(props.taxon);
+    const bmwp    = scoresBmwp.get       (props.taxon.name);
+    const whpt    = calcSingleWhpt       (props.taxon);
+    const psiFam  = calcSinglePsiFamily  (props.taxon);
+    const lifeFam = calcSingleLifeFamily (props.taxon);
     const lifeSpc = calcSingleLifeSpecies(props.taxon);
+    const cci     = calcSingleCci        (props.taxon);
     return (
         <div>
             <button onClick={dec}>-</button>
@@ -100,6 +104,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
             { (psiFam  !== undefined) ? ` PSI: ${psiFam.score} (${psiFam.fssr})`        : null }
             { (lifeFam !== undefined) ? <span> LIFE<sub>family</sub>:  {lifeFam}</span> : null }
             { (lifeSpc !== undefined) ? <span> LIFE<sub>species</sub>: {lifeSpc}</span> : null }
+            { (cci     !== undefined) ? ` CCI: ${cci}`                                  : null }
         </div>
     )
 }
@@ -178,6 +183,34 @@ const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
         : undefined;
 }
 
+
+const calcSingleCci = (foundTaxon:FoundTaxon): number | undefined => {
+    const cci: ScoreCci | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresCci);
+    // const psi: ScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
+    if(! (cci && foundTaxon.count) )
+    {   return undefined;    }
+    else {
+        return cci.score;
+    }
+}
+ 
+const calcCci = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
+    const cci = foundTaxa.reduce((acc, taxon) => {
+        const taxonScore = calcSingleCci(taxon);
+        return (taxonScore)
+            ? {
+                count: acc.count + 1,
+                max: Math.max(taxonScore, acc.max),
+                sum: acc.sum + taxonScore,
+            }
+            : acc;
+    }, { max:0, sum:0, count:0 });
+
+    const scoreConservationMean = div0(cci.sum, cci.count);
+    const scoreCommunity = scoresCciCommunity[cci.max];
+    const score = scoreConservationMean * scoreCommunity;
+    return {score, count: cci.count};
+}
 
 interface PartialScorePSI {
     AB: number,
@@ -280,6 +313,7 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
         ASPT: { calcAspt      (p.foundTaxa)      .toFixed(2) },
         WHPT: { calcWhpt      (p.foundTaxa).score.toFixed(2) },
         PSI:  { calcPsiFamily (p.foundTaxa).score.toFixed(2) }%,
+        CCI:  { calcCci       (p.foundTaxa).score.toFixed(2) },
         LIFE<sub>family</sub>: { calcLifeFamily(p.foundTaxa).score.toFixed(2) },
         LIFE<sub>species</sub>: { calcLifeSpecies(p.foundTaxa).score.toFixed(2) },
     </h2>
@@ -300,6 +334,7 @@ class TaxaForm extends React.Component<{}, {
             ...Array.from(scoresLifeSpecies.keys()),
             ...Array.from(scoresPsiFamily  .keys()),
             ...Array.from(scoresWhpt       .keys()),
+            ...Array.from(scoresCci        .keys()),
         ])
         this.setState({
             found: [] as FoundTaxon[],
