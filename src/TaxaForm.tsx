@@ -1,10 +1,54 @@
 import * as React from 'react';
-import { IScoreBMWP, IScoreLifeFam, IScoreLifeSpc, IScorePsiFam, IScoreWHPT, scoresBmwp, scoresLifeFamily, scoresLifeGroups, scoresLifeSpecies, scoresPsiFamily, scoresPsiGroups, scoresWhpt } from './scores';
+import { allTaxa, ITaxa, TaxaCode } from './alltaxa';
+import {
+    IScoreBMWP,
+    IScoreLifeFam,
+    IScoreLifeSpc,
+    IScorePsiFam,
+    IScoreWHPT,
+    scoresBmwp,
+    scoresLifeFamily,
+    scoresLifeGroups,
+    scoresLifeSpecies,
+    scoresPsiFamily,
+    scoresPsiGroups,
+    scoresWhpt
+} from './scores';
 
-const startsLower = (s:string):boolean => {
-    const first = s.charAt(0);
-    return first === first.toLowerCase() && first !== first.toUpperCase() // doesn't return true for numbers
+
+// NOTE: these strings can be used as keys for the object values in allTaxa (as shown below)
+const taxonLevel = (taxon: TaxaCode): 'major_group' | 'family' | 'genus' | 'species' | undefined => (
+    taxon.length === 8 ?
+        (taxon[6] !== '0' || taxon[7] !== '0') ? 'species'     :
+        (taxon[4] !== '0' || taxon[5] !== '0') ? 'genus'       :
+        (taxon[2] !== '0' || taxon[3] !== '0') ? 'family'      :
+        (taxon[0] !== '0' || taxon[1] !== '0') ? 'major_group' :
+        undefined
+    : undefined
+)
+const taxonPreciseName = (taxon: TaxaCode): string | undefined => {
+    const type = taxonLevel(taxon);
+    const tx: ITaxa | undefined = allTaxa.get(taxon);
+    return type && tx
+        ? tx[type]
+        : undefined;
 }
+
+const taxonFullName = (taxon: TaxaCode): string | undefined => {
+    const type = taxonLevel(taxon);
+    const tx = allTaxa.get(taxon);
+    return tx && (
+        type === 'major_group' ? `${tx.major_group}` : 
+        type === 'family'      ? `${tx.major_group} ${tx.family}` : 
+        type === 'genus'       ? `${tx.major_group} ${tx.family} ${tx.genus}` : 
+        type === 'species'     ? `${tx.major_group} ${tx.family} ${tx.genus} ${tx.species}` : 
+        undefined
+    );
+}
+
+const isSpecies = (taxon: TaxaCode): boolean => ( taxonLevel(taxon) === 'species' )
+const taxonStyle = (taxon: TaxaCode):any => ({fontStyle: isSpecies(taxon) ? 'italic' : 'normal'})
+
 
 const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: number }> = (props) => {
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
@@ -12,7 +56,7 @@ const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: numb
     const taxaAfter   = props.taxaMatching.slice(props.iSelect + 1);  // /
     const listTaxon = (taxon:string, style?:any) => (
         <li
-            style={{ ...style, fontStyle: startsLower(taxon) ? 'italic' : 'normal' }}
+            style={{ ...style, ...taxonStyle(taxon) }}
             key={taxon}>
             {taxon}
         </li>
@@ -33,6 +77,7 @@ const div0 = (dividend:number, divisor:number):number => ((divisor) ? dividend /
 interface FoundTaxon {
     count:number,
     name: string,
+    code: TaxaCode,
 }
 
 // tslint:disable-next-line:one-variable-per-declaration
@@ -49,10 +94,10 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
             <button onClick={dec}>-</button>
             <button onClick={inc}>+</button>
             {props.taxon.count}
-            <span style={{marginLeft: '2rem'}}>{props.taxon.name}</span> - 
-            { (bmwp)                  ? ` BMWP: ${bmwp.score_orig}`                    : null }
-            { (whpt    !== undefined) ? ` WHPT: ${whpt}`                               : null }
-            { (psiFam  !== undefined) ? ` PSI: ${psiFam.score} (${psiFam.fssr})`       : null }
+            <span style={{marginLeft: '2rem', ...taxonStyle(props.taxon.code)}}>{ taxonFullName(props.taxon.code) }</span> - 
+            { (bmwp)                  ? ` BMWP: ${bmwp.score_orig}`                     : null }
+            { (whpt    !== undefined) ? ` WHPT: ${whpt}`                                : null }
+            { (psiFam  !== undefined) ? ` PSI: ${psiFam.score} (${psiFam.fssr})`        : null }
             { (lifeFam !== undefined) ? <span> LIFE<sub>family</sub>:  {lifeFam}</span> : null }
             { (lifeSpc !== undefined) ? <span> LIFE<sub>species</sub>: {lifeSpc}</span> : null }
         </div>
@@ -76,6 +121,25 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number,
     </ul>
 )
 
+
+const nextTaxonLevel = (lvl: 'major_group' | 'family' | 'genus' | 'species' | undefined): 'major_group' | 'family' | 'genus' | 'species' | undefined => (
+    lvl === 'species' ? 'genus' :
+    lvl === 'genus'   ? 'family' :
+    lvl === 'family'  ? 'major_group' :
+    undefined
+)
+
+const taxonFromMapAtAnyLevel = (taxon: FoundTaxon, scores: Map<any,any>): any | undefined => {
+    const tx = allTaxa.get(taxon.code);
+    for(let lvl = taxonLevel(taxon.code); tx && lvl; lvl = nextTaxonLevel(lvl)) {
+        const name = tx[lvl];
+        const score = scores.get(name);
+        if (score)
+        {   return score;    }
+    }
+    return undefined;
+}
+
 // 1-9    => 1
 // 10-99  => 2
 // 100-99 => 3
@@ -91,21 +155,23 @@ const logAbundance = (count: number): number => {
 
 // 1-10     => 1
 // 11-100   => 2
-// 101-1000 => 3
+// 101-1000 => 
 // ...
 const logAbundanceWhpt = (count: number): number => {
     return logAbundance(count > 1 ? count - 1 : count)
 }
 
 const calcSingleBmwp = (foundTaxon:FoundTaxon): number | undefined => {
-    const bmwp: IScoreBMWP | undefined = scoresBmwp.get(foundTaxon.name);
+    const bmwp:    IScoreBMWP | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresBmwp);
+    // const bmwp: IScoreBMWP | undefined = scoresBmwp.get(foundTaxon.name);
     return (bmwp)
         ? bmwp.score_orig
         : undefined;
 }
 
 const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
-    const whpt: IScoreWHPT | undefined = scoresWhpt.get(foundTaxon.name);
+    const whpt: IScoreWHPT | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresWhpt);
+    // const whpt: IScoreWHPT | undefined = scoresWhpt.get(foundTaxon.name);
     const iScore = logAbundanceWhpt(foundTaxon.count) - 1;
     return (whpt && iScore >= 0)
         ? whpt.scores[iScore]
@@ -124,7 +190,8 @@ interface ISingleScorePSI {
 }
 
 const calcSinglePsiFamily = (foundTaxon:FoundTaxon): ISingleScorePSI | undefined => {
-    const psi: IScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
+    const psi: IScorePsiFam | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresPsiFamily);
+    // const psi: IScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
     if(! (psi && foundTaxon.count) )
     {   return undefined;    }
     else {
@@ -163,7 +230,8 @@ const calcPsiFamily = (foundTaxa: FoundTaxon[]): { score:number, count:number } 
 }
 
 const calcSingleLife = (foundTaxon:FoundTaxon, scoresTable:Map<string, IScoreLifeFam> | Map<string, IScoreLifeFam>): number | undefined => {
-    const life: IScoreLifeFam | IScoreLifeSpc | undefined = scoresTable.get(foundTaxon.name);
+    const life: IScoreLifeFam | IScoreLifeSpc | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresTable);
+    // const life: IScoreLifeFam | IScoreLifeSpc | undefined = scoresTable.get(foundTaxon.name);
     if(! (life && foundTaxon.count) )
     {   return undefined;    }
     else {
@@ -302,12 +370,23 @@ class TaxaForm extends React.Component<{}, {
         // NOTE: avoids adding for invalid search
         if (this.state.search.length && iPreselect >= 0) {
             const preselect = this.state.taxaMatching[iPreselect];
-            const iFound = this.state.found.findIndex((foundEl: FoundTaxon) => foundEl.name === preselect);
+            const iFound    = this.state.found.findIndex((foundEl: FoundTaxon) => foundEl.name === preselect);
+            const allTaxaKeys = Array.from(allTaxa.keys());
+            const code = allTaxaKeys.find((key: TaxaCode) => {
+                const name = taxonPreciseName(key)
+                return !!name && name.toLowerCase() === preselect.toLowerCase();
+            })
 
-            const found = this.state.found;
-            if (iFound === -1) { found.push({ name:preselect, count: 1 }); }
-            else               { found[iFound].count++; }
-            this.setState({ found });
+            if(code)
+            {
+                const found = this.state.found;
+                if (iFound === -1) { found.push({ name: preselect, count: 1, code }); }
+                else { found[iFound].count++; }
+                this.setState({ found });
+            }
+            else
+            // tslint:disable-next-line:no-console
+            { console.assert(code, "should not be undefined"); }
         }
     }
 }
