@@ -20,10 +20,11 @@ import {
     ScoreWhpt,
 } from './scores';
 
+type TaxonLvl = 'major_group' | 'family' | 'genus' | 'species';
 
 // NOTE: these strings can be used as keys for the object values in allTaxa (as shown below)
-const taxonLevel = (taxon: TaxaCode): 'major_group' | 'family' | 'genus' | 'species' | undefined => (
-    taxon.length === 8 ?
+const maybeTaxonLevel = (taxon: TaxaCode): TaxonLvl | undefined => (
+    (taxon.length === 8) ? 
         (taxon[6] !== '0' || taxon[7] !== '0') ? 'species'     :
         (taxon[4] !== '0' || taxon[5] !== '0') ? 'genus'       :
         (taxon[2] !== '0' || taxon[3] !== '0') ? 'family'      :
@@ -31,23 +32,21 @@ const taxonLevel = (taxon: TaxaCode): 'major_group' | 'family' | 'genus' | 'spec
         undefined
     : undefined
 )
-const taxonKeyName = (taxon: TaxaCode): string | undefined => {
+const taxonLevel = (taxon: TaxaCode): TaxonLvl => ( maybeTaxonLevel(taxon) as TaxonLvl ) 
+const taxonKeyName = (taxon: TaxaCode): string => {
     const type = taxonLevel(taxon);
-    const tx: Taxa | undefined = allTaxa.get(taxon);
-    return type && tx
-        ? tx[type]
-        : undefined;
+    const tx: Taxa =  allTaxa.get(taxon) as Taxa;
+    return tx[type];
 }
 
-const taxonFullName = (taxon: TaxaCode): string | undefined => {
-    const type = taxonLevel(taxon);
-    const tx = allTaxa.get(taxon);
-    return tx && (
-        type === 'major_group' ? `${tx.major_group}` : 
-        type === 'family'      ? `${tx.major_group} ${tx.family}` : 
-        type === 'genus'       ? `${tx.major_group} ${tx.family} ${tx.genus}` : 
-        type === 'species'     ? `${tx.major_group} ${tx.family} ${tx.genus} ${tx.species}` : 
-        undefined
+const taxonFullName = (taxon: TaxaCode): string => {
+    const lvl = taxonLevel(taxon);
+    const tx = allTaxa.get(taxon) as Taxa;
+    return (
+        lvl === 'species'     ? `${tx.major_group} ${tx.family} ${tx.genus} ${tx.species}` :
+        lvl === 'genus'       ? `${tx.major_group} ${tx.family} ${tx.genus}` : 
+        lvl === 'family'      ? `${tx.major_group} ${tx.family}` : 
+      /*lvl === 'major_group'*/ `${tx.major_group}`
     );
 }
 
@@ -58,25 +57,21 @@ const taxonStyle = (taxon: TaxaCode):any => ({
 })
 
 
-const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: number }> = (props) => {
+const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: TaxaCode[], iSelect: number }> = (props) => {
+    const listTaxon = (code:TaxaCode) => (
+        <span
+            style={{ ...taxonStyle(code) }}
+            key={code}
+        >
+            {taxonFullName(code)}
+        </span>
+    );
+
+    const listTaxa = (taxa: TaxaCode[]) => (taxa.map(taxon => <li key={taxon}>{listTaxon(taxon)}</li>));
+
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
     const selectTaxon = props.taxaMatching[props.iSelect];            //  |- could be useful utility if common pattern
-    const taxaAfter   = props.taxaMatching.slice(props.iSelect + 1);  // /
-    const listTaxon = (taxon:string) => {
-        const code = taxonCode(taxon);
-        // tslint:disable-next-line:no-console
-        console.assert(code && "Taxon should be findable");
-        return code &&
-            <span
-                style={{ ...taxonStyle(taxon) }}
-                key={taxon}
-            >
-                {
-                    taxonFullName(code)}
-            </span>
-    };
-
-    const listTaxa = (taxa: string[]) => (taxa.map(taxon => <li key={taxon}>{listTaxon(taxon)}</li>));
+    const taxaAfter   = props.taxaMatching.slice(props.iSelect + 1);  // /   (or may already exist)
     return (
         <ul style={{listStyleType:'none'}}>
             {listTaxa(taxaBefore)}
@@ -159,7 +154,7 @@ const nextTaxonLevel = (lvl: 'major_group' | 'family' | 'genus' | 'species' | un
 
 const taxonFromMapAtAnyLevel = (taxon: FoundTaxon, scores: Map<any,any>): any | undefined => {
     const tx = allTaxa.get(taxon.code);
-    for(let lvl = taxonLevel(taxon.code); tx && lvl; lvl = nextTaxonLevel(lvl)) {
+    for(let lvl:TaxonLvl | undefined = taxonLevel(taxon.code); tx && lvl; lvl = nextTaxonLevel(lvl)) {
         const name = tx[lvl];
         const score = scores.get(name);
         if (score)
@@ -386,28 +381,43 @@ class TaxaForm extends React.Component<{}, {
     found: FoundTaxon[],
     iPreselect: number,
     search: string,
-    taxaAll: Set<string>,
-    taxaMatching: string[],
+    taxaAll: Set<TaxaCode>,
+    taxaMatching: TaxaCode[],
 }> {
     public componentWillMount() {
-        // This prevents non-scoring taxa from autocompleting...
-        // TODO: is this desired behaviour?
-        const taxaAll = new Set([
-            ...Array.from(scoresBmwp       .keys()), 
-            ...Array.from(scoresLifeFamily .keys()),
-            ...Array.from(scoresLifeSpecies.keys()),
-            ...Array.from(scoresPsiFamily  .keys()),
-            ...Array.from(scoresPsiSpecies .keys()),
-            ...Array.from(scoresWhpt       .keys()),
-            ...Array.from(scoresCci        .keys()),
-        ])
         this.setState({
             found: [] as FoundTaxon[],
             iPreselect: 0,
             search: '',
-            taxaAll,
-            taxaMatching: [] as string[],
+            taxaMatching: [] as TaxaCode[],
         });
+    }
+
+    public componentDidMount() {
+        const taxaCodesFor = (names: string[]): TaxaCode[] => (
+            names.reduce((acc: TaxaCode[], name: string) => {
+                const code = taxonCode(name);
+                if (code)
+                {   acc.push(code)   }
+                else
+                // tslint:disable-next-line:no-console
+                {   console.assert("Could not find code for taxon!")   }
+                return acc;
+            }, [])
+        );
+
+        // This prevents non-scoring taxa from autocompleting...
+        // TODO: is this desired behaviour?
+        const taxaAll = new Set([
+            ...taxaCodesFor(Array.from(scoresBmwp       .keys())), 
+            ...taxaCodesFor(Array.from(scoresLifeFamily .keys())),
+            ...taxaCodesFor(Array.from(scoresLifeSpecies.keys())),
+            ...taxaCodesFor(Array.from(scoresPsiFamily  .keys())),
+            ...taxaCodesFor(Array.from(scoresPsiSpecies .keys())),
+            ...taxaCodesFor(Array.from(scoresWhpt       .keys())),
+            ...taxaCodesFor(Array.from(scoresCci        .keys())),
+        ]);
+        this.setState({taxaAll});
     }
 
     public render() {
@@ -456,7 +466,7 @@ class TaxaForm extends React.Component<{}, {
     private searchTextUpdate = (e: React.FormEvent<HTMLInputElement>) => {
         const search = e.currentTarget.value;
         const taxaMatching = (search.length)
-            ? Array.from(this.state.taxaAll) .filter(name => name.toLowerCase() .includes (search.toLowerCase()))
+            ? Array.from(this.state.taxaAll) .filter(code => taxonFullName(code).toLowerCase() .includes (search.toLowerCase()))
             : [];
         const iPreselect = (taxaMatching.length)
             ? 0
@@ -471,7 +481,7 @@ class TaxaForm extends React.Component<{}, {
         if (this.state.search.length && iPreselect >= 0) {
             const preselect = this.state.taxaMatching[iPreselect];
             const iFound    = this.state.found.findIndex((foundEl: FoundTaxon) => foundEl.name === preselect);
-            const code = taxonCode(preselect);
+            const code      = taxonCode(preselect);
 
             if(code)
             {
