@@ -20,6 +20,12 @@ import {
     ScoreWhpt,
 } from './scores';
 
+const cmp = (a:any, b:any) => (
+    a < b ? -1 :
+    a > b ?  1 :
+    0
+);  
+
 type TaxonLvl = 'major_group' | 'family' | 'genus' | 'species';
 
 // NOTE: these strings can be used as keys for the object values in allTaxa (as shown below)
@@ -467,6 +473,7 @@ class TaxaForm extends React.Component<{}, {
         const search = e.currentTarget.value;
         const taxaMatching = (search.length)
             ? Array.from(this.state.taxaAll) .filter(code => taxonFullName(code).toLowerCase() .includes (search.toLowerCase()))
+                .sort((a:TaxaCode, b:TaxaCode) => cmp(taxonFullName(a), taxonFullName(b)))
             : [];
         const iPreselect = (taxaMatching.length)
             ? 0
