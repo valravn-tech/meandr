@@ -384,17 +384,21 @@ const taxonCode = (taxon: string): TaxaCode | undefined => {
 
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
+    buttonText: string,
     found: FoundTaxon[],
     iPreselect: number,
     search: string,
     taxaAll: Set<TaxaCode>,
     taxaMatching: TaxaCode[],
 }> {
-    private searchBox = React.createRef<HTMLInputElement>()
+    private searchBox = React.createRef<HTMLInputElement>();
+    private taxonRemoveText = 'Remove Taxon';
+    private taxonAddText = 'Add Taxon';
 
 
     public componentWillMount() {
         this.setState({
+            buttonText: this.taxonAddText,
             found: [] as FoundTaxon[],
             iPreselect: 0,
             search: '',
@@ -433,13 +437,6 @@ class TaxaForm extends React.Component<{}, {
     }
 
     public render() {
-        const modifyFound = (add: number, i: number) => {
-            const found = this.state.found;
-            found[i].count += add;
-            if(found[i].count === 0)
-            { found.splice(i, 1); }
-            this.setState({ found })
-        }
 
         return (
             <div>
@@ -452,22 +449,37 @@ class TaxaForm extends React.Component<{}, {
                         id='form-input'
                         value={this.state.search}
                         onChange={this.searchTextUpdate}
-                        onKeyDown={this.changeAutoCompleteSelect} />
-                    <input type='submit' value='Add Taxon' />
+                        onKeyDown={this.changeAutoCompleteSelect}
+                        onKeyUp={this.setButtonText}
+                    />
+                    <input type='submit' value={this.state.buttonText} />
                 </form>
                 {this.state.taxaMatching.length
                     ? <TaxaAutocompleteOptions taxaMatching={this.state.taxaMatching} iSelect={this.state.iPreselect} />
                     : <p>Start entering the name of a scoring BMWP family</p>
                 }
-                <TaxaFoundList foundTaxa={this.state.found} addToCount={modifyFound} />
+                <TaxaFoundList foundTaxa={this.state.found} addToCount={this.modifyFound} />
             </div>
         );
     }
+    
+    private setButtonText = (e: React.KeyboardEvent) => {
+        const buttonText = e.shiftKey ? this.taxonRemoveText : this.taxonAddText;
+        if (this.state.buttonText !== buttonText)
+        {   this.setState({buttonText});   }
+    }
 
+    private modifyFound = (add: number, i: number) => {
+        const found = this.state.found;
+        found[i].count += add;
+        if (found[i].count === 0) { found.splice(i, 1); }
+        this.setState({ found })
+    }
     private changeAutoCompleteSelect = (e: React.KeyboardEvent) => {
         const iPreselect = this.state.iPreselect;
-        switch(e.key) {
-            case "ArrowDown": if(iPreselect < this.state.taxaMatching.length - 1)
+        this.setButtonText(e);
+        switch (e.key) {
+            case "ArrowDown": if (iPreselect < this.state.taxaMatching.length - 1)
             { this.setState({ iPreselect: iPreselect + 1 }); } break;
 
             case "ArrowUp"  : if(iPreselect > 0)
@@ -496,9 +508,16 @@ class TaxaForm extends React.Component<{}, {
             const iFound  = this.state.found.findIndex((foundEl: FoundTaxon) => foundEl.code === code);
 
             const found = this.state.found;
-            if (iFound === -1) { found.push({ count: 1, code }); }
-            else { found[iFound].count++; }
-            this.setState({ found });
+            const shouldRemove = this.state.buttonText === this.taxonRemoveText;
+            const isFound = iFound !== -1;
+            if (isFound) {
+                const inc = shouldRemove ? -1 : 1;
+                this.modifyFound(inc, iFound);
+            }
+            else if (! shouldRemove) {
+                found.push({ count: 1, code });
+                this.setState({ found });
+            }
         }
     }
 }
