@@ -56,20 +56,21 @@ const taxonFullName = (taxon: TaxaCode): string => {
     );
 }
 
-const isSpecies = (taxon: TaxaCode): boolean => ( taxonLevel(taxon) === 'species' )
-const taxonStyle = (taxon: TaxaCode):any => ({
-    fontStyle: isSpecies(taxon) ? 'italic' : 'normal',
-    
-})
-
+const TaxonName: React.SFC<{ taxonCode: TaxaCode }> = (props) => {
+    const lvl = taxonLevel(props.taxonCode)
+    const tx = allTaxa.get(props.taxonCode) as Taxa;
+    return <span>{
+        lvl === 'species'     ? <span>{`${tx.major_group} ${tx.family}`} <em>{tx.genus} {tx.species}</em></span> :
+        lvl === 'genus'       ? <span>{`${tx.major_group} ${tx.family}`} <em>{tx.genus}</em></span> : 
+        lvl === 'family'      ? `${tx.major_group} ${tx.family}` : 
+      /*lvl === 'major_group'*/ `${tx.major_group}`
+    }</span>
+}
 
 const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: TaxaCode[], iSelect: number }> = (props) => {
     const listTaxon = (code:TaxaCode) => (
-        <span
-            style={{ ...taxonStyle(code) }}
-            key={code}
-        >
-            {taxonFullName(code)}
+        <span key={code} >
+            <TaxonName taxonCode={code} />
         </span>
     );
 
@@ -108,7 +109,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
     const cci     = calcSingleCci        (props.taxon);
     return (
         <tr>
-            <td style={{marginLeft: '2rem', ...taxonStyle(props.taxon.code)}}>{ taxonFullName(props.taxon.code) }</td>
+            <td><TaxonName taxonCode={props.taxon.code} /></td>
             <td>
                 <button onClick={dec}>-</button>
                 <button onClick={inc}>+</button>
