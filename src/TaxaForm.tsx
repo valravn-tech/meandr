@@ -389,6 +389,9 @@ class TaxaForm extends React.Component<{}, {
     taxaAll: Set<TaxaCode>,
     taxaMatching: TaxaCode[],
 }> {
+    private searchBox = React.createRef<HTMLInputElement>()
+
+
     public componentWillMount() {
         this.setState({
             found: [] as FoundTaxon[],
@@ -423,6 +426,9 @@ class TaxaForm extends React.Component<{}, {
             ...taxaCodesFor(Array.from(scoresCci        .keys())),
         ]);
         this.setState({taxaAll});
+        const node = this.searchBox.current;
+        if (node)
+        {   node.focus()   }
     }
 
     public render() {
@@ -439,6 +445,7 @@ class TaxaForm extends React.Component<{}, {
                 <TaxaScore foundTaxa={this.state.found} />
                 <form onSubmit={this.submitTaxon}>
                     <input
+                        ref={this.searchBox}
                         type='text'
                         placeholder='Start writing a taxon name'
                         id='form-input'
@@ -455,7 +462,6 @@ class TaxaForm extends React.Component<{}, {
             </div>
         );
     }
-
 
     private changeAutoCompleteSelect = (e: React.KeyboardEvent) => {
         const iPreselect = this.state.iPreselect;
