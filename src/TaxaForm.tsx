@@ -6,6 +6,7 @@ import {
     ScoreLifeFam,
     ScoreLifeSpc,
     ScorePsiFam,
+    ScorePsiSpc,
     scoresBmwp,
     scoresCci,
     scoresCciCommunity,
@@ -14,8 +15,9 @@ import {
     scoresLifeSpecies,
     scoresPsiFamily,
     scoresPsiGroups,
+    scoresPsiSpecies,
     scoresWhpt,
-    ScoreWhpt
+    ScoreWhpt,
 } from './scores';
 
 
@@ -90,6 +92,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
     const bmwp    = scoresBmwp.get       (props.taxon.name);
     const whpt    = calcSingleWhpt       (props.taxon);
     const psiFam  = calcSinglePsiFamily  (props.taxon);
+    const psiSpc  = calcSinglePsiSpecies (props.taxon);
     const lifeFam = calcSingleLifeFamily (props.taxon);
     const lifeSpc = calcSingleLifeSpecies(props.taxon);
     const cci     = calcSingleCci        (props.taxon);
@@ -99,12 +102,14 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
             <button onClick={inc}>+</button>
             {props.taxon.count}
             <span style={{marginLeft: '2rem', ...taxonStyle(props.taxon.code)}}>{ taxonFullName(props.taxon.code) }</span> - 
-            { (bmwp)                  ? ` BMWP: ${bmwp.score_orig}`                     : null }
-            { (whpt    !== undefined) ? ` WHPT: ${whpt}`                                : null }
-            { (psiFam  !== undefined) ? ` PSI: ${psiFam.score} (${psiFam.fssr})`        : null }
-            { (lifeFam !== undefined) ? <span> LIFE<sub>family</sub>:  {lifeFam}</span> : null }
-            { (lifeSpc !== undefined) ? <span> LIFE<sub>species</sub>: {lifeSpc}</span> : null }
-            { (cci     !== undefined) ? ` CCI: ${cci}`                                  : null }
+            { (bmwp)                  ? ` BMWP: ${bmwp.score_orig}`                                               : null }
+            { (whpt    !== undefined) ? ` WHPT: ${whpt}`                                                          : null }
+            { (psiFam  !== undefined) ? ` PSI: ${psiFam.score} (${psiFam.fssr})`                                  : null }
+            { (psiFam  !== undefined) ? <span> PSI<sub>family</sub>:  {`${psiFam.score} (${psiFam.fssr})`}</span> : null }
+            { (psiSpc  !== undefined) ? <span> PSI<sub>species</sub>: {`${psiSpc.score} (${psiSpc.fssr})`}</span> : null }
+            { (lifeFam !== undefined) ? <span> LIFE<sub>family</sub>:  {lifeFam}</span>                           : null }
+            { (lifeSpc !== undefined) ? <span> LIFE<sub>species</sub>: {lifeSpc}</span>                           : null }
+            { (cci     !== undefined) ? ` CCI: ${cci}`                                                            : null }
         </div>
     )
 }
@@ -234,6 +239,18 @@ const calcSinglePsiFamily = (foundTaxon:FoundTaxon): SingleScorePSI | undefined 
     }
 }
 
+const calcSinglePsiSpecies = (foundTaxon:FoundTaxon): SingleScorePSI | undefined => {
+    const psi: ScorePsiSpc | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresPsiSpecies);
+    // const psi: ScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
+    if(! (psi && foundTaxon.count) )
+    {   return undefined;    }
+    else {
+        const iScore = logAbundance(foundTaxon.count) - 1;
+        const score = scoresPsiGroups[psi.fssr].scores[iScore]
+        return { score, fssr:psi.fssr }
+    }
+}
+
 // TODO: is using && instead of ternary clear?
 const psiSingleToPartial = (single: SingleScorePSI | undefined): PartialScorePSI | undefined => (
     (single)
@@ -249,6 +266,22 @@ const psiSingleToPartial = (single: SingleScorePSI | undefined): PartialScorePSI
 const calcPsiFamily = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
     const partial = foundTaxa.reduce((acc, taxon) => {
         const taxonScore: PartialScorePSI | undefined = psiSingleToPartial(calcSinglePsiFamily(taxon));
+        return (taxonScore)
+            ? {
+                count: acc.count + 1,
+                score: {
+                    AB: acc.score.AB + taxonScore.AB, AD: acc.score.AD + taxonScore.AD
+                },
+            }
+            : acc;
+    }, { score: { AB: 0, AD: 0 }, count: 0 });
+
+    return { count: partial.count, score: 100 * div0(partial.score.AB, partial.score.AD) }
+}
+
+const calcPsiSpecies = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
+    const partial = foundTaxa.reduce((acc, taxon) => {
+        const taxonScore: PartialScorePSI | undefined = psiSingleToPartial(calcSinglePsiSpecies(taxon));
         return (taxonScore)
             ? {
                 count: acc.count + 1,
@@ -309,12 +342,13 @@ const calcAspt = (foundTaxa:FoundTaxon[]): number => {
 
 const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
     <h2>
-        BMWP: { calcBmwp      (p.foundTaxa).score.toFixed(2) },
-        ASPT: { calcAspt      (p.foundTaxa)      .toFixed(2) },
-        WHPT: { calcWhpt      (p.foundTaxa).score.toFixed(2) },
-        PSI:  { calcPsiFamily (p.foundTaxa).score.toFixed(2) }%,
-        CCI:  { calcCci       (p.foundTaxa).score.toFixed(2) },
-        LIFE<sub>family</sub>: { calcLifeFamily(p.foundTaxa).score.toFixed(2) },
+        BMWP:                   { calcBmwp       (p.foundTaxa).score.toFixed(2) },
+        ASPT:                   { calcAspt       (p.foundTaxa)      .toFixed(2) },
+        WHPT:                   { calcWhpt       (p.foundTaxa).score.toFixed(2) },
+        PSI<sub>family</sub>:   { calcPsiFamily  (p.foundTaxa).score.toFixed(2) }%,
+        PSI<sub>species</sub>:  { calcPsiSpecies (p.foundTaxa).score.toFixed(2) }%,
+        CCI:                    { calcCci        (p.foundTaxa).score.toFixed(2) },
+        LIFE<sub>family</sub>:  { calcLifeFamily (p.foundTaxa).score.toFixed(2) },
         LIFE<sub>species</sub>: { calcLifeSpecies(p.foundTaxa).score.toFixed(2) },
     </h2>
 )
@@ -333,6 +367,7 @@ class TaxaForm extends React.Component<{}, {
             ...Array.from(scoresLifeFamily .keys()),
             ...Array.from(scoresLifeSpecies.keys()),
             ...Array.from(scoresPsiFamily  .keys()),
+            ...Array.from(scoresPsiSpecies .keys()),
             ...Array.from(scoresWhpt       .keys()),
             ...Array.from(scoresCci        .keys()),
         ])
