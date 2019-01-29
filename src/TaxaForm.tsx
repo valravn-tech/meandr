@@ -92,7 +92,6 @@ const div0 = (dividend:number, divisor:number):number => ((divisor) ? dividend /
 // tslint:disable-next-line:interface-name
 interface FoundTaxon {
     count:number,
-    name: string,
     code: TaxaCode,
 }
 
@@ -100,7 +99,7 @@ interface FoundTaxon {
 const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void  }> = (props) => {
     const dec = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(-1) }
     const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount( 1) }
-    const bmwp    = scoresBmwp.get       (props.taxon.name);
+    const bmwp    = scoresBmwp.get(taxonKeyName(props.taxon.code));
     const whpt    = calcSingleWhpt       (props.taxon);
     const psiFam  = calcSinglePsiFamily  (props.taxon);
     const psiSpc  = calcSinglePsiSpecies (props.taxon);
@@ -486,20 +485,13 @@ class TaxaForm extends React.Component<{}, {
         const iPreselect = this.state.iPreselect;
         // NOTE: avoids adding for invalid search
         if (this.state.search.length && iPreselect >= 0) {
-            const preselect = this.state.taxaMatching[iPreselect];
-            const iFound    = this.state.found.findIndex((foundEl: FoundTaxon) => foundEl.name === preselect);
-            const code      = taxonCode(preselect);
+            const code    = this.state.taxaMatching[iPreselect];
+            const iFound  = this.state.found.findIndex((foundEl: FoundTaxon) => foundEl.code === code);
 
-            if(code)
-            {
-                const found = this.state.found;
-                if (iFound === -1) { found.push({ name: preselect, count: 1, code }); }
-                else { found[iFound].count++; }
-                this.setState({ found });
-            }
-            else
-            // tslint:disable-next-line:no-console
-            { console.assert(code, "should not be undefined"); }
+            const found = this.state.found;
+            if (iFound === -1) { found.push({ count: 1, code }); }
+            else { found[iFound].count++; }
+            this.setState({ found });
         }
     }
 }
