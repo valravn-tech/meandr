@@ -97,38 +97,46 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
     const lifeSpc = calcSingleLifeSpecies(props.taxon);
     const cci     = calcSingleCci        (props.taxon);
     return (
-        <div>
-            <button onClick={dec}>-</button>
-            <button onClick={inc}>+</button>
-            {props.taxon.count}
-            <span style={{marginLeft: '2rem', ...taxonStyle(props.taxon.code)}}>{ taxonFullName(props.taxon.code) }</span> - 
-            { (bmwp)                  ? ` BMWP: ${bmwp.score_orig}`                                               : null }
-            { (whpt    !== undefined) ? ` WHPT: ${whpt}`                                                          : null }
-            { (psiFam  !== undefined) ? ` PSI: ${psiFam.score} (${psiFam.fssr})`                                  : null }
-            { (psiFam  !== undefined) ? <span> PSI<sub>family</sub>:  {`${psiFam.score} (${psiFam.fssr})`}</span> : null }
-            { (psiSpc  !== undefined) ? <span> PSI<sub>species</sub>: {`${psiSpc.score} (${psiSpc.fssr})`}</span> : null }
-            { (lifeFam !== undefined) ? <span> LIFE<sub>family</sub>:  {lifeFam}</span>                           : null }
-            { (lifeSpc !== undefined) ? <span> LIFE<sub>species</sub>: {lifeSpc}</span>                           : null }
-            { (cci     !== undefined) ? ` CCI: ${cci}`                                                            : null }
-        </div>
+        <tr>
+            <td style={{marginLeft: '2rem', ...taxonStyle(props.taxon.code)}}>{ taxonFullName(props.taxon.code) }</td>
+            <td>
+                <button onClick={dec}>-</button>
+                <button onClick={inc}>+</button>
+                {props.taxon.count}
+            </td>
+            <td>{ (bmwp)                  ? bmwp.score_orig                    : '-' }</td>
+            <td>{ (whpt    !== undefined) ? whpt                               : '-' }</td>
+            <td>{ (psiFam  !== undefined) ? `${psiFam.score} (${psiFam.fssr})` : '-' }</td>
+            <td>{ (psiSpc  !== undefined) ? `${psiSpc.score} (${psiSpc.fssr})` : '-' }</td>
+            <td>{ (lifeFam !== undefined) ? lifeFam                            : '-' }</td>
+            <td>{ (lifeSpc !== undefined) ? lifeSpc                            : '-' }</td>
+            <td>{ (cci     !== undefined) ? cci                                : '-' }</td>
+        </tr>
     )
 }
 
 
 // tslint:disable-next-line:one-variable-per-declaration
 const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number, i:number) => void }> = (props) => (
-    <ul>
+    <table>
+        <tr>
+            <th>Full name</th>
+            <th>Count</th>
+            <th>BMWP</th>
+            <th>WHPT</th>
+            <th>PSI<sub>family</sub></th>
+            <th>PSI<sub>species</sub></th>
+            <th>LIFE<sub>family</sub></th>
+            <th>LIFE<sub>species</sub></th>
+            <th>CCI</th>
+        </tr>
         {
             props.foundTaxa.map((taxon, i) => {
                 const addToIndex = (add: number) => (props.addToCount(add, i));
-                return (
-                    <li key={i}>
-                        <TaxonFound taxon={taxon} addToCount={addToIndex} />
-                    </li>
-                )
+                return <TaxonFound key={i} taxon={taxon} addToCount={addToIndex} />;
             })
         }
-    </ul>
+    </table>
 )
 
 
