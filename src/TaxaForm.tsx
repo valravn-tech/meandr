@@ -31,7 +31,7 @@ const taxonLevel = (taxon: TaxaCode): 'major_group' | 'family' | 'genus' | 'spec
         undefined
     : undefined
 )
-const taxonPreciseName = (taxon: TaxaCode): string | undefined => {
+const taxonKeyName = (taxon: TaxaCode): string | undefined => {
     const type = taxonLevel(taxon);
     const tx: Taxa | undefined = allTaxa.get(taxon);
     return type && tx
@@ -52,25 +52,35 @@ const taxonFullName = (taxon: TaxaCode): string | undefined => {
 }
 
 const isSpecies = (taxon: TaxaCode): boolean => ( taxonLevel(taxon) === 'species' )
-const taxonStyle = (taxon: TaxaCode):any => ({fontStyle: isSpecies(taxon) ? 'italic' : 'normal'})
+const taxonStyle = (taxon: TaxaCode):any => ({
+    fontStyle: isSpecies(taxon) ? 'italic' : 'normal',
+    
+})
 
 
 const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: string[], iSelect: number }> = (props) => {
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
     const selectTaxon = props.taxaMatching[props.iSelect];            //  |- could be useful utility if common pattern
     const taxaAfter   = props.taxaMatching.slice(props.iSelect + 1);  // /
-    const listTaxon = (taxon:string, style?:any) => (
-        <li
-            style={{ ...style, ...taxonStyle(taxon) }}
-            key={taxon}>
-            {taxon}
-        </li>
-    );
-    const listTaxa = (taxa: string[]) => (taxa.map(taxon => listTaxon(taxon)));
+    const listTaxon = (taxon:string) => {
+        const code = taxonCode(taxon);
+        // tslint:disable-next-line:no-console
+        console.assert(code && "Taxon should be findable");
+        return code &&
+            <span
+                style={{ ...taxonStyle(taxon) }}
+                key={taxon}
+            >
+                {
+                    taxonFullName(code)}
+            </span>
+    };
+
+    const listTaxa = (taxa: string[]) => (taxa.map(taxon => <li key={taxon}>{listTaxon(taxon)}</li>));
     return (
-        <ul>
+        <ul style={{listStyleType:'none'}}>
             {listTaxa(taxaBefore)}
-            {listTaxon(selectTaxon, { fontWeight: 'bold' })}
+            <li style={{backgroundColor:'#226', color:'white', fontWeight:'bold'}}>{listTaxon(selectTaxon)}</li>
             {listTaxa(taxaAfter)}
         </ul>
     )
@@ -361,6 +371,16 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
     </h2>
 )
 
+// TODO: restructure. This is currently O(n) but for most uses it should be O(1)
+// it causes a noticeable hitch for the first few keys of autocomplete
+const taxonCode = (taxon: string): TaxaCode | undefined => {
+    const allTaxaKeys = Array.from(allTaxa.keys());
+    return allTaxaKeys.find((key: TaxaCode) => {
+        const name = taxonKeyName(key);
+        return !!name && name.toLowerCase() === taxon.toLowerCase();
+    });
+}
+
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
     found: FoundTaxon[],
@@ -370,6 +390,8 @@ class TaxaForm extends React.Component<{}, {
     taxaMatching: string[],
 }> {
     public componentWillMount() {
+        // This prevents non-scoring taxa from autocompleting...
+        // TODO: is this desired behaviour?
         const taxaAll = new Set([
             ...Array.from(scoresBmwp       .keys()), 
             ...Array.from(scoresLifeFamily .keys()),
@@ -449,11 +471,7 @@ class TaxaForm extends React.Component<{}, {
         if (this.state.search.length && iPreselect >= 0) {
             const preselect = this.state.taxaMatching[iPreselect];
             const iFound    = this.state.found.findIndex((foundEl: FoundTaxon) => foundEl.name === preselect);
-            const allTaxaKeys = Array.from(allTaxa.keys());
-            const code = allTaxaKeys.find((key: TaxaCode) => {
-                const name = taxonPreciseName(key)
-                return !!name && name.toLowerCase() === preselect.toLowerCase();
-            })
+            const code = taxonCode(preselect);
 
             if(code)
             {
