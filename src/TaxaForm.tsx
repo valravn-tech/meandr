@@ -360,16 +360,19 @@ const calcAspt = (foundTaxa:FoundTaxon[]): number => {
 
 
 const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
-    <h2>
-        BMWP:                   { calcBmwp       (p.foundTaxa).score.toFixed(2) },
-        ASPT:                   { calcAspt       (p.foundTaxa)      .toFixed(2) },
-        WHPT:                   { calcWhpt       (p.foundTaxa).score.toFixed(2) },
-        PSI<sub>family</sub>:   { calcPsiFamily  (p.foundTaxa).score.toFixed(2) }%,
-        PSI<sub>species</sub>:  { calcPsiSpecies (p.foundTaxa).score.toFixed(2) }%,
-        CCI:                    { calcCci        (p.foundTaxa).score.toFixed(2) },
-        LIFE<sub>family</sub>:  { calcLifeFamily (p.foundTaxa).score.toFixed(2) },
-        LIFE<sub>species</sub>: { calcLifeSpecies(p.foundTaxa).score.toFixed(2) },
-    </h2>
+    <div>
+        <h2>Scores</h2>
+        <dl>
+            <dt>BMWP</dt>                   <dd>{ calcBmwp       (p.foundTaxa).score.toFixed(2) }</dd>
+            <dt>ASPT</dt>                   <dd>{ calcAspt       (p.foundTaxa)      .toFixed(2) }</dd>
+            <dt>WHPT</dt>                   <dd>{ calcWhpt       (p.foundTaxa).score.toFixed(2) }</dd>
+            <dt>PSI<sub>family</sub></dt>   <dd>{ calcPsiFamily  (p.foundTaxa).score.toFixed(2) }%</dd>
+            <dt>PSI<sub>species</sub></dt>  <dd>{ calcPsiSpecies (p.foundTaxa).score.toFixed(2) }%</dd>
+            <dt>CCI</dt>                    <dd>{ calcCci        (p.foundTaxa).score.toFixed(2) }</dd>
+            <dt>LIFE<sub>family</sub></dt>  <dd>{ calcLifeFamily (p.foundTaxa).score.toFixed(2) }</dd>
+            <dt>LIFE<sub>species</sub></dt> <dd>{ calcLifeSpecies(p.foundTaxa).score.toFixed(2) }</dd>
+        </dl>
+    </div>
 )
 
 // TODO: restructure. This is currently O(n) but for most uses it should be O(1)
@@ -445,7 +448,7 @@ class TaxaForm extends React.Component<{}, {
                     <input
                         ref={this.searchBox}
                         type='text'
-                        placeholder='Start writing a taxon name'
+                        placeholder='taxon name'
                         id='form-input'
                         value={this.state.search}
                         onChange={this.searchTextUpdate}
@@ -456,7 +459,7 @@ class TaxaForm extends React.Component<{}, {
                 </form>
                 {this.state.taxaMatching.length
                     ? <TaxaAutocompleteOptions taxaMatching={this.state.taxaMatching} iSelect={this.state.iPreselect} />
-                    : <p>Start entering the name of a scoring BMWP family</p>
+                    : <p>Start entering the name of a scoring taxon</p>
                 }
                 <TaxaFoundList foundTaxa={this.state.found} addToCount={this.modifyFound} />
             </div>
