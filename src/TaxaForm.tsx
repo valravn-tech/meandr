@@ -406,24 +406,95 @@ const calcAspt = (foundTaxa:FoundTaxon[]): number => {
     return div0(bmwp.score, bmwp.count);
 }
 
-
-const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
-    <div>
-        <h2>Scores</h2>
-        <dl>
-            <dt>BMWP</dt>                   <dd>{ calcBmwp       (p.foundTaxa).score.toFixed(2) }</dd>
-            <dt>ASPT</dt>                   <dd>{ calcAspt       (p.foundTaxa)      .toFixed(2) }</dd>
-            <dt>WHPT</dt>                   <dd>{ calcWhpt       (p.foundTaxa).score.toFixed(2) }</dd>
-            <dt>PSI<sub>family</sub></dt>   <dd>{ calcPsiFamily  (p.foundTaxa).score.toFixed(2) }%</dd>
-            <dt>PSI<sub>species</sub></dt>  <dd>{ calcPsiSpecies (p.foundTaxa).score.toFixed(2) }%</dd>
-            <dt>CCI</dt>                    <dd>{ calcCci        (p.foundTaxa).score.toFixed(2) }</dd>
-            <dt>LIFE<sub>family</sub></dt>  <dd>{ calcLifeFamily (p.foundTaxa).score.toFixed(2) }</dd>
-            <dt>LIFE<sub>species</sub></dt> <dd>{ calcLifeSpecies(p.foundTaxa).score.toFixed(2) }</dd>
-            <dt>AWIC</dt>                   <dd>{ calcAwic       (p.foundTaxa).score.toFixed(2) }</dd>
-            <dt>DEHLI</dt>                  <dd>{ calcDehli      (p.foundTaxa).score.toFixed(2) }</dd>
-        </dl>
-    </div>
+// "Standard BMWP/ASPT ratings for habitat rich riffles"
+const calcLqiPartialStandard = ( bmwp:number, aspt:number ): {lqiX:number, lqiY:number} => (
+    {
+        lqiX:
+            bmwp >= 151 ? 7 :
+            bmwp >= 121 ? 6 :
+            bmwp >=  91 ? 5 :
+            bmwp >=  61 ? 4 :
+            bmwp >=  31 ? 3 :
+            bmwp >=  15 ? 2 :
+          /*bmwp >=   0*/ 1,
+        lqiY:
+            aspt >= 6.0 ? 7 :
+            aspt >= 5.5 ? 6 :
+            aspt >= 5.1 ? 5 :
+            aspt >= 4.6 ? 4 :
+            aspt >= 3.6 ? 3 :
+            aspt >= 2.6 ? 2 :
+          /*aspt >= 0.0*/ 1,
+    }
 )
+
+// "Enhanced BMWP/ASPT ratings for habitat poor riffles and pools"
+const calcLqiPartialEnhanced = ( bmwp:number, aspt:number ): {lqiX:number, lqiY:number} => (
+    {
+        lqiX:
+            bmwp >= 121 ? 7 :
+            bmwp >= 101 ? 6 :
+            bmwp >=  81 ? 5 :
+            bmwp >=  51 ? 4 :
+            bmwp >=  25 ? 3 :
+            bmwp >=  10 ? 2 :
+          /*bmwp >=   0*/ 1,
+        lqiY:
+            aspt >= 5.0 ? 7 :
+            aspt >= 4.5 ? 6 :
+            aspt >= 4.1 ? 5 :
+            aspt >= 3.6 ? 4 :
+            aspt >= 3.1 ? 3 :
+            aspt >= 2.1 ? 2 :
+          /*aspt >= 0.0*/ 1,
+    }
+)
+
+const calcLqi = ( bmwp:number, aspt:number, type:string): {score:number, index: string, interpretation:string} => {
+    const { lqiX, lqiY } = type === "enhanced"
+        ? calcLqiPartialEnhanced(bmwp, aspt)
+        : calcLqiPartialStandard(bmwp, aspt);
+    const score = (lqiX + lqiY) / 2;
+
+    const {index, interpretation} =
+        score >= 6.0 ? { index:'A++', interpretation:'Excellent Quality' } :
+        score >= 5.5 ? { index:'A+',  interpretation:'Excellent Quality' } :
+        score >= 5.0 ? { index:'A',   interpretation:'Excellent Quality' } :
+        score >= 4.5 ? { index:'B',   interpretation:'Good Quality' } :
+        score >= 4.0 ? { index:'C',   interpretation:'Good Quality' } :
+        score >= 3.5 ? { index:'D',   interpretation:'Moderate Quality' } :
+        score >= 3.0 ? { index:'E',   interpretation:'Moderate Quality' } :
+        score >= 2.5 ? { index:'F',   interpretation:'Poor Quality' } :
+        score >= 2.0 ? { index:'G',   interpretation:'Poor Quality' } :
+        score >= 1.5 ? { index:'H',   interpretation:'Very Poor Quality' } :
+      /*score >= 1.0*/ { index:'I',   interpretation:'Very Poor Quality' };
+    return { score, index, interpretation }
+}
+
+
+const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => {
+    const bmwp = calcBmwp(p.foundTaxa).score;
+    const aspt = calcAspt(p.foundTaxa);
+    const lqi = calcLqi(bmwp, aspt, "standard");
+    return (
+        <div>
+            <h2>Scores</h2>
+            <dl>
+                <dt>BMWP</dt>                   <dd>{bmwp.toFixed(2)}</dd>
+                <dt>ASPT</dt>                   <dd>{aspt.toFixed(2)}</dd>
+                <dt>LQI</dt>                    <dd>{lqi.score.toFixed(2)} ({lqi.index} - <em>{lqi.interpretation}</em>)</dd>
+                <dt>WHPT</dt>                   <dd>{calcWhpt(p.foundTaxa).score.toFixed(2)}</dd>
+                <dt>PSI<sub>family</sub></dt>   <dd>{calcPsiFamily(p.foundTaxa).score.toFixed(2)}%</dd>
+                <dt>PSI<sub>species</sub></dt>  <dd>{calcPsiSpecies(p.foundTaxa).score.toFixed(2)}%</dd>
+                <dt>CCI</dt>                    <dd>{calcCci(p.foundTaxa).score.toFixed(2)}</dd>
+                <dt>LIFE<sub>family</sub></dt>  <dd>{calcLifeFamily(p.foundTaxa).score.toFixed(2)}</dd>
+                <dt>LIFE<sub>species</sub></dt> <dd>{calcLifeSpecies(p.foundTaxa).score.toFixed(2)}</dd>
+                <dt>AWIC</dt>                   <dd>{calcAwic(p.foundTaxa).score.toFixed(2)}</dd>
+                <dt>DEHLI</dt>                  <dd>{calcDehli(p.foundTaxa).score.toFixed(2)}</dd>
+            </dl>
+        </div>
+    )
+}
 
 const taxonCode = (taxon: string): TaxaCode | undefined => {
     const allTaxaKeys = Array.from(allTaxa.keys());
