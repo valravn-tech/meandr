@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { allTaxa, Taxa, TaxaCode } from './alltaxa';
 import {
+    ScoreAwic,
     ScoreBmwp,
     ScoreCci,
     ScoreLifeFam,
     ScoreLifeSpc,
     ScorePsiFam,
     ScorePsiSpc,
+    scoresAwic,
     scoresBmwp,
     scoresCci,
     scoresCciCommunity,
@@ -104,9 +106,10 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
     const whpt    = calcSingleWhpt       (props.taxon);
     const psiFam  = calcSinglePsiFamily  (props.taxon);
     const psiSpc  = calcSinglePsiSpecies (props.taxon);
+    const cci     = calcSingleCci        (props.taxon);
     const lifeFam = calcSingleLifeFamily (props.taxon);
     const lifeSpc = calcSingleLifeSpecies(props.taxon);
-    const cci     = calcSingleCci        (props.taxon);
+    const awic    = calcSingleAwic       (props.taxon);
     return (
         <tr>
             <td><TaxonName taxonCode={props.taxon.code} /></td>
@@ -119,9 +122,10 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
             <td>{ (whpt    !== undefined) ? whpt                               : '-' }</td>
             <td>{ (psiFam  !== undefined) ? `${psiFam.score} (${psiFam.fssr})` : '-' }</td>
             <td>{ (psiSpc  !== undefined) ? `${psiSpc.score} (${psiSpc.fssr})` : '-' }</td>
+            <td>{ (cci     !== undefined) ? cci                                : '-' }</td>
             <td>{ (lifeFam !== undefined) ? lifeFam                            : '-' }</td>
             <td>{ (lifeSpc !== undefined) ? lifeSpc                            : '-' }</td>
-            <td>{ (cci     !== undefined) ? cci                                : '-' }</td>
+            <td>{ (awic    !== undefined) ? awic                               : '-' }</td>
         </tr>
     )
 }
@@ -137,9 +141,10 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number,
             <th>WHPT</th>
             <th>PSI<sub>family</sub></th>
             <th>PSI<sub>species</sub></th>
+            <th>CCI</th>
             <th>LIFE<sub>family</sub></th>
             <th>LIFE<sub>species</sub></th>
-            <th>CCI</th>
+            <th>AWIC</th>
         </tr>
         {
             props.foundTaxa.map((taxon, i) => {
@@ -158,6 +163,7 @@ const nextTaxonLevel = (lvl: 'major_group' | 'family' | 'genus' | 'species' | un
     undefined
 )
 
+// TODO: fix double scoring when family added and species in that family added
 const taxonFromMapAtAnyLevel = (taxon: FoundTaxon, scores: Map<any,any>): any | undefined => {
     const tx = allTaxa.get(taxon.code);
     for(let lvl:TaxonLvl | undefined = taxonLevel(taxon.code); tx && lvl; lvl = nextTaxonLevel(lvl)) {
@@ -211,11 +217,10 @@ const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
 const calcSingleCci = (foundTaxon:FoundTaxon): number | undefined => {
     const cci: ScoreCci | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresCci);
     // const psi: ScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
-    if(! (cci && foundTaxon.count) )
+    if (! (cci && foundTaxon.count) )
     {   return undefined;    }
-    else {
-        return cci.score;
-    }
+    else
+    {   return cci.score;   }
 }
  
 const calcCci = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
@@ -236,6 +241,25 @@ const calcCci = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
     return {score, count: cci.count};
 }
 
+// TODO: separate to species/family calculation
+const calcSingleAwic = (foundTaxon:FoundTaxon): number | undefined => {
+    const awic: ScoreAwic | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresAwic);
+    // const psi: ScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
+    if (! (awic && foundTaxon.count) )
+    {   return undefined;    }
+    else
+    {   return awic.score;   }
+}
+
+const calcAwic = (foundTaxa: FoundTaxon[]): { score:number, count:number } => (
+    foundTaxa.reduce((acc, taxon) => {
+        const awic = calcSingleAwic(taxon);
+        return (awic !== undefined)
+            ? { score:acc.score + awic, count:acc.count + 1 }
+            : acc;
+    }, {score: 0, count: 0})
+)
+ 
 interface PartialScorePSI {
     AB: number,
     AD: number,
@@ -371,12 +395,11 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
             <dt>CCI</dt>                    <dd>{ calcCci        (p.foundTaxa).score.toFixed(2) }</dd>
             <dt>LIFE<sub>family</sub></dt>  <dd>{ calcLifeFamily (p.foundTaxa).score.toFixed(2) }</dd>
             <dt>LIFE<sub>species</sub></dt> <dd>{ calcLifeSpecies(p.foundTaxa).score.toFixed(2) }</dd>
+            <dt>AWIC</dt>                   <dd>{ calcAwic       (p.foundTaxa).score.toFixed(2) }</dd>
         </dl>
     </div>
 )
 
-// TODO: restructure. This is currently O(n) but for most uses it should be O(1)
-// it causes a noticeable hitch for the first few keys of autocomplete
 const taxonCode = (taxon: string): TaxaCode | undefined => {
     const allTaxaKeys = Array.from(allTaxa.keys());
     return allTaxaKeys.find((key: TaxaCode) => {
