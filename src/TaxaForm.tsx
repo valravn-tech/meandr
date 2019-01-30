@@ -281,7 +281,7 @@ const calcDehli = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
             : acc;
     }, {score: 0, count: 0});
 
-    return { score: partial.score / partial.count, count: partial.count }
+    return { score: div0(partial.score, partial.count), count: partial.count }
 }
  
 interface PartialScorePSI {
@@ -480,6 +480,8 @@ class TaxaForm extends React.Component<{}, {
             ...taxaCodesFor(Array.from(scoresPsiSpecies .keys())),
             ...taxaCodesFor(Array.from(scoresWhpt       .keys())),
             ...taxaCodesFor(Array.from(scoresCci        .keys())),
+            ...taxaCodesFor(Array.from(scoresAwic       .keys())),
+            ...taxaCodesFor(Array.from(scoresDehli      .keys())),
         ]);
         this.setState({taxaAll});
         const node = this.searchBox.current;
