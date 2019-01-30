@@ -4,6 +4,7 @@ import {
     ScoreAwic,
     ScoreBmwp,
     ScoreCci,
+    ScoreDehli,
     ScoreLifeFam,
     ScoreLifeSpc,
     ScorePsiFam,
@@ -12,6 +13,7 @@ import {
     scoresBmwp,
     scoresCci,
     scoresCciCommunity,
+    scoresDehli,
     scoresLifeFamily,
     scoresLifeGroups,
     scoresLifeSpecies,
@@ -110,6 +112,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
     const lifeFam = calcSingleLifeFamily (props.taxon);
     const lifeSpc = calcSingleLifeSpecies(props.taxon);
     const awic    = calcSingleAwic       (props.taxon);
+    const dehli   = calcSingleDehli      (props.taxon);
     return (
         <tr>
             <td><TaxonName taxonCode={props.taxon.code} /></td>
@@ -126,6 +129,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
             <td>{ (lifeFam !== undefined) ? lifeFam                            : '-' }</td>
             <td>{ (lifeSpc !== undefined) ? lifeSpc                            : '-' }</td>
             <td>{ (awic    !== undefined) ? awic                               : '-' }</td>
+            <td>{ (dehli   !== undefined) ? dehli                              : '-' }</td>
         </tr>
     )
 }
@@ -145,6 +149,7 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number,
             <th>LIFE<sub>family</sub></th>
             <th>LIFE<sub>species</sub></th>
             <th>AWIC</th>
+            <th>DEHLI</th>
         </tr>
         {
             props.foundTaxa.map((taxon, i) => {
@@ -245,10 +250,9 @@ const calcCci = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
 const calcSingleAwic = (foundTaxon:FoundTaxon): number | undefined => {
     const awic: ScoreAwic | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresAwic);
     // const psi: ScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
-    if (! (awic && foundTaxon.count) )
-    {   return undefined;    }
-    else
-    {   return awic.score;   }
+    return (awic && foundTaxon.count)
+        ? awic.score
+        : undefined;    
 }
 
 const calcAwic = (foundTaxa: FoundTaxon[]): { score:number, count:number } => (
@@ -259,6 +263,26 @@ const calcAwic = (foundTaxa: FoundTaxon[]): { score:number, count:number } => (
             : acc;
     }, {score: 0, count: 0})
 )
+
+// TODO: account for exceptions
+const calcSingleDehli = (foundTaxon:FoundTaxon): number | undefined => {
+    const dehli: ScoreDehli | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresDehli);
+    // const psi: ScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
+    return (dehli && foundTaxon.count)
+        ? dehli.score
+        : undefined;    
+}
+
+const calcDehli = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
+    const partial:{ score:number, count:number } = foundTaxa.reduce((acc, taxon) => {
+        const dehli = calcSingleDehli(taxon);
+        return (dehli !== undefined)
+            ? { score:acc.score + dehli, count:acc.count + 1 }
+            : acc;
+    }, {score: 0, count: 0});
+
+    return { score: partial.score / partial.count, count: partial.count }
+}
  
 interface PartialScorePSI {
     AB: number,
@@ -396,6 +420,7 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => (
             <dt>LIFE<sub>family</sub></dt>  <dd>{ calcLifeFamily (p.foundTaxa).score.toFixed(2) }</dd>
             <dt>LIFE<sub>species</sub></dt> <dd>{ calcLifeSpecies(p.foundTaxa).score.toFixed(2) }</dd>
             <dt>AWIC</dt>                   <dd>{ calcAwic       (p.foundTaxa).score.toFixed(2) }</dd>
+            <dt>DEHLI</dt>                  <dd>{ calcDehli      (p.foundTaxa).score.toFixed(2) }</dd>
         </dl>
     </div>
 )
