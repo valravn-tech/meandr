@@ -5,6 +5,7 @@ import {
     ScoreBmwp,
     ScoreCci,
     ScoreDehli,
+    ScoreInfo,
     ScoreLifeFam,
     ScoreLifeSpc,
     ScorePsiFam,
@@ -171,7 +172,7 @@ const nextTaxonLevel = (lvl: 'major_group' | 'family' | 'genus' | 'species' | un
 )
 
 // TODO: fix double scoring when family added and species in that family added
-const taxonFromMapAtAnyLevel = (taxon: FoundTaxon, scores: Map<any,any>): {info:any, lvl:TaxonLvl} | undefined => {
+const taxonFromMapAtAnyLevel = (taxon: FoundTaxon, scores: Map<any,any>): {info:ScoreInfo, lvl:TaxonLvl} | undefined => {
     const tx = allTaxa.get(taxon.code);
     for(let lvl:TaxonLvl | undefined = taxonLevel(taxon.code); tx && lvl; lvl = nextTaxonLevel(lvl)) {
         const name = tx[lvl];
@@ -204,27 +205,27 @@ const logAbundanceWhpt = (count: number): number => {
 }
 
 const calcSingleBmwp = (foundTaxon:FoundTaxon): number | undefined => {
-    const bmwp: { info: ScoreBmwp, lvl: TaxonLvl } | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresBmwp);
+    const bmwp = taxonFromMapAtAnyLevel(foundTaxon, scoresBmwp);
     return (bmwp)
-        ? bmwp.info.score_orig
+        ? (bmwp.info as ScoreBmwp).score_orig
         : undefined;
 }
 
 const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
-    const whpt: { info: ScoreWhpt, lvl:TaxonLvl } | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresWhpt);
+    const whpt = taxonFromMapAtAnyLevel(foundTaxon, scoresWhpt);
     const iScore = logAbundanceWhpt(foundTaxon.count) - 1;
     return (whpt && iScore >= 0)
-        ? whpt.info.scores[iScore]
+        ? (whpt.info as ScoreWhpt).scores[iScore]
         : undefined;
 }
 
 
 const calcSingleCci = (foundTaxon:FoundTaxon): number | undefined => {
-    const cci: { info: ScoreCci, lvl:TaxonLvl } | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresCci);
+    const cci = taxonFromMapAtAnyLevel(foundTaxon, scoresCci);
     if (! (cci && foundTaxon.count) )
     {   return undefined;    }
     else
-    {   return cci.info.score;   }
+    {   return (cci.info as ScoreCci).score;   }
 }
 
 const calcCci = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
@@ -247,9 +248,9 @@ const calcCci = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
 
 // TODO: separate to species/family calculation
 const calcSingleAwic = (foundTaxon:FoundTaxon): number | undefined => {
-    const awic: { info: ScoreAwic, lvl:TaxonLvl } | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresAwic);
+    const awic = taxonFromMapAtAnyLevel(foundTaxon, scoresAwic);
     return (awic && foundTaxon.count)
-        ? awic.info.score
+        ? (awic.info as ScoreAwic).score
         : undefined;
 }
 
@@ -264,9 +265,9 @@ const calcAwic = (foundTaxa: FoundTaxon[]): { score:number, count:number } => (
 
 // TODO: account for exceptions
 const calcSingleDehli = (foundTaxon:FoundTaxon): number | undefined => {
-    const dehli: { info: ScoreDehli, lvl:TaxonLvl } | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresDehli);
+    const dehli = taxonFromMapAtAnyLevel(foundTaxon, scoresDehli);
     return (dehli && foundTaxon.count)
-        ? dehli.info.score
+        ? (dehli.info as ScoreDehli).score
         : undefined;    
 }
 
@@ -292,30 +293,29 @@ interface SingleScorePSI {
 }
 
 const calcSinglePsiFamily = (foundTaxon:FoundTaxon): SingleScorePSI | undefined => {
-    const psi: { info: ScorePsiFam, lvl:TaxonLvl } | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresPsiFamily);
-    // const psi: ScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
+    const psi = taxonFromMapAtAnyLevel(foundTaxon, scoresPsiFamily);
     if(! (psi && foundTaxon.count) )
     {   return undefined;    }
     else {
+        const fssr = (psi.info as ScorePsiFam).fssr;
         const iScore = logAbundance(foundTaxon.count) - 1;
-        const score = scoresPsiGroups[psi.info.fssr].scores[iScore]
-        return { score, fssr:psi.info.fssr }
+        const score = scoresPsiGroups[fssr].scores[iScore]
+        return { score, fssr }
     }
 }
 
 const calcSinglePsiSpecies = (foundTaxon:FoundTaxon): SingleScorePSI | undefined => {
-    const psi: { info: ScorePsiSpc, lvl:TaxonLvl } | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresPsiSpecies);
-    // const psi: ScorePsiFam | undefined = scoresPsiFamily.get(foundTaxon.name);
+    const psi = taxonFromMapAtAnyLevel(foundTaxon, scoresPsiSpecies);
     if(! (psi && foundTaxon.count) )
     {   return undefined;    }
     else {
+        const fssr = (psi.info as ScorePsiSpc).fssr;
         const iScore = logAbundance(foundTaxon.count) - 1;
-        const score = scoresPsiGroups[psi.info.fssr].scores[iScore]
-        return { score, fssr:psi.info.fssr }
+        const score = scoresPsiGroups[fssr].scores[iScore]
+        return { score, fssr }
     }
 }
 
-// TODO: is using && instead of ternary clear?
 const psiSingleToPartial = (single: SingleScorePSI | undefined): PartialScorePSI | undefined => (
     (single)
     ? {
@@ -360,14 +360,14 @@ const calcPsiSpecies = (foundTaxa: FoundTaxon[]): { score:number, count:number }
 }
 
 const calcSingleLife = (foundTaxon:FoundTaxon, scoresTable:Map<string, ScoreLifeFam> | Map<string, ScoreLifeFam>): number | undefined => {
-    const life: { info: ScoreLifeFam | ScoreLifeSpc, lvl:TaxonLvl } | undefined = taxonFromMapAtAnyLevel(foundTaxon, scoresTable);
-    // const life: ScoreLifeFam | ScoreLifeSpc | undefined = scoresTable.get(foundTaxon.name);
-    if(! (life && foundTaxon.count) )
-    {   return undefined;    }
-    else {
+    const life = taxonFromMapAtAnyLevel(foundTaxon, scoresTable);
+    if (life && foundTaxon.count) {
         const iScore = logAbundance(foundTaxon.count) - 1;
-        return scoresLifeGroups[life.info.flow].scores[iScore];
+        const flow = (life.info as ScoreLifeFam | ScoreLifeSpc).flow
+        return scoresLifeGroups[flow].scores[iScore];
     }
+    else
+    {   return undefined;    }
 }
 
 const calcSingleLifeFamily  = (foundTaxon:FoundTaxon) => calcSingleLife(foundTaxon, scoresLifeFamily)
@@ -393,7 +393,7 @@ interface ScoringTaxon {
     count:       number,   //
     lvl:         TaxonLvl,  // e.g. "genus"
     scoringLvl:  TaxonLvl,  // e.g. "family"
-    info:        any,
+    info:        ScoreInfo,
 }
 
 const calcScore = (calcSingle: (t: FoundTaxon) => number | undefined, scores:Map<any,any>, foundTaxa: FoundTaxon[])
@@ -478,6 +478,7 @@ const calcLqiPartialEnhanced = ( bmwp:number, aspt:number ): {lqiX:number, lqiY:
     }
 )
 
+// bmwp & aspt are ints in the range [1,7]
 const calcLqi = ( bmwp:number, aspt:number, type:string): {score:number, index: string, interpretation:string} => {
     const { lqiX, lqiY } = type === "enhanced"
         ? calcLqiPartialEnhanced(bmwp, aspt)

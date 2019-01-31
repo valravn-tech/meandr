@@ -1,3 +1,5 @@
+export type ScoreInfo = number | ScoreAwic | ScoreBmwp | ScoreCci | ScoreDehli | ScoreLifeFam | ScoreLifeSpc | ScorePsiFam | ScorePsiSpc | ScoreWhpt;
+
 export interface ScoreBmwp {
     // family:            string,
     common_name:       string,
