@@ -31,6 +31,7 @@ const cmp = (a:any, b:any) => (
     0
 );  
 
+// TODO: enum?
 type TaxonLvl = 'major_group' | 'family' | 'genus' | 'species';
 
 // NOTE: these strings can be used as keys for the object values in allTaxa (as shown below)
@@ -59,6 +60,31 @@ const taxonFullName = (taxon: TaxaCode): string => {
         lvl === 'family'      ? `${tx.major_group} ${tx.family}` : 
       /*lvl === 'major_group'*/ `${tx.major_group}`
     );
+}
+
+const taxonGetCodeForLevel = (taxon: TaxaCode, lvl: TaxonLvl) => {
+    const offset = (
+        lvl === 'species'     ? 8 :
+        lvl === 'genus'       ? 6 :
+        lvl === 'family'      ? 4 :
+      /*lvl === 'major_group'*/ 2);
+
+    if (taxonLevel(taxon) === lvl)
+    {   return taxon;   }
+    else if (taxon[offset] !== '0' || taxon[offset+1] !== '0') {
+        const taxonChars = taxon.split('');
+        let newTaxon = '';
+        let i = 0;
+        for(; i < offset; ++i)
+        {   newTaxon += taxonChars[i];   }
+        for(; i < 8; ++i)
+        {   newTaxon += '0';   }
+        // tslint:disable-next-line:no-console
+        console.assert(newTaxon.length === 8)
+        return newTaxon;
+    }
+    else
+    {   return undefined;   }
 }
 
 const TaxonName: React.SFC<{ taxonCode: TaxaCode }> = (props) => {
@@ -388,38 +414,35 @@ const calcLifeSpecies = (foundTaxa:FoundTaxon[]) => calcLife(foundTaxa, scoresLi
 
 // could also do via scoringEquivalent()
 interface ScoringTaxon {
-    code:        TaxaCode, // e.g. "03110100" -> "Hydra"
-    scoringCode: TaxaCode, // e.g. "03110000" -> "Hydridae"
-    count:       number,   //
-    lvl:         TaxonLvl,  // e.g. "genus"
-    scoringLvl:  TaxonLvl,  // e.g. "family"
-    info:        ScoreInfo,
+    count: number,
+    info:  ScoreInfo,
+    // code: TaxaCode,
+    // children: ScoringTaxon[],
 }
 
-const calcScore = (calcSingle: (t: FoundTaxon) => number | undefined, scores:Map<any,any>, foundTaxa: FoundTaxon[])
+const calcScore = (calcSingle: (t: FoundTaxon) => number | undefined, scores:Map<string,ScoreInfo>, foundTaxa: FoundTaxon[])
 : { score:number, count:number } => {
-    const scorableTaxa = foundTaxa.reduce((taxa:ScoringTaxon[], taxon:FoundTaxon) => {
+    const scoringTaxa = foundTaxa.reduce((taxa, taxon:FoundTaxon) => {
             const tx = taxonFromMapAtAnyLevel(taxon, scores);
-            if (tx) {
-                const code        = taxon.code;
-                const count       = taxon.count;
-                const lvl         = taxonLevel(code);
+            if (tx) { // taxon scores for this index
                 const scoringLvl  = tx.lvl;
-                const scoringCode = (allTaxa.get(code) as Taxa)[scoringLvl];
+                const scoringCode = taxonGetCodeForLevel(taxon.code, scoringLvl) as TaxaCode;
                 const info        = tx.info;
 
-                taxa.push({ code, scoringCode, count, lvl, scoringLvl, info });
+
+                const currentInfoForTaxon = taxa.get(scoringCode);
+                // tslint:disable-next-line:no-console
+                console.assert(! currentInfoForTaxon || info === currentInfoForTaxon.info);
+
+                const scoringTaxon = currentInfoForTaxon || { count: 0, info };
+                ++scoringTaxon.count;
+                taxa.set(scoringCode, scoringTaxon);
             }
             return taxa;
-    }, []);
+    }, new Map<TaxaCode, ScoringTaxon>());
 
-    // TODO (opt): there's almost certainly a way of doing this with lower time complexity!
-    const scoringTaxa = scorableTaxa.filter((taxon, i, arr) => (
-        arr.findIndex(tx => tx.scoringCode === taxon.scoringCode) === i
-    ))
-
-    return scoringTaxa.reduce((acc, taxon) => {
-        const taxonScore = calcSingle(taxon);
+    return Array.from(scoringTaxa.entries()).reduce((acc, taxon) => {
+        const taxonScore = calcSingle({code: taxon[0], count: taxon[1].count,});
         return (taxonScore)
             ? { score: acc.score + taxonScore, count: acc.count + 1 }
             : acc;
