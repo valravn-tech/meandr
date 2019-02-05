@@ -1,4 +1,4 @@
-export type ScoreInfo = number | ScoreAwic | ScoreBmwp | ScoreCci | ScoreDehli | ScoreLifeFam | ScoreLifeSpc | ScorePsiFam | ScorePsiSpc | ScoreWhpt;
+export type ScoreInfo = number | ScoreAwic | ScoreBmwp | ScoreCci | ScoreDehli | ScoreLife| ScorePsi | ScoreWhpt;
 
 export interface ScoreBmwp {
     // family:            string,
@@ -239,6 +239,10 @@ export const scoresPsiGroups: {[fssrGroup: string]: { description: string, score
 	'B': { description: 'Moderately sensitive',   scores: [1, 2, 3, 4] },
 	'C': { description: 'Moderately insensitive', scores: [1, 2, 3, 4] },
 	'D': { description: 'Highly insensitive',     scores: [2, 3, 4, 5] },
+}
+
+export interface ScorePsi {
+    fssr: string,
 }
 
 export interface ScorePsiFam {
@@ -1310,6 +1314,10 @@ export const scoresLifeGroups: {[flowGroup: string]: { description: string, scor
 //  0– 20    Heavily sedimented
 
 // TODO: normalize the LIFE tables to allow both to use the same interface
+export interface ScoreLife {
+    flow: string,
+}
+
 export interface ScoreLifeFam {
     // family:   string,
 	major_group: string,
