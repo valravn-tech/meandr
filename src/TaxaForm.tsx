@@ -179,25 +179,29 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
 // tslint:disable-next-line:one-variable-per-declaration
 const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number, i:number) => void }> = (props) => (
     <table>
-        <tr>
-            <th>Full name</th>
-            <th>Count</th>
-            <th>BMWP</th>
-            <th>WHPT</th>
-            <th>PSI<sub>family</sub></th>
-            <th>PSI<sub>species</sub></th>
-            <th>CCI</th>
-            <th>LIFE<sub>family</sub></th>
-            <th>LIFE<sub>species</sub></th>
-            <th>AWIC</th>
-            <th>DEHLI</th>
-        </tr>
-        {
-            props.foundTaxa.map((taxon, i) => {
-                const addToIndex = (add: number) => (props.addToCount(add, i));
-                return <TaxonFound key={i} taxon={taxon} addToCount={addToIndex} />;
-            })
-        }
+        <thead>
+            <tr>
+                <th>Full name</th>
+                <th>Count</th>
+                <th>BMWP</th>
+                <th>WHPT</th>
+                <th>PSI<sub>family</sub></th>
+                <th>PSI<sub>species</sub></th>
+                <th>CCI</th>
+                <th>LIFE<sub>family</sub></th>
+                <th>LIFE<sub>species</sub></th>
+                <th>AWIC</th>
+                <th>DEHLI</th>
+            </tr>
+        </thead>
+        <tbody>
+            {
+                props.foundTaxa.map((taxon, i) => {
+                    const addToIndex = (add: number) => (props.addToCount(add, i));
+                    return <TaxonFound key={i} taxon={taxon} addToCount={addToIndex} />;
+                })
+            }
+        </tbody>
     </table>
 )
 
@@ -401,8 +405,7 @@ const calcDehli = (foundTaxa: FoundTaxon[]): ScoreCount => {
 }
 
 const calcLife = (foundTaxa: FoundTaxon[], scores: Map<string, ScoreLife>): ScoreCount => {
-    const partial:ScoreCount = calcScore(foundTaxa, scores,
-    (acc: ScoreCount, taxon: FoundTaxon) => {
+    const partial:ScoreCount = calcScore(foundTaxa, scores, (acc, taxon) => {
         const taxonScore = calcSingleLife(taxon, scores);
         return (taxonScore)
             ? { score: acc.score + taxonScore, count: acc.count + 1 }
