@@ -213,7 +213,6 @@ const nextTaxonLevel = (lvl: 'major_group' | 'family' | 'genus' | 'species' | un
     undefined
 )
 
-// TODO: fix double scoring when family added and species in that family added
 const taxonFromMapAtAnyLevel = (taxon: FoundTaxon, scores: Map<any,any>): {info:ScoreInfo, lvl:TaxonLvl} | undefined => {
     const tx = allTaxa.get(taxon.code);
     for(let lvl:TaxonLvl | undefined = taxonLevel(taxon.code); tx && lvl; lvl = nextTaxonLevel(lvl)) {
@@ -268,7 +267,13 @@ const calcSingleCci = (foundTaxon:FoundTaxon): number | undefined => {
         : undefined;
 }
 
-// TODO: account for exceptions
+// TODO: account for exceptions:
+//      - Adults only
+// NOTE: accounts for:
+//      - Elodes/other Scirtidae (by trying most specific first)
+//      - Taeniopterigidae
+//      - Philopotamidae
+//      - Nemouridae
 const calcSingleDehli = (foundTaxon:FoundTaxon): number | undefined => {
     const dehli = taxonFromMapAtAnyLevel(foundTaxon, scoresDehli);
     return (dehli && foundTaxon.count)

@@ -3454,8 +3454,12 @@ export const scoresDehli: Map<string, ScoreDehli> = new Map([
 	["Ameletidae",        { "by":"family", "score":10, "group":1 }],
 	["Perlidae",          { "by":"family", "score":10, "group":1 }],
 	["Chloroperlidae",    { "by":"family", "score":10, "group":1 }],
-	["Taeniopterigidae",  { "by":"family", "score":9,  "group":1 }], // Brachyptera & Rhabdiopteryx
-	["Philopotamidae",    { "by":"family", "score":10, "group":1 }], // Philopotamus & Wormaldia
+	// ["Taeniopterigidae",  { "by":"family", "score":9,  "group":1 }], // Brachyptera & Rhabdiopteryx
+	["Brachyptera",       { "by":"genus", "score":9,  "group":1  }],
+	["Rhabdiopteryx",     { "by":"genus", "score":9,  "group":1  }],
+	// ["Philopotamidae",    { "by":"family", "score":10, "group":1 }], // Philopotamus & Wormaldia
+	["Philopotamus",      { "by":"genus", "score":10, "group":1  }],
+	["Wormaldia",         { "by":"genus", "score":10, "group":1  }],
 	["Rhyacophilidae",    { "by":"family", "score":10, "group":1 }],
 	["Odontoceridae",     { "by":"family", "score":9,  "group":1 }],
 	["Hydrobiidae",       { "by":"family", "score":7,  "group":2 }],
@@ -3471,12 +3475,15 @@ export const scoresDehli: Map<string, ScoreDehli> = new Map([
 	["Beraeidae",         { "by":"family", "score":7,  "group":2 }],
 	["Pyralidae",         { "by":"family", "score":7,  "group":2 }],
 	["Thaumaleidae",      { "by":"family", "score":8,  "group":2 }],
-	["Dixidae",           { "by":"family", "score":8,  "group":2 }], // Primarily Dixellaspp.
+	["Dixidae",           { "by":"family", "score":8,  "group":2 }], // Primarily Dixella spp.
 	["Gammaridae",        { "by":"family", "score":6,  "group":3 }],
 	["Baetis",            { "by":"genus",  "score":7,  "group":3 }],
 	["Paraleptophlebia",  { "by":"genus",  "score":6,  "group":3 }],
 	["Perlodidae",        { "by":"family", "score":7,  "group":3 }],
-	["Nemouridae",        { "by":"family", "score":7,  "group":3 }], // Protonemura, Amphinemura & Nemurella
+	// ["Nemouridae",        { "by":"family", "score":7,  "group":3 }], // Protonemura, Amphinemura & Nemurella
+	["Protonemura",       { "by":"genus", "score":7,  "group":3  }],
+	["Amphinemura",       { "by":"genus", "score":7,  "group":3  }],
+	["Nemurella",         { "by":"genus", "score":7,  "group":3  }],
 	["Taeniopteryx",      { "by":"genus",  "score":6,  "group":3 }],
 	["Leuctridae",        { "by":"family", "score":7,  "group":3 }],
 	["Aphelocheiridae",   { "by":"family", "score":7,  "group":3 }],
