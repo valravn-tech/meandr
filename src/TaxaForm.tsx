@@ -117,12 +117,19 @@ const TaxonName: React.SFC<{ taxonCode: TaxonCode }> = (props) => {
     }</span>
 }
 
-const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: TaxonCode[], taxaFound: Map<TaxonCode, FoundTaxon>, iSelect: number }> = (props) => {
-    const listTaxon = (code:TaxonCode, selected:boolean) => {
+const TaxaAutocompleteOptions: React.SFC<{
+    iSelect: number,
+    isFocused: boolean,
+    taxaMatching: TaxonCode[],
+    taxaFound: Map<TaxonCode, FoundTaxon>,
+}> = (props) => {
+    const listTaxon = (code: TaxonCode, selected: boolean) => {
         const taxonMatch = props.taxaFound.get(code);
         const taxonCount = taxonMatch ? taxonMatch.count : 0;
-        const style:React.CSSProperties | undefined = (selected)
-            ? { backgroundColor:'#226', color:'white', fontWeight:'bold' }
+        const focusedStyle: React.CSSProperties   = { backgroundColor:'#226', color:'white', fontWeight:'bold' };
+        const unfocusedStyle: React.CSSProperties = { backgroundColor:'#555', color:'white', fontWeight:'bold' };
+        const style = (selected)
+            ? (props.isFocused ? focusedStyle : unfocusedStyle)
             : undefined;
 
         const result = (
@@ -565,6 +572,7 @@ class TaxaForm extends React.Component<{}, {
     buttonText: string,
     found: Map<TaxonCode, FoundTaxon>,
     iPreselect: number,
+    taxonInputIsFocused: boolean,
     search: string,
     taxaAll: Set<TaxonCode>,
     taxaMatching: TaxonCode[],
@@ -582,6 +590,7 @@ class TaxaForm extends React.Component<{}, {
             iPreselect: 0,
             search: '',
             taxaMatching: [] as TaxonCode[],
+            taxonInputIsFocused: false,
         });
     }
 
@@ -661,7 +670,8 @@ class TaxaForm extends React.Component<{}, {
             {   this.addCount = 1;   }
 
             const taxaMatching = (search.length)
-                ? Array.from(this.state.taxaAll) .filter(code => taxonFullName(code).toLowerCase() .includes (search.toLowerCase()))
+                ? Array.from(this.state.taxaAll) .filter(code =>
+                    taxonFullName(code).toLowerCase() .includes (search.toLowerCase()))
                     .sort((a:TaxonCode, b:TaxonCode) => cmp(taxonFullName(a), taxonFullName(b)))
                 : [];
 
@@ -674,7 +684,7 @@ class TaxaForm extends React.Component<{}, {
         const setButtonText = (e: React.KeyboardEvent) => {
             const buttonText:string = (e.shiftKey)
                 ? this.taxonRemoveText[this.taxonTextI()]
-                : this.taxonAddText[this.taxonTextI()];
+                : this.taxonAddText   [this.taxonTextI()];
             if (this.state.buttonText !== buttonText)
             {   this.setState({buttonText});   }
         }
@@ -693,6 +703,9 @@ class TaxaForm extends React.Component<{}, {
 
         const handleNumberChange = (val:number) => { this.addCount = val; }
         const ensureCountHasValue = () => { if(this.addCount === null) { this.addCount = 1; } }
+
+        const handleTaxonInputFocus = () => { this.setState({ taxonInputIsFocused: true  }) }
+        const handleTaxonInputBlur  = () => { this.setState({ taxonInputIsFocused: false }) }
  
         return (<div>
             <TaxaScore foundTaxa={ Array.from(this.state.found.values()) } />
@@ -707,6 +720,8 @@ class TaxaForm extends React.Component<{}, {
                     onChange={searchTextUpdate}
                     onKeyUp={changeAutoCompleteSelect}
                     onKeyDown={setButtonText}
+                    onFocus={handleTaxonInputFocus}
+                    onBlur={handleTaxonInputBlur}
                 />
                 <NumericInput
                     min={1}
@@ -723,6 +738,7 @@ class TaxaForm extends React.Component<{}, {
                 ? <TaxaAutocompleteOptions
                     taxaMatching={this.state.taxaMatching}
                     taxaFound={this.state.found}
+                    isFocused={this.state.taxonInputIsFocused}
                     iSelect={this.state.iPreselect}
                 />
                 : <p>Start entering the name of a scoring taxon</p>
