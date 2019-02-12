@@ -117,24 +117,37 @@ const TaxonName: React.SFC<{ taxonCode: TaxaCode }> = (props) => {
     }</span>
 }
 
-const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: TaxaCode[], iSelect: number }> = (props) => {
-    const listTaxon = (code:TaxaCode) => (
-        <span key={code} >
-            <TaxonName taxonCode={code} />
-        </span>
-    );
+const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: TaxaCode[], taxaFound: FoundTaxon[], iSelect: number }> = (props) => {
+    const listTaxon = (code:TaxaCode, selected:boolean) => {
+        // TODO: refactor this with code as key
+        const taxonMatch = props.taxaFound.find((tx) => tx.code === code);
+        const taxonCount = taxonMatch ? taxonMatch.count : 0;
+        const style:React.CSSProperties | undefined = (selected)
+            ? { backgroundColor:'#226', color:'white', fontWeight:'bold' }
+            : undefined;
 
-    const listTaxa = (taxa: TaxaCode[]) => (taxa.map(taxon => <li key={taxon}>{listTaxon(taxon)}</li>));
+        const result = (
+            <tr key={code} style={style}>
+                <td><TaxonName taxonCode={code} /></td>
+                <td>{taxonCount || undefined}</td>
+            </tr>
+        )
+        return result;
+    };
+
+    const listTaxa = (taxa: TaxaCode[]) =>
+    (   taxa.map(taxon => listTaxon(taxon, false))   );
 
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
     const selectTaxon = props.taxaMatching[props.iSelect];            //  |- could be useful utility if common pattern
     const taxaAfter   = props.taxaMatching.slice(props.iSelect + 1);  // /   (or may already exist)
+
     return (
-        <ul style={{listStyleType:'none'}}>
+        <table>
             {listTaxa(taxaBefore)}
-            <li style={{backgroundColor:'#226', color:'white', fontWeight:'bold'}}>{listTaxon(selectTaxon)}</li>
+            {listTaxon(selectTaxon, true)}
             {listTaxa(taxaAfter)}
-        </ul>
+        </table>
     )
 }
 
@@ -676,36 +689,41 @@ class TaxaForm extends React.Component<{}, {
 
         const handleNumberChange = (val:number) => { this.addCount = val; }
  
-        return (
-            <div>
-                <TaxaScore foundTaxa={this.state.found} />
-                <form onSubmit={submitTaxon}>
-                    <input
-                        ref={this.searchBox}
-                        type='text'
-                        placeholder='taxon name'
-                        id='form-input'
-                        value={this.state.search}
-                        onChange={searchTextUpdate}
-                        onKeyUp={changeAutoCompleteSelect}
-                        onKeyDown={setButtonText}
-                    />
-                    <NumericInput
-                        min={1}
-                        value={this.addCount}
-                        onChange={handleNumberChange}
-                        onKeyUp={setButtonText}
-                        onKeyDown={setButtonText}
-                    />
-                    <input type='submit' value={this.state.buttonText} />
-                </form>
-                {this.state.taxaMatching.length
-                    ? <TaxaAutocompleteOptions taxaMatching={this.state.taxaMatching} iSelect={this.state.iPreselect} />
-                    : <p>Start entering the name of a scoring taxon</p>
-                }
-                <TaxaFoundList foundTaxa={this.state.found} setCount={modifyFound} />
-            </div>
-        );
+        return (<div>
+            <TaxaScore foundTaxa={this.state.found} />
+
+            <form onSubmit={submitTaxon}>
+                <input
+                    ref={this.searchBox}
+                    type='text'
+                    placeholder='taxon name'
+                    id='form-input'
+                    value={this.state.search}
+                    onChange={searchTextUpdate}
+                    onKeyUp={changeAutoCompleteSelect}
+                    onKeyDown={setButtonText}
+                />
+                <NumericInput
+                    min={1}
+                    value={this.addCount}
+                    onChange={handleNumberChange}
+                    onKeyUp={setButtonText}
+                    onKeyDown={setButtonText}
+                />
+                <input type='submit' value={this.state.buttonText} />
+            </form>
+
+            {this.state.taxaMatching.length
+                ? <TaxaAutocompleteOptions
+                    taxaMatching={this.state.taxaMatching}
+                    taxaFound={this.state.found}
+                    iSelect={this.state.iPreselect}
+                />
+                : <p>Start entering the name of a scoring taxon</p>
+            }
+
+            <TaxaFoundList foundTaxa={this.state.found} setCount={modifyFound} />
+        </div>);
     }
 
     private taxonTextI = ():number => (+(this.addCount > 1));
