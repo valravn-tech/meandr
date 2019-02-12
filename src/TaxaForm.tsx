@@ -140,9 +140,54 @@ const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: TaxaCode[], iSelect: nu
 const div0 = (dividend:number, divisor:number):number => ((divisor) ? dividend /divisor : 0);
 
 // tslint:disable-next-line:one-variable-per-declaration
-const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void  }> = (props) => {
-    const dec = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount(-1) }
-    const inc = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => { props.addToCount( 1) }
+const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:number) => void  }> = (props) => {
+    const refNFoundInput = React.createRef<HTMLInputElement>();
+
+    const setInput = (count:number) => {
+        if (refNFoundInput.current)
+        {   refNFoundInput.current.value = count.toString();   }
+    }
+    const mod = (e:any, addend:number) => {
+        const count = props.taxon.count + addend;
+        props.setCount(count);
+        setInput(count);
+    }
+    const dec = (e:any) => { mod(e, -1); }
+    const inc = (e:any) => { mod(e, +1); }
+
+    const setCountFromInput = (input: HTMLInputElement) => {
+            const count = parseInt(input.value, 10);
+            if (! isNaN(count)) { props.setCount(count); }
+    }
+
+    const filterNumbers = (e: React.KeyboardEvent) => {
+        if (! ((e.key >= '0' && e.key <= '9')
+            || e.key === 'ArrowLeft'
+            || e.key === 'Tab'
+            || e.key === 'ArrowRight'
+            || e.key === 'Backspace'
+            || e.key === 'Delete'))
+        {   e.preventDefault();   }
+    }
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        switch(e.key)
+        {
+            case 'Enter':     if (refNFoundInput.current)
+            {   setCountFromInput(refNFoundInput.current);   } break;
+            case 'ArrowUp':   inc(e);      break;
+            case 'ArrowDown': dec(e);      break;
+            default:          filterNumbers(e);
+        }
+    }
+
+    const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (refNFoundInput.current) {
+            if (refNFoundInput.current.value.length)
+            {   setCountFromInput(refNFoundInput.current);   }
+            else
+            {   setInput(props.taxon.count);    }
+        }
+    }
 
     const bmwp    = scoresBmwp.get(taxonKeyName(props.taxon.code));
     const whpt    = calcSingleWhpt (props.taxon);
@@ -158,6 +203,15 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
         <tr>
             <td><TaxonName taxonCode={props.taxon.code} /></td>
             <td>
+                <input
+                    // NOTE: type='number' behaves inconsistently
+                    type='text'
+                    ref={refNFoundInput}
+                    // defaultValue={props.taxon.count.toString()}
+                    value={props.taxon.count.toString()}
+                    onKeyDown={handleKeyDown}
+                    onBlur={handleBlur}
+                />
                 <button onClick={dec}>-</button>
                 <button onClick={inc}>+</button>
                 {props.taxon.count}
@@ -177,7 +231,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, addToCount: (add:number) => void
 
 
 // tslint:disable-next-line:one-variable-per-declaration
-const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number, i:number) => void }> = (props) => (
+const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], setCount: (count:number, i:number) => void }> = (props) => (
     <table>
         <thead>
             <tr>
@@ -197,8 +251,8 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number,
         <tbody>
             {
                 props.foundTaxa.map((taxon, i) => {
-                    const addToIndex = (add: number) => (props.addToCount(add, i));
-                    return <TaxonFound key={i} taxon={taxon} addToCount={addToIndex} />;
+                    const setIndex = (count: number) => (props.setCount(count, i));
+                    return <TaxonFound key={i} taxon={taxon} setCount={setIndex} />;
                 })
             }
         </tbody>
@@ -206,7 +260,7 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], addToCount: (add:number,
 )
 
 
-const nextTaxonLevel = (lvl: 'major_group' | 'family' | 'genus' | 'species' | undefined): 'major_group' | 'family' | 'genus' | 'species' | undefined => (
+const nextTaxonLevel = (lvl: TaxonLvl | undefined): TaxonLvl | undefined => (
     lvl === 'species' ? 'genus' :
     lvl === 'genus'   ? 'family' :
     lvl === 'family'  ? 'major_group' :
@@ -559,6 +613,7 @@ class TaxaForm extends React.Component<{}, {
     private searchBox = React.createRef<HTMLInputElement>();
     private taxonRemoveText = 'Remove Taxon';
     private taxonAddText    = 'Add Taxon';
+    private taxaIdxToRemove: number[]  = [];
 
 
     public componentWillMount() {
@@ -604,6 +659,15 @@ class TaxaForm extends React.Component<{}, {
     }
 
     public render() {
+        // This feels like an awkward place to put this, is there somewhere better?
+        // or... should this be some fancy reducer/other functional concept..?
+        const taxaIdxToRemove = this.taxaIdxToRemove.slice();
+        this.taxaIdxToRemove = [];
+        taxaIdxToRemove.forEach((taxaIdx) => {
+            const found = this.state.found;
+            found.splice(taxaIdx, 1);
+            this.setState({ found });
+        });
 
         return (
             <div>
@@ -625,7 +689,7 @@ class TaxaForm extends React.Component<{}, {
                     ? <TaxaAutocompleteOptions taxaMatching={this.state.taxaMatching} iSelect={this.state.iPreselect} />
                     : <p>Start entering the name of a scoring taxon</p>
                 }
-                <TaxaFoundList foundTaxa={this.state.found} addToCount={this.modifyFound} />
+                <TaxaFoundList foundTaxa={this.state.found} setCount={this.modifyFound} />
             </div>
         );
     }
@@ -636,12 +700,13 @@ class TaxaForm extends React.Component<{}, {
         {   this.setState({buttonText});   }
     }
 
-    private modifyFound = (add: number, i: number) => {
+    private modifyFound = (newCount: number, i: number) => {
         const found = this.state.found;
-        found[i].count += add;
-        if (found[i].count === 0) { found.splice(i, 1); }
+        found[i].count = newCount;
+        if (found[i].count === 0) { this.taxaIdxToRemove.push(i); }
         this.setState({ found })
     }
+
     private changeAutoCompleteSelect = (e: React.KeyboardEvent) => {
         const iPreselect = this.state.iPreselect;
         this.setButtonText(e);
@@ -671,15 +736,15 @@ class TaxaForm extends React.Component<{}, {
         const iPreselect = this.state.iPreselect;
         // NOTE: avoids adding for invalid search
         if (this.state.search.length && iPreselect >= 0) {
-            const code    = this.state.taxaMatching[iPreselect];
-            const iFound  = this.state.found.findIndex((foundEl: FoundTaxon) => foundEl.code === code);
-
-            const found = this.state.found;
+            const code         = this.state.taxaMatching[iPreselect];
             const shouldRemove = this.state.buttonText === this.taxonRemoveText;
+            const found        = this.state.found;
+            
+            const iFound  = found.findIndex((foundEl: FoundTaxon) => foundEl.code === code);
             const isFound = iFound !== -1;
             if (isFound) {
                 const inc = shouldRemove ? -1 : 1;
-                this.modifyFound(inc, iFound);
+                this.modifyFound(this.state.found[iFound].count + inc, iFound);
             }
             else if (! shouldRemove) {
                 found.push({ count: 1, code });
