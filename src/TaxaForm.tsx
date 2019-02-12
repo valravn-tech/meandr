@@ -557,13 +557,14 @@ class TaxaForm extends React.Component<{}, {
     taxaMatching: TaxaCode[],
 }> {
     private searchBox = React.createRef<HTMLInputElement>();
-    private taxonRemoveText = 'Remove Taxon';
-    private taxonAddText    = 'Add Taxon';
+    private taxonRemoveText = ['Remove Taxon', 'Remove Taxa'];
+    private taxonAddText    = ['Add Taxon', 'Add Taxa'];
+    private addCount = 1;
 
 
     public componentWillMount() {
         this.setState({
-            buttonText: this.taxonAddText,
+            buttonText: this.taxonAddText[0],
             found: [] as FoundTaxon[],
             iPreselect: 0,
             search: '',
@@ -585,7 +586,7 @@ class TaxaForm extends React.Component<{}, {
         );
 
         // This prevents non-scoring taxa from autocompleting...
-        // TODO: is this desired behaviour?
+        // TODO (ux): is this desired behaviour?
         const taxaAll = new Set([
             ...taxaCodesFor(Array.from(scoresBmwp       .keys())), 
             ...taxaCodesFor(Array.from(scoresLifeFamily .keys())),
@@ -604,19 +605,97 @@ class TaxaForm extends React.Component<{}, {
     }
 
     public render() {
+        const modifyFound = (newCount: number, i: number) => {
+            const found = this.state.found;
+            found[i].count = newCount;
+            // TODO: do we want to auto-delete when hitting 0?
+            // quicker to use, but more error-prone
+            if (found[i].count === 0)
+            { found.splice(i, 1); }
+            this.setState({ found })
+        }
+
+        const submitTaxon = (e:React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            const iPreselect = this.state.iPreselect;
+            // NOTE: avoids adding for invalid search
+            if (this.state.search.length && iPreselect >= 0) {
+                const code         = this.state.taxaMatching[iPreselect];
+                const shouldRemove = this.state.buttonText === this.taxonRemoveText[this.taxonTextI()];
+                const found        = this.state.found;
+                
+                const iFound  = found.findIndex((foundEl: FoundTaxon) => foundEl.code === code);
+                const isFound = iFound !== -1;
+                if (isFound) {
+                    const inc = shouldRemove ? -this.addCount : this.addCount;
+                    modifyFound(this.state.found[iFound].count + inc, iFound);
+                }
+                else if (! shouldRemove) {
+                    found.push({ count: this.addCount, code });
+                    this.setState({ found });
+                }
+            }
+        }
+
+        const searchTextUpdate = (e: React.FormEvent<HTMLInputElement>) => {
+            const search = e.currentTarget.value;
+            // TODO (ux): is this the right trigger to reset the count?
+            if (search.length === 0)
+            {   this.addCount = 1;   }
+
+            const taxaMatching = (search.length)
+                ? Array.from(this.state.taxaAll) .filter(code => taxonFullName(code).toLowerCase() .includes (search.toLowerCase()))
+                    .sort((a:TaxaCode, b:TaxaCode) => cmp(taxonFullName(a), taxonFullName(b)))
+                : [];
+
+            const iPreselect = (taxaMatching.length)
+                ? 0
+                : -1;
+            this.setState({ iPreselect, taxaMatching, search });
+        }
+
+        const setButtonText = (e: React.KeyboardEvent) => {
+            const buttonText:string = (e.shiftKey)
+                ? this.taxonRemoveText[this.taxonTextI()]
+                : this.taxonAddText[this.taxonTextI()];
+            if (this.state.buttonText !== buttonText)
+            {   this.setState({buttonText});   }
+        }
+
+        const changeAutoCompleteSelect = (e: React.KeyboardEvent) => {
+            const iPreselect = this.state.iPreselect;
+            setButtonText(e);
+            switch (e.key) {
+                case "ArrowDown": if (iPreselect < this.state.taxaMatching.length - 1)
+                { this.setState({ iPreselect: iPreselect + 1 }); } break;
+
+                case "ArrowUp"  : if(iPreselect > 0)
+                { this.setState({ iPreselect: iPreselect - 1 }); } break;
+            }
+        }
+
+        const handleNumberChange = (val:number) => { this.addCount = val; }
+ 
         return (
             <div>
                 <TaxaScore foundTaxa={this.state.found} />
-                <form onSubmit={this.submitTaxon}>
+                <form onSubmit={submitTaxon}>
                     <input
                         ref={this.searchBox}
                         type='text'
                         placeholder='taxon name'
                         id='form-input'
                         value={this.state.search}
-                        onChange={this.searchTextUpdate}
-                        onKeyDown={this.changeAutoCompleteSelect}
-                        onKeyUp={this.setButtonText}
+                        onChange={searchTextUpdate}
+                        onKeyUp={changeAutoCompleteSelect}
+                        onKeyDown={setButtonText}
+                    />
+                    <NumericInput
+                        min={1}
+                        value={this.addCount}
+                        onChange={handleNumberChange}
+                        onKeyUp={setButtonText}
+                        onKeyDown={setButtonText}
                     />
                     <input type='submit' value={this.state.buttonText} />
                 </form>
@@ -624,72 +703,12 @@ class TaxaForm extends React.Component<{}, {
                     ? <TaxaAutocompleteOptions taxaMatching={this.state.taxaMatching} iSelect={this.state.iPreselect} />
                     : <p>Start entering the name of a scoring taxon</p>
                 }
-                <TaxaFoundList foundTaxa={this.state.found} setCount={this.modifyFound} />
+                <TaxaFoundList foundTaxa={this.state.found} setCount={modifyFound} />
             </div>
         );
     }
-    
-    private setButtonText = (e: React.KeyboardEvent) => {
-        const buttonText = e.shiftKey ? this.taxonRemoveText : this.taxonAddText;
-        if (this.state.buttonText !== buttonText)
-        {   this.setState({buttonText});   }
-    }
 
-    private modifyFound = (newCount: number, i: number) => {
-        const found = this.state.found;
-        found[i].count = newCount;
-        // TODO: do we want to auto-delete when hitting 0?
-        // quicker to use, but more error-prone
-        if (found[i].count === 0)
-        { found.splice(i, 1); }
-        this.setState({ found })
-    }
-
-    private changeAutoCompleteSelect = (e: React.KeyboardEvent) => {
-        const iPreselect = this.state.iPreselect;
-        this.setButtonText(e);
-        switch (e.key) {
-            case "ArrowDown": if (iPreselect < this.state.taxaMatching.length - 1)
-            { this.setState({ iPreselect: iPreselect + 1 }); } break;
-
-            case "ArrowUp"  : if(iPreselect > 0)
-            { this.setState({ iPreselect: iPreselect - 1 }); } break;
-        }
-    }
-
-    private searchTextUpdate = (e: React.FormEvent<HTMLInputElement>) => {
-        const search = e.currentTarget.value;
-        const taxaMatching = (search.length)
-            ? Array.from(this.state.taxaAll) .filter(code => taxonFullName(code).toLowerCase() .includes (search.toLowerCase()))
-                .sort((a:TaxaCode, b:TaxaCode) => cmp(taxonFullName(a), taxonFullName(b)))
-            : [];
-        const iPreselect = (taxaMatching.length)
-            ? 0
-            : -1;
-        this.setState({ iPreselect, taxaMatching, search });
-    }
-
-    private submitTaxon = (e:React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const iPreselect = this.state.iPreselect;
-        // NOTE: avoids adding for invalid search
-        if (this.state.search.length && iPreselect >= 0) {
-            const code         = this.state.taxaMatching[iPreselect];
-            const shouldRemove = this.state.buttonText === this.taxonRemoveText;
-            const found        = this.state.found;
-            
-            const iFound  = found.findIndex((foundEl: FoundTaxon) => foundEl.code === code);
-            const isFound = iFound !== -1;
-            if (isFound) {
-                const inc = shouldRemove ? -1 : 1;
-                this.modifyFound(this.state.found[iFound].count + inc, iFound);
-            }
-            else if (! shouldRemove) {
-                found.push({ count: 1, code });
-                this.setState({ found });
-            }
-        }
-    }
+    private taxonTextI = ():number => (+(this.addCount > 1));
 }
 
 export default TaxaForm
