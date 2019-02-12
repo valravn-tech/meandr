@@ -174,6 +174,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:number) => void
                 value={props.taxon.count}
                 onChange={handleChange}
             /></td>
+
             <td>{ (bmwp)                  ? bmwp.score_orig                    : '-' }</td>
             <td>{ (whpt    !== undefined) ? whpt                               : '-' }</td>
             <td>{ (psiFam  !== undefined) ? `${psiFam.score} (${psiFam.fssr})` : '-' }</td>
@@ -691,6 +692,7 @@ class TaxaForm extends React.Component<{}, {
         }
 
         const handleNumberChange = (val:number) => { this.addCount = val; }
+        const ensureCountHasValue = () => { if(this.addCount === null) { this.addCount = 1; } }
  
         return (<div>
             <TaxaScore foundTaxa={ Array.from(this.state.found.values()) } />
@@ -712,6 +714,7 @@ class TaxaForm extends React.Component<{}, {
                     onChange={handleNumberChange}
                     onKeyUp={setButtonText}
                     onKeyDown={setButtonText}
+                    onBlur={ensureCountHasValue}
                 />
                 <input type='submit' value={this.state.buttonText} />
             </form>
