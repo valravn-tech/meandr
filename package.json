@@ -26,5 +26,11 @@
     "immer": "^1.10.5",
     "typesafe-actions": "^3.0.0",
     "typescript": "^3.2.4"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

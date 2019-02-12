@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as NumericInput from 'react-numeric-input';
-import { allTaxa, Taxa, TaxaCode } from './alltaxa';
+import { allTaxa, Taxa, TaxaCode as TaxonCode } from './alltaxa';
 import {
     ScoreAwic,
     ScoreBmwp,
@@ -34,13 +34,13 @@ const zeroScoreCount:ScoreCount = {count:0, score:0};
 interface ScoringTaxon {
     count: number,
     info:  ScoreInfo,
-    code:  TaxaCode,
+    code:  TaxonCode,
     // children: ScoringTaxon[],
 }
 
 interface FoundTaxon {
     count:number,
-    code: TaxaCode,
+    code: TaxonCode,
 }
 
 
@@ -54,7 +54,7 @@ const cmp = <T extends {}>(a:T, b:T) => (
 type TaxonLvl = 'major_group' | 'family' | 'genus' | 'species';
 
 // NOTE: these strings can be used as keys for the object values in allTaxa (as shown below)
-const maybeTaxonLevel = (taxon: TaxaCode): TaxonLvl | undefined => (
+const maybeTaxonLevel = (taxon: TaxonCode): TaxonLvl | undefined => (
     (taxon.length === 8) ? 
         (taxon[6] !== '0' || taxon[7] !== '0') ? 'species'     :
         (taxon[4] !== '0' || taxon[5] !== '0') ? 'genus'       :
@@ -63,14 +63,14 @@ const maybeTaxonLevel = (taxon: TaxaCode): TaxonLvl | undefined => (
         undefined
     : undefined
 )
-const taxonLevel = (taxon: TaxaCode): TaxonLvl => ( maybeTaxonLevel(taxon) as TaxonLvl ) 
-const taxonKeyName = (taxon: TaxaCode): string => {
+const taxonLevel = (taxon: TaxonCode): TaxonLvl => ( maybeTaxonLevel(taxon) as TaxonLvl ) 
+const taxonKeyName = (taxon: TaxonCode): string => {
     const type = taxonLevel(taxon);
     const tx: Taxa =  allTaxa.get(taxon) as Taxa;
     return tx[type];
 }
 
-const taxonFullName = (taxon: TaxaCode): string => {
+const taxonFullName = (taxon: TaxonCode): string => {
     const lvl = taxonLevel(taxon);
     const tx = allTaxa.get(taxon) as Taxa;
     return (
@@ -81,7 +81,7 @@ const taxonFullName = (taxon: TaxaCode): string => {
     );
 }
 
-const taxonGetCodeForLevel = (taxon: TaxaCode, lvl: TaxonLvl) => {
+const taxonGetCodeForLevel = (taxon: TaxonCode, lvl: TaxonLvl) => {
     const offset = (
         lvl === 'species'     ? 8 :
         lvl === 'genus'       ? 6 :
@@ -106,7 +106,7 @@ const taxonGetCodeForLevel = (taxon: TaxaCode, lvl: TaxonLvl) => {
     {   return undefined;   }
 }
 
-const TaxonName: React.SFC<{ taxonCode: TaxaCode }> = (props) => {
+const TaxonName: React.SFC<{ taxonCode: TaxonCode }> = (props) => {
     const lvl = taxonLevel(props.taxonCode)
     const tx = allTaxa.get(props.taxonCode) as Taxa;
     return <span>{
@@ -117,10 +117,9 @@ const TaxonName: React.SFC<{ taxonCode: TaxaCode }> = (props) => {
     }</span>
 }
 
-const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: TaxaCode[], taxaFound: FoundTaxon[], iSelect: number }> = (props) => {
-    const listTaxon = (code:TaxaCode, selected:boolean) => {
-        // TODO: refactor this with code as key
-        const taxonMatch = props.taxaFound.find((tx) => tx.code === code);
+const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: TaxonCode[], taxaFound: Map<TaxonCode, FoundTaxon>, iSelect: number }> = (props) => {
+    const listTaxon = (code:TaxonCode, selected:boolean) => {
+        const taxonMatch = props.taxaFound.get(code);
         const taxonCount = taxonMatch ? taxonMatch.count : 0;
         const style:React.CSSProperties | undefined = (selected)
             ? { backgroundColor:'#226', color:'white', fontWeight:'bold' }
@@ -135,7 +134,7 @@ const TaxaAutocompleteOptions: React.SFC<{ taxaMatching: TaxaCode[], taxaFound: 
         return result;
     };
 
-    const listTaxa = (taxa: TaxaCode[]) =>
+    const listTaxa = (taxa: TaxonCode[]) =>
     (   taxa.map(taxon => listTaxon(taxon, false))   );
 
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
@@ -190,7 +189,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:number) => void
 
 
 // tslint:disable-next-line:one-variable-per-declaration
-const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], setCount: (count:number, i:number) => void }> = (props) => (
+const TaxaFoundList: React.SFC<{foundTaxa: Map<TaxonCode, FoundTaxon>, setCount: (count:number, code:TaxonCode) => void }> = (props) => (
     <table>
         <thead>
             <tr>
@@ -209,9 +208,9 @@ const TaxaFoundList: React.SFC<{foundTaxa:FoundTaxon[], setCount: (count:number,
         </thead>
         <tbody>
             {
-                props.foundTaxa.map((taxon, i) => {
-                    const setIndex = (count: number) => (props.setCount(count, i));
-                    return <TaxonFound key={i} taxon={taxon} setCount={setIndex} />;
+                Array.from(props.foundTaxa.values()) .map((taxon) => {
+                    const setIndex = (count: number) => (props.setCount(count, taxon.code));
+                    return <TaxonFound key={taxon.code} taxon={taxon} setCount={setIndex} />;
                 })
             }
         </tbody>
@@ -351,7 +350,7 @@ const scoringTaxaFromFound = (foundTaxa: FoundTaxon[], scores:Map<string,ScoreIn
         const tx = taxonFromMapAtAnyLevel(taxon, scores);
         if (tx) { // taxon scores for this index
             const scoringLvl  = tx.lvl;
-            const scoringCode = taxonGetCodeForLevel(taxon.code, scoringLvl) as TaxaCode;
+            const scoringCode = taxonGetCodeForLevel(taxon.code, scoringLvl) as TaxonCode;
             const info        = tx.info;
 
             const currentInfoForTaxon = taxa.get(scoringCode);
@@ -363,7 +362,7 @@ const scoringTaxaFromFound = (foundTaxa: FoundTaxon[], scores:Map<string,ScoreIn
             taxa.set(scoringCode, scoringTaxon);
         }
         return taxa;
-    }, new Map<TaxaCode, ScoringTaxon>())
+    }, new Map<TaxonCode, ScoringTaxon>())
 
     return Array.from(scoringTaxa.values());
 }
@@ -552,9 +551,9 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => {
     )
 }
 
-const taxonCode = (taxon: string): TaxaCode | undefined => {
+const taxonCode = (taxon: string): TaxonCode | undefined => {
     const allTaxaKeys = Array.from(allTaxa.keys());
-    return allTaxaKeys.find((key: TaxaCode) => {
+    return allTaxaKeys.find((key: TaxonCode) => {
         const name = taxonKeyName(key);
         return !!name && name.toLowerCase() === taxon.toLowerCase();
     });
@@ -563,11 +562,11 @@ const taxonCode = (taxon: string): TaxaCode | undefined => {
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
     buttonText: string,
-    found: FoundTaxon[],
+    found: Map<TaxonCode, FoundTaxon>,
     iPreselect: number,
     search: string,
-    taxaAll: Set<TaxaCode>,
-    taxaMatching: TaxaCode[],
+    taxaAll: Set<TaxonCode>,
+    taxaMatching: TaxonCode[],
 }> {
     private searchBox = React.createRef<HTMLInputElement>();
     private taxonRemoveText = ['Remove Taxon', 'Remove Taxa'];
@@ -578,16 +577,16 @@ class TaxaForm extends React.Component<{}, {
     public componentWillMount() {
         this.setState({
             buttonText: this.taxonAddText[0],
-            found: [] as FoundTaxon[],
+            found: new Map(),
             iPreselect: 0,
             search: '',
-            taxaMatching: [] as TaxaCode[],
+            taxaMatching: [] as TaxonCode[],
         });
     }
 
     public componentDidMount() {
-        const taxaCodesFor = (names: string[]): TaxaCode[] => (
-            names.reduce((acc: TaxaCode[], name: string) => {
+        const taxaCodesFor = (names: string[]): TaxonCode[] => (
+            names.reduce((acc: TaxonCode[], name: string) => {
                 const code = taxonCode(name);
                 if (code)
                 {   acc.push(code)   }
@@ -618,13 +617,18 @@ class TaxaForm extends React.Component<{}, {
     }
 
     public render() {
-        const modifyFound = (newCount: number, i: number) => {
+        const modifyFound = (newCount: number, code: TaxonCode) => {
             const found = this.state.found;
-            found[i].count = newCount;
-            // TODO: do we want to auto-delete when hitting 0?
+            const tx = found.get(code);
+            if (! tx) { return; }
+            tx.count = newCount;
+
+            // TODO(ux): do we want to auto-delete when hitting 0?
             // quicker to use, but more error-prone
-            if (found[i].count === 0)
-            { found.splice(i, 1); }
+            if (tx.count === 0)
+            { found.delete(code); }
+            else
+            { found.set(code, tx); }
             this.setState({ found })
         }
 
@@ -636,15 +640,14 @@ class TaxaForm extends React.Component<{}, {
                 const code         = this.state.taxaMatching[iPreselect];
                 const shouldRemove = this.state.buttonText === this.taxonRemoveText[this.taxonTextI()];
                 const found        = this.state.found;
-                
-                const iFound  = found.findIndex((foundEl: FoundTaxon) => foundEl.code === code);
-                const isFound = iFound !== -1;
-                if (isFound) {
+
+                const tx = found.get(code);
+                if (tx) {
                     const inc = shouldRemove ? -this.addCount : this.addCount;
-                    modifyFound(this.state.found[iFound].count + inc, iFound);
+                    modifyFound(tx.count + inc, code);
                 }
-                else if (! shouldRemove) {
-                    found.push({ count: this.addCount, code });
+                else if (! shouldRemove) { // add new taxon
+                    found.set(code, { count: this.addCount, code });
                     this.setState({ found });
                 }
             }
@@ -658,7 +661,7 @@ class TaxaForm extends React.Component<{}, {
 
             const taxaMatching = (search.length)
                 ? Array.from(this.state.taxaAll) .filter(code => taxonFullName(code).toLowerCase() .includes (search.toLowerCase()))
-                    .sort((a:TaxaCode, b:TaxaCode) => cmp(taxonFullName(a), taxonFullName(b)))
+                    .sort((a:TaxonCode, b:TaxonCode) => cmp(taxonFullName(a), taxonFullName(b)))
                 : [];
 
             const iPreselect = (taxaMatching.length)
@@ -690,7 +693,7 @@ class TaxaForm extends React.Component<{}, {
         const handleNumberChange = (val:number) => { this.addCount = val; }
  
         return (<div>
-            <TaxaScore foundTaxa={this.state.found} />
+            <TaxaScore foundTaxa={ Array.from(this.state.found.values()) } />
 
             <form onSubmit={submitTaxon}>
                 <input
