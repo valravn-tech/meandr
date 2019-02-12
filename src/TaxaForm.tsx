@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as NumericInput from 'react-numeric-input';
 import { allTaxa, Taxa, TaxaCode } from './alltaxa';
 import {
     ScoreAwic,
@@ -141,54 +142,9 @@ const div0 = (dividend:number, divisor:number):number => ((divisor) ? dividend /
 
 // tslint:disable-next-line:one-variable-per-declaration
 const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:number) => void  }> = (props) => {
-    const refNFoundInput = React.createRef<HTMLInputElement>();
-
-    const setInput = (count:number) => {
-        if (refNFoundInput.current)
-        {   refNFoundInput.current.value = count.toString();   }
-    }
-    const mod = (e:any, addend:number) => {
-        const count = props.taxon.count + addend;
-        props.setCount(count);
-        setInput(count);
-    }
-    const dec = (e:any) => { mod(e, -1); }
-    const inc = (e:any) => { mod(e, +1); }
-
-    const setCountFromInput = (input: HTMLInputElement) => {
-            const count = parseInt(input.value, 10);
-            if (! isNaN(count)) { props.setCount(count); }
-    }
-
-    const filterNumbers = (e: React.KeyboardEvent) => {
-        if (! ((e.key >= '0' && e.key <= '9')
-            || e.key === 'ArrowLeft'
-            || e.key === 'Tab'
-            || e.key === 'ArrowRight'
-            || e.key === 'Backspace'
-            || e.key === 'Delete'))
-        {   e.preventDefault();   }
-    }
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        switch(e.key)
-        {
-            case 'Enter':     if (refNFoundInput.current)
-            {   setCountFromInput(refNFoundInput.current);   } break;
-            case 'ArrowUp':   inc(e);      break;
-            case 'ArrowDown': dec(e);      break;
-            default:          filterNumbers(e);
-        }
-    }
-
-    const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (refNFoundInput.current) {
-            if (refNFoundInput.current.value.length)
-            {   setCountFromInput(refNFoundInput.current);   }
-            else
-            {   setInput(props.taxon.count);    }
-        }
-    }
-
+    const handleChange = (value:number, str:string, input:any) => 
+    {   props.setCount(value);   }
+    
     const bmwp    = scoresBmwp.get(taxonKeyName(props.taxon.code));
     const whpt    = calcSingleWhpt (props.taxon);
     const psiFam  = calcSinglePsi  (props.taxon, scoresPsiFamily);
@@ -202,20 +158,10 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:number) => void
     return (
         <tr>
             <td><TaxonName taxonCode={props.taxon.code} /></td>
-            <td>
-                <input
-                    // NOTE: type='number' behaves inconsistently
-                    type='text'
-                    ref={refNFoundInput}
-                    // defaultValue={props.taxon.count.toString()}
-                    value={props.taxon.count.toString()}
-                    onKeyDown={handleKeyDown}
-                    onBlur={handleBlur}
-                />
-                <button onClick={dec}>-</button>
-                <button onClick={inc}>+</button>
-                {props.taxon.count}
-            </td>
+            <td><NumericInput
+                value={props.taxon.count}
+                onChange={handleChange}
+            /></td>
             <td>{ (bmwp)                  ? bmwp.score_orig                    : '-' }</td>
             <td>{ (whpt    !== undefined) ? whpt                               : '-' }</td>
             <td>{ (psiFam  !== undefined) ? `${psiFam.score} (${psiFam.fssr})` : '-' }</td>
@@ -613,7 +559,6 @@ class TaxaForm extends React.Component<{}, {
     private searchBox = React.createRef<HTMLInputElement>();
     private taxonRemoveText = 'Remove Taxon';
     private taxonAddText    = 'Add Taxon';
-    private taxaIdxToRemove: number[]  = [];
 
 
     public componentWillMount() {
@@ -659,16 +604,6 @@ class TaxaForm extends React.Component<{}, {
     }
 
     public render() {
-        // This feels like an awkward place to put this, is there somewhere better?
-        // or... should this be some fancy reducer/other functional concept..?
-        const taxaIdxToRemove = this.taxaIdxToRemove.slice();
-        this.taxaIdxToRemove = [];
-        taxaIdxToRemove.forEach((taxaIdx) => {
-            const found = this.state.found;
-            found.splice(taxaIdx, 1);
-            this.setState({ found });
-        });
-
         return (
             <div>
                 <TaxaScore foundTaxa={this.state.found} />
@@ -703,7 +638,10 @@ class TaxaForm extends React.Component<{}, {
     private modifyFound = (newCount: number, i: number) => {
         const found = this.state.found;
         found[i].count = newCount;
-        if (found[i].count === 0) { this.taxaIdxToRemove.push(i); }
+        // TODO: do we want to auto-delete when hitting 0?
+        // quicker to use, but more error-prone
+        if (found[i].count === 0)
+        { found.splice(i, 1); }
         this.setState({ found })
     }
 
