@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as NumericInput from 'react-numeric-input';
-import { allTaxa, Taxa, TaxaCode as TaxonCode } from './alltaxa';
+import { allTaxa, Taxa, TaxonCode as TaxonCode } from './alltaxa';
 import {
     ScoreAwic,
     ScoreBmwp,
