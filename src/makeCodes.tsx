@@ -1518,6 +1518,114 @@ const cci = [
 	{ species:"exoleta",               major_group:"Diptera",       family:"Muscidae",                             genus:"Phaonia",                score:8  },
 ];
 
+
+const dehli = [
+	{ taxon:"Heptageniidae",     by:"family", score:0,  group:1 },
+	{ taxon:"Ameletidae",        by:"family", score:10, group:1 },
+	{ taxon:"Perlidae",          by:"family", score:10, group:1 },
+	{ taxon:"Chloroperlidae",    by:"family", score:10, group:1 },
+	{ taxon:"Brachyptera",       by:"genus",  score:9,  group:1 },
+	{ taxon:"Rhabdiopteryx",     by:"genus",  score:9,  group:1 },
+	{ taxon:"Philopotamus",      by:"genus",  score:10, group:1 },
+	{ taxon:"Wormaldia",         by:"genus",  score:10, group:1 },
+	{ taxon:"Rhyacophilidae",    by:"family", score:10, group:1 },
+	{ taxon:"Odontoceridae",     by:"family", score:9,  group:1 },
+	{ taxon:"Hydrobiidae",       by:"family", score:7,  group:2 },
+	{ taxon:"Bithyniidae",       by:"family", score:7,  group:2 },
+	{ taxon:"Valvatidae",        by:"family", score:7,  group:2 },
+	{ taxon:"Platycnemididae",   by:"family", score:7,  group:2 },
+	{ taxon:"Lestidae",          by:"family", score:7,  group:2 },
+	{ taxon:"Calopterygidae",    by:"family", score:7,  group:2 },
+	{ taxon:"Aeshnidae",         by:"family", score:7,  group:2 },
+	{ taxon:"Nepidae",           by:"family", score:7,  group:2 },
+	{ taxon:"Hydraenidae",       by:"family", score:7,  group:2 },
+	{ taxon:"Phryganeidae",      by:"family", score:7,  group:2 },
+	{ taxon:"Beraeidae",         by:"family", score:7,  group:2 },
+	{ taxon:"Pyralidae",         by:"family", score:7,  group:2 },
+	{ taxon:"Thaumaleidae",      by:"family", score:8,  group:2 },
+	{ taxon:"Dixidae",           by:"family", score:8,  group:2 },  // Primarily Dixella spp.
+	{ taxon:"Gammaridae",        by:"family", score:6,  group:3 },
+	{ taxon:"Baetis",            by:"genus",  score:7,  group:3 },
+	{ taxon:"Paraleptophlebia",  by:"genus",  score:6,  group:3 },
+	{ taxon:"Perlodidae",        by:"family", score:7,  group:3 },
+	{ taxon:"Protonemura",       by:"genus",  score:7,  group:3 },
+	{ taxon:"Amphinemura",       by:"genus",  score:7,  group:3 },
+	{ taxon:"Nemurella",         by:"genus",  score:7,  group:3 },
+	{ taxon:"Taeniopteryx",      by:"genus",  score:6,  group:3 },
+	{ taxon:"Leuctridae",        by:"family", score:7,  group:3 },
+	{ taxon:"Aphelocheiridae",   by:"family", score:7,  group:3 },
+	{ taxon:"Elodes",            by:"genus",  score:6,  group:3 },
+	{ taxon:"Brachycentridae",   by:"family", score:6,  group:3 },
+	{ taxon:"Lepidostomatidae",  by:"family", score:7,  group:3 },
+	{ taxon:"Glossosomatidae",   by:"family", score:7,  group:3 },
+	{ taxon:"Chimarra",          by:"genus",  score:6,  group:3 },
+	{ taxon:"Hydropsychidae",    by:"family", score:5,  group:3 },
+	{ taxon:"Leptoceridae",      by:"family", score:5,  group:3 },
+	{ taxon:"Polycentropodidae", by:"family", score:6,  group:3 },
+	{ taxon:"Goeridae",          by:"family", score:8,  group:3 },
+	{ taxon:"Sericostomatidae",  by:"family", score:7,  group:3 },
+	{ taxon:"Simuliidae",        by:"family", score:6,  group:3 },
+	{ taxon:"Pediciidae",        by:"family", score:7,  group:3 },
+	{ taxon:"Empididae",         by:"family", score:6,  group:3 },
+	{ taxon:"Stratiomyidae",     by:"family", score:7,  group:3 },
+	{ taxon:"Muscidae",          by:"family", score:5,  group:3 },
+	{ taxon:"Unionidae",         by:"family", score:6,  group:4 },
+	{ taxon:"Coenagrionidae",    by:"family", score:5,  group:4 },
+	{ taxon:"Corduliidae",       by:"family", score:4,  group:4 },
+	{ taxon:"Libellulidae",      by:"family", score:4,  group:4 },
+	{ taxon:"Gomphidae",         by:"family", score:5,  group:4 },
+	{ taxon:"Siphlonuridae",     by:"family", score:5,  group:4 },
+	{ taxon:"Ephemeridae",       by:"family", score:5,  group:4 },
+	{ taxon:"Cloeon",            by:"genus",  score:4,  group:4 },
+	{ taxon:"Caenidae",          by:"family", score:5,  group:4 },
+	{ taxon:"Leptophlebia",      by:"genus",  score:5,  group:6 },
+	{ taxon:"Habrophlebia",      by:"genus",  score:5,  group:6 },
+	{ taxon:"Nemoura",           by:"genus",  score:6,  group:4 },
+	{ taxon:"Sialidae",          by:"family", score:5,  group:4 },
+	{ taxon:"Sisyridae",         by:"family", score:6,  group:4 },
+	{ taxon:"Elmidae",           by:"family", score:5,  group:4 },
+	{ taxon:"Hydrochidae",       by:"family", score:5,  group:4 },
+	{ taxon:"Helophoridae",      by:"family", score:3,  group:4 },
+	{ taxon:"Ecnomidae",         by:"family", score:4,  group:4 },
+	{ taxon:"Molannidae",        by:"family", score:5,  group:4 },
+	{ taxon:"Tanypodinae",       by:"family", score:5,  group:4 },
+	{ taxon:"Orthocladiinae",    by:"family", score:5,  group:4 },
+	{ taxon:"Limoniidae",        by:"family", score:5,  group:4 },
+	{ taxon:"Tipulidae",         by:"family", score:4,  group:4 },
+	{ taxon:"Ptychopteridae",    by:"family", score:5,  group:4 },
+	{ taxon:"Dolichopodidae",    by:"family", score:5,  group:4 },
+	{ taxon:"Psychodidae",       by:"family", score:4,  group:4 },
+	{ taxon:"Tabanidae",         by:"family", score:4,  group:4 },
+	{ taxon:"Rhagionidae",       by:"family", score:5,  group:4 },
+	{ taxon:"Athericidae",       by:"family", score:5,  group:4 },
+	{ taxon:"Planariidae",       by:"family", score:3,  group:5 },
+	{ taxon:"Dugesiidae",        by:"family", score:3,  group:5 },
+	{ taxon:"Lymnaeidae",        by:"family", score:2,  group:5 },
+	{ taxon:"Physidae",          by:"family", score:3,  group:5 },
+	{ taxon:"Sphaeriidae",       by:"family", score:2,  group:5 },
+	{ taxon:"Asellidae",         by:"family", score:2,  group:5 },
+	{ taxon:"Corixidae",         by:"family", score:2,  group:5 },
+	{ taxon:"Gerridae",          by:"family", score:2,  group:5 },
+	{ taxon:"Hydrometridae",     by:"family", score:2,  group:5 },
+	{ taxon:"Notonectidae",      by:"family", score:1,  group:5 },
+	{ taxon:"Naucoridae",        by:"family", score:3,  group:5 },
+	{ taxon:"Veliidae",          by:"family", score:2,  group:5 },
+	{ taxon:"Mesoveliidae",      by:"family", score:2,  group:5 },
+	{ taxon:"Gyrinidae",         by:"family", score:2,  group:5 },  // ADULTS ONLY
+	{ taxon:"Hydrophilidae",     by:"family", score:3,  group:5 },
+	{ taxon:"Scirtidae",         by:"family", score:3,  group:5 },  // EXCLUDING Elodes
+	{ taxon:"Dytiscidae",        by:"family", score:1,  group:5 },  // Tolerates > 1 drying stage
+	{ taxon:"Ephydridae",        by:"family", score:2,  group:5 },
+	// { taxon:"Chironomini",       by:"family", score:1,  group:5 },
+	{ taxon:"Chironominae (Chironomini)", by:"family", score:1,  group:5 },
+	{ taxon:"Culicidae",         by:"family", score:1,  group:5 },
+	{ taxon:"Syrphidae",         by:"family", score:1,  group:5 },
+	{ taxon:"Ceratopogonidae",   by:"family", score:1,  group:5 },  // Tolerates > 1 drying stage
+	{ taxon:"Planorbidae",       by:"family", score:1,  group:6 },
+	{ taxon:"Dytiscidae",        by:"family", score:1,  group:6 },  // Tolerates > 1 drying stage
+	{ taxon:"Ceratopogonidae",   by:"family", score:1,  group:6 },  // Tolerates > 1 drying stage
+];
+
 const AwicCodes: React.SFC<{}> = (props) => {
 	const awicCodedTaxa: ScoringTaxonToPrint[] = awic.map((tx) => {
 		const codedTaxon = Array.from(allTaxa.entries()) .find((testTx) => {
@@ -1604,13 +1712,43 @@ const CciCodes: React.SFC<{}> = () => {
 }
 
 
+const DehliCodes: React.SFC<{}> = () => {
+	const dehliCodedTaxa: ScoringTaxonToPrint[] = dehli.map((taxon) => {
+		const tx = Array.from(allTaxa.entries()) .find((testTx) => {
+			return (testTx[1][taxon.by] === taxon.taxon ||
+					testTx[1][taxon.by].split(' ')[0] === taxon.taxon.split('_')[0]);
+		}) as [TaxonCode, Taxa]
+
+		// // TEMP, TODO: delete
+		// if (tx === undefined) {
+		// 	errs.push(taxon);
+		// 	return { code: '', codeName: '', name: '', scoreStr: '', }
+		// }
+
+		const name     = taxon.by + ': ' + taxon.taxon;
+		const info     = tx[1];
+		const codeName = `${info.major_group} ${info.family} ${info.genus} ${info.species}`;
+		const scoreStr = `score:${taxon.score}`;
+
+		return { scoreStr, name, code: tx[0], codeName };
+	})
+
+	return (<div>
+		<h2>DEHLI errors</h2>
+		{errs.map((err:any) => (<div>{err.by + ': ' + err.taxon}</div>))}
+		{printTaxa('DEHLI', dehliCodedTaxa)}
+	</div>)
+}
+
+
 
 
 
 export const NewCodes: React.SFC<{}> = () => (
 	<div>
-		<CciCodes  /> <hr />
-		<AwicCodes /> <hr />
-		<BmwpCodes /> <hr />
+		<DehliCodes /> <hr />
+		<CciCodes   /> <hr />
+		<AwicCodes  /> <hr />
+		<BmwpCodes  /> <hr />
 	</div>
 )
