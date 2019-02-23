@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './App.css';
-import { AwicCodes } from './makeCodes';
+import { NewCodes } from './makeCodes';
 import TaxaForm from './TaxaForm'
 
 class App extends React.Component {
@@ -10,7 +10,7 @@ class App extends React.Component {
         <h1 className="App-title">MEANDR</h1>
         <TaxaForm />
         <hr/>
-        <AwicCodes />
+        <NewCodes />
       </div>
     );
   }
