@@ -20,7 +20,7 @@ const printTaxa = (name:string, taxa: ScoringTaxonToPrint[]) => (
 
 		<h3>New format</h3> {
 			taxa.map((tx) => (
-				<p>{`[ "${tx.code}", { ${tx.scoreStr} } ],   // ${tx.codeName}`}</p>
+				<p key={tx.code}>{`[ "${tx.code}", { ${tx.scoreStr} } ],   // ${tx.codeName}`}</p>
 			))
 		}
 	</div>
@@ -1626,6 +1626,125 @@ const dehli = [
 	{ taxon:"Ceratopogonidae",   by:"family", score:1,  group:6 },  // Tolerates > 1 drying stage
 ];
 
+const lifeFamily = [
+	{ family:"Planariidae",        major_group:"Tricladida",    flow:"IV"  },
+	{ family:"Dugesiidae",         major_group:"Tricladida",    flow:"IV"  },
+	{ family:"Dendrocoelidae",     major_group:"Tricladida",    flow:"IV"  },
+	{ family:"Neritidae",          major_group:"Gastropoda",    flow:"II"  },
+	{ family:"Viviparidae",        major_group:"Gastropoda",    flow:"III" },
+	{ family:"Valvatidae",         major_group:"Gastropoda",    flow:"IV"  },
+	{ family:"Hydrobiidae",        major_group:"Gastropoda",    flow:"IV"  },
+	{ family:"Bithyniidae",        major_group:"Gastropoda",    flow:"IV"  },
+	{ family:"Lymnaeidae",         major_group:"Gastropoda",    flow:"IV"  },
+	{ family:"Physidae",           major_group:"Gastropoda",    flow:"IV"  },
+	{ family:"Planorbidae",        major_group:"Gastropoda",    flow:"IV"  },
+	// { family:"Ancylidae",           major_group:"Gastropoda",    flow:"II"  },
+	{ family:"Acroloxidae",        major_group:"Gastropoda",    flow:"IV"  },
+	{ family:"Margaritiferidae",   major_group:"Bivalvia",      flow:"II"  },
+	{ family:"Unionidae",          major_group:"Bivalvia",      flow:"IV"  },
+	{ family:"Sphaeriidae",        major_group:"Bivalvia",      flow:"IV"  },
+	{ family:"Dreissenidae",       major_group:"Bivalvia",      flow:"IV"  },
+	{ family:"Piscicolidae",       major_group:"Hirudinea",     flow:"II"  },
+	{ family:"Glossiphoniidae",    major_group:"Hirudinea",     flow:"IV"  },
+	// RENAME { family:"Hirudidae",          major_group:"Hirudinea",     flow:"IV"  },
+	{ family:"Hirudinidae",        major_group:"Hirudinea",     flow:"IV"  },
+	{ family:"Erpobdellidae",      major_group:"Hirudinea",     flow:"IV"  },
+	// { family:"Agelinidae",         major_group:"Araneae",       flow:"V"   },
+	// { family:"Chirocephalidae",    major_group:"Anostraca",     flow:"VI"  },
+	{ family:"Triopsidae",         major_group:"Notostraca",    flow:"VI"  },
+	// RENAME { family:"Mysidae",            major_group:"Malacostraca",  flow:"V"   },
+	{ family:"Mysidae",            major_group:"Mysidacea",     flow:"V"   },
+	// RENAME { family:"Asellidae",          major_group:"Malacostraca",  flow:"IV"  },
+	{ family:"Asellidae",          major_group:"Isopoda",       flow:"IV"  },
+	// RENAME { family:"Corophidae",         major_group:"Malacostraca",  flow:"III" },
+	{ family:"Corophiidae",        major_group:"Amphipoda",     flow:"III" },
+	// RENAME { family:"Gammaridae",         major_group:"Malacostraca",  flow:"II"  },
+	{ family:"Gammaridae",         major_group:"Amphipoda",     flow:"II"  },
+	// RENAME { family:"Crangonycitidae",    major_group:"Malacostraca",  flow:"IV"  },
+	{ family:"Crangonyctidae",     major_group:"Amphipoda",     flow:"IV"  },
+	// RENAME { family:"Talitridae",         major_group:"Malacostraca",  flow:"VI"  },
+	{ family:"Talitridae",         major_group:"Amphipoda",     flow:"VI"  },
+	// RENAME { family:"Astacidae",          major_group:"Malacostraca",  flow:"II"  },
+	{ family:"Astacidae",          major_group:"Decapoda",      flow:"II"  },
+	{ family:"Siphlonuridae",      major_group:"Ephemeroptera", flow:"IV"  },
+	{ family:"Baetidae",           major_group:"Ephemeroptera", flow:"II"  },
+	{ family:"Heptageniidae",      major_group:"Ephemeroptera", flow:"I"   },
+	{ family:"Leptophlebiidae",    major_group:"Ephemeroptera", flow:"II"  },
+	{ family:"Ephemerellidae",     major_group:"Ephemeroptera", flow:"II"  },
+	{ family:"Potamanthidae",      major_group:"Ephemeroptera", flow:"III" },
+	{ family:"Ephemeridae",        major_group:"Ephemeroptera", flow:"II"  },
+	{ family:"Caenidae",           major_group:"Ephemeroptera", flow:"IV"  },
+	// RENAME { family:"Taeniopterigidae",   major_group:"Plecoptera",    flow:"II"  },
+	{ family:"Taeniopterygidae",   major_group:"Plecoptera",    flow:"II"  },
+	{ family:"Nemouridae",         major_group:"Plecoptera",    flow:"IV"  },
+	{ family:"Leuctridae",         major_group:"Plecoptera",    flow:"II"  },
+	{ family:"Capniidae",          major_group:"Plecoptera",    flow:"I"   },
+	{ family:"Perlodidae",         major_group:"Plecoptera",    flow:"I"   },
+	{ family:"Perlidae",           major_group:"Plecoptera",    flow:"I"   },
+	{ family:"Chloroperlidae",     major_group:"Plecoptera",    flow:"I"   },
+	{ family:"Platycnemididae",    major_group:"Odonata",       flow:"IV"  },
+	// RENAME { family:"Coenagriidae",       major_group:"Odonata",       flow:"IV"  },
+	{ family:"Coenagrionidae",     major_group:"Odonata",       flow:"IV"  },
+	{ family:"Lestidae",           major_group:"Odonata",       flow:"IV"  },
+	// RENAME { family:"Agriidae",           major_group:"Odonata",       flow:"III" },
+	{ family:"Calopterygidae",     major_group:"Odonata",       flow:"III" },
+	{ family:"Gomphidae",          major_group:"Odonata",       flow:"II"  },
+	// RENAME { family:"Cordulegasteridae",  major_group:"Odonata",       flow:"II"  },
+	{ family:"Cordulegastridae",   major_group:"Odonata",       flow:"II"  },
+	{ family:"Aeshnidae",          major_group:"Odonata",       flow:"IV"  },
+	{ family:"Corduliidae",        major_group:"Odonata",       flow:"IV"  },
+	{ family:"Libellulidae",       major_group:"Odonata",       flow:"IV"  },
+	// RENAME { family:"Mesovelidae",        major_group:"Hemiptera",     flow:"V"   },
+	{ family:"Mesoveliidae",        major_group:"Hemiptera",     flow:"V"   },
+	{ family:"Hebridae",           major_group:"Hemiptera",     flow:"IV"  },
+	{ family:"Hydrometridae",      major_group:"Hemiptera",     flow:"IV"  },
+	{ family:"Veliidae",           major_group:"Hemiptera",     flow:"IV"  },
+	{ family:"Gerridae",           major_group:"Hemiptera",     flow:"IV"  },
+	{ family:"Nepidae",            major_group:"Hemiptera",     flow:"V"   },
+	{ family:"Naucoridae",         major_group:"Hemiptera",     flow:"IV"  },
+	{ family:"Aphelocheiridae",    major_group:"Hemiptera",     flow:"II"  },
+	{ family:"Notonectidae",       major_group:"Hemiptera",     flow:"IV"  },
+	{ family:"Pleidae",            major_group:"Hemiptera",     flow:"IV"  },
+	{ family:"Corixidae",          major_group:"Hemiptera",     flow:"IV"  },
+	{ family:"Haliplidae",         major_group:"Coleoptera",    flow:"IV"  },
+	// RENAME { family:"Hygrobiidae",        major_group:"Coleoptera",    flow:"V"   },
+	{ family:"Paelobiidae",        major_group:"Coleoptera",    flow:"V"   },
+	{ family:"Noteridae",          major_group:"Coleoptera",    flow:"IV"  },
+	{ family:"Dytiscidae",         major_group:"Coleoptera",    flow:"IV"  },
+	{ family:"Gyrinidae",          major_group:"Coleoptera",    flow:"IV"  },
+	{ family:"Hydrophilidae",      major_group:"Coleoptera",    flow:"IV"  },
+	{ family:"Hydraenidae",        major_group:"Coleoptera",    flow:"IV"  },
+	{ family:"Scirtidae",          major_group:"Coleoptera",    flow:"IV"  },
+	{ family:"Elmidae",            major_group:"Coleoptera",    flow:"II"  },
+	{ family:"Sialidae",           major_group:"Megaloptera",   flow:"IV"  },
+	{ family:"Osmylidae",          major_group:"Neuroptera",    flow:"II"  },
+	{ family:"Sisyridae",          major_group:"Neuroptera",    flow:"IV"  },
+	{ family:"Rhyacophilidae",     major_group:"Trichoptera",   flow:"I"   },
+	{ family:"Glossosomatidae",    major_group:"Trichoptera",   flow:"II"  },
+	{ family:"Philopotamidae",     major_group:"Trichoptera",   flow:"I"   },
+	{ family:"Polycentropodidae",  major_group:"Trichoptera",   flow:"IV"  },
+	{ family:"Psychomyiidae",      major_group:"Trichoptera",   flow:"II"  },
+	{ family:"Ecnomidae",          major_group:"Trichoptera",   flow:"III" },
+	{ family:"Hydropsychidae",     major_group:"Trichoptera",   flow:"II"  },
+	{ family:"Hydroptilidae",      major_group:"Trichoptera",   flow:"IV"  },
+	{ family:"Phryganeidae",       major_group:"Trichoptera",   flow:"IV"  },
+	{ family:"Limnephilidae",      major_group:"Trichoptera",   flow:"IV"  },
+	{ family:"Molannidae",         major_group:"Trichoptera",   flow:"IV"  },
+	{ family:"Beraeidae",          major_group:"Trichoptera",   flow:"II"  },
+	{ family:"Odontoceridae",      major_group:"Trichoptera",   flow:"I"   },
+	{ family:"Leptoceridae",       major_group:"Trichoptera",   flow:"IV"  },
+	{ family:"Goeridae",           major_group:"Trichoptera",   flow:"I"   },
+	{ family:"Lepidostomatidae",   major_group:"Trichoptera",   flow:"II"  },
+	{ family:"Brachycentridae",    major_group:"Trichoptera",   flow:"II"  },
+	{ family:"Sericostomatidae",   major_group:"Trichoptera",   flow:"II"  },
+	{ family:"Tipulidae",          major_group:"Diptera",       flow:"IV"  },
+	{ family:"Ptychopteridae",     major_group:"Diptera",       flow:"II"  },
+	{ family:"Chaoboridae",        major_group:"Diptera",       flow:"V"   },
+	{ family:"Culicidae",          major_group:"Diptera",       flow:"V"   },
+	{ family:"Simuliidae",         major_group:"Diptera",       flow:"II"  },
+	{ family:"Syrphidae",          major_group:"Diptera",       flow:"V"   },
+];
+
 const AwicCodes: React.SFC<{}> = (props) => {
 	const awicCodedTaxa: ScoringTaxonToPrint[] = awic.map((tx) => {
 		const codedTaxon = Array.from(allTaxa.entries()) .find((testTx) => {
@@ -1741,11 +1860,38 @@ const DehliCodes: React.SFC<{}> = () => {
 }
 
 
+const LifeFamCodes: React.SFC<{}> = () => {
+	const lifeCodedTaxa: ScoringTaxonToPrint[] = lifeFamily.map((taxon) => {
+		const tx = Array.from(allTaxa.entries()) .find((testTx) => {
+			return testTx[1].major_group === taxon.major_group
+				&& testTx[1].family === taxon.family;
+		}) as [TaxonCode, Taxa]
 
+		// TEMP, TODO: delete
+		if (tx === undefined) {
+			errs.push(taxon);
+			return { code: '', codeName: '', name: '', scoreStr: '', }
+		}
+
+		const name     = taxon.major_group + ' ' + taxon.family;
+		const info     = tx[1];
+		const codeName = `${info.major_group} ${info.family}`;
+		const scoreStr = `flow:${taxon.flow}`;
+
+		return { scoreStr, name, code: tx[0], codeName };
+	})
+
+	return (<div>
+		<h2>LIFE errors</h2>
+		{errs.map((err:any) => (<div>{err.major_group} {err.family}</div>))}
+		{printTaxa('LIFE (family)', lifeCodedTaxa)}
+	</div>)
+}
 
 
 export const NewCodes: React.SFC<{}> = () => (
 	<div>
+		<LifeFamCodes /> <hr />
 		<DehliCodes /> <hr />
 		<CciCodes   /> <hr />
 		<AwicCodes  /> <hr />
