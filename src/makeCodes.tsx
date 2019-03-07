@@ -2644,6 +2644,109 @@ const lifeSpecies = [
   { taxon:"Culicidae",          "by":"family",  "genus":"",                 "major_group":"Diptera",       "flow":"V"   },
 ]
 
+const psiFam = [
+	{ family:"Spongillidae",       "class_order":"Porifera",      "suborder_superfamily":"",                 "fssr":"B"},
+	{ family:"Planariidae",        "class_order":"Tricladida",    "suborder_superfamily":"",                 "fssr":"D"},
+	{ family:"Dugesiidae",         "class_order":"Tricladida",    "suborder_superfamily":"",                 "fssr":"D"},
+	{ family:"Dendrocoelidae",     "class_order":"Tricladida",    "suborder_superfamily":"",                 "fssr":"C"},
+	{ family:"Neritidae",          "class_order":"Gastropoda",    "suborder_superfamily":"Prosobranchia",    "fssr":"C"},
+	{ family:"Viviparidae",        "class_order":"Gastropoda",    "suborder_superfamily":"Prosobranchia",    "fssr":"D"},
+	{ family:"Valvatidae",         "class_order":"Gastropoda",    "suborder_superfamily":"Prosobranchia",    "fssr":"C"},
+	{ family:"Hydrobiidae",        "class_order":"Gastropoda",    "suborder_superfamily":"Prosobranchia",    "fssr":"C"},
+	{ family:"Bithyniidae",        "class_order":"Gastropoda",    "suborder_superfamily":"Prosobranchia",    "fssr":"D"},
+	{ family:"Physidae",           "class_order":"Gastropoda",    "suborder_superfamily":"Aquatic Pulmonata","fssr":"D"},
+	{ family:"Lymnaeidae",         "class_order":"Gastropoda",    "suborder_superfamily":"Aquatic Pulmonata","fssr":"D"},
+	{ family:"Planorbidae",        "class_order":"Gastropoda",    "suborder_superfamily":"Aquatic Pulmonata","fssr":"D"},
+	{ family:"Margaritiferidae",   "class_order":"Bivalvia",      "suborder_superfamily":"",                 "fssr":"A"},
+	{ family:"Unionidae",          "class_order":"Bivalvia",      "suborder_superfamily":"",                 "fssr":"D"},
+	{ family:"Sphaeriidae",        "class_order":"Bivalvia",      "suborder_superfamily":"",                 "fssr":"D"},
+	{ family:"Oligochaeta",        "class_order":"Oligochaeta",   "suborder_superfamily":"",                 "fssr":"D"},
+	{ family:"Piscicolidae",       "class_order":"Hirudinea",     "suborder_superfamily":"Rhynchobdella",    "fssr":"B"},
+	{ family:"Glossiphoniidae",    "class_order":"Hirudinea",     "suborder_superfamily":"Rhynchobdella",    "fssr":"C"},
+	{ family:"Hirudinidae",        "class_order":"Hirudinea",     "suborder_superfamily":"Gnathobdellae",    "fssr":"D"},
+	{ family:"Erpobdellidae",      "class_order":"Hirudinea",     "suborder_superfamily":"Gnathobdellae",    "fssr":"C"},
+	{ family:"Bathynellidae",      "class_order":"Bathynellacea", "suborder_superfamily":"",                 "fssr":"B"},
+	{ family:"Asellidae",          "class_order":"Isopoda",       "suborder_superfamily":"",                 "fssr":"D"},
+	{ family:"Corophiidae",        "class_order":"Amphipoda",     "suborder_superfamily":"",                 "fssr":"D"},
+	{ family:"Crangonyctidae",     "class_order":"Amphipoda",     "suborder_superfamily":"",                 "fssr":"D"},
+	{ family:"Gammaridae",         "class_order":"Amphipoda",     "suborder_superfamily":"",                 "fssr":"B"},
+	{ family:"Niphargidae",        "class_order":"Amphipoda",     "suborder_superfamily":"",                 "fssr":"B"},
+	{ family:"Siphlonuridae",      "class_order":"Ephemeroptera", "suborder_superfamily":"Baetoidea",        "fssr":"C"},
+	{ family:"Baetidae",           "class_order":"Ephemeroptera", "suborder_superfamily":"Baetoidea",        "fssr":"A"},
+	{ family:"Heptageniidae",      "class_order":"Ephemeroptera", "suborder_superfamily":"Baetoidea",        "fssr":"A"},
+	{ family:"Ameletidae",         "class_order":"Ephemeroptera", "suborder_superfamily":"Baetoidea",        "fssr":"B"},
+	{ family:"Arthropleidae",      "class_order":"Ephemeroptera", "suborder_superfamily":"Baetoidea",        "fssr":"D"},
+	{ family:"Leptophlebiidae",    "class_order":"Ephemeroptera", "suborder_superfamily":"Leptophlebioidea", "fssr":"B"},
+	{ family:"Potamanthidae",      "class_order":"Ephemeroptera", "suborder_superfamily":"Ephemeroidea",     "fssr":"B"},
+	{ family:"Ephemeridae",        "class_order":"Ephemeroptera", "suborder_superfamily":"Ephemeroidea",     "fssr":"C"},
+	{ family:"Ephemerellidae",     "class_order":"Ephemeroptera", "suborder_superfamily":"Ephemerelloidea",  "fssr":"A"},
+	{ family:"Caenidae",           "class_order":"Ephemeroptera", "suborder_superfamily":"Ephemerelloidea",  "fssr":"D"},
+	{ family:"Nemouridae",         "class_order":"Ephemeroptera", "suborder_superfamily":"Plecoptera",       "fssr":"C"},
+	{ family:"Leuctridae",         "class_order":"Ephemeroptera", "suborder_superfamily":"Plecoptera",       "fssr":"A"},
+	{ family:"Capniidae",          "class_order":"Ephemeroptera", "suborder_superfamily":"Plecoptera",       "fssr":"A"},
+	// { family:"Perlodidae",         "class_order":"Ephemeroptera", "suborder_superfamily":"Setipalpia",       "fssr":"A"},
+	// { family:"Perlidae",           "class_order":"Ephemeroptera", "suborder_superfamily":"Setipalpia",       "fssr":"A"},
+	// { family:"Chloroperlidae",     "class_order":"Ephemeroptera", "suborder_superfamily":"Setipalpia",       "fssr":"A"},
+	{ family:"Perlodidae",         "class_order":"Plecoptera",    "suborder_superfamily":"Setipalpia",       "fssr":"A"},
+	{ family:"Perlidae",           "class_order":"Plecoptera",    "suborder_superfamily":"Setipalpia",       "fssr":"A"},
+	{ family:"Chloroperlidae",     "class_order":"Plecoptera",    "suborder_superfamily":"Setipalpia",       "fssr":"A"},
+	{ family:"Platycnemididae",    "class_order":"Odonata",       "suborder_superfamily":"Zygoptera",        "fssr":"D"},
+	{ family:"Calopterygidae",     "class_order":"Odonata",       "suborder_superfamily":"Coenagrionidae",   "fssr":"C"},
+	{ family:"Gomphidae",          "class_order":"Odonata",       "suborder_superfamily":"Anisoptera",       "fssr":"D"},
+	{ family:"Cordulegastridae",   "class_order":"Odonata",       "suborder_superfamily":"Anisoptera",       "fssr":"D"},
+	{ family:"Aeshnidae",          "class_order":"Odonata",       "suborder_superfamily":"Anisoptera",       "fssr":"C"},
+	{ family:"Corduliidae",        "class_order":"Odonata",       "suborder_superfamily":"Anisoptera",       "fssr":"D"},
+	{ family:"Libellulidae",       "class_order":"Odonata",       "suborder_superfamily":"Anisoptera",       "fssr":"C"},
+	{ family:"Nepidae",            "class_order":"Hemiptera",     "suborder_superfamily":"Nepoidea",         "fssr":"D"},
+	{ family:"Aphelocheiridae",    "class_order":"Hemiptera",     "suborder_superfamily":"Naucoroidea",      "fssr":"A"},
+	{ family:"Corixidae",          "class_order":"Hemiptera",     "suborder_superfamily":"Corixoidea",       "fssr":"D"},
+	{ family:"Haliplidae",         "class_order":"Coleoptera",    "suborder_superfamily":"Adephaga",         "fssr":"D"},
+	{ family:"Paelobiidae",        "class_order":"Coleoptera",    "suborder_superfamily":"Adephaga",         "fssr":"D"},
+	{ family:"Noteridae",          "class_order":"Coleoptera",    "suborder_superfamily":"Adephaga",         "fssr":"D"},
+	{ family:"Dytiscidae",         "class_order":"Coleoptera",    "suborder_superfamily":"Adephaga",         "fssr":"D"},
+	{ family:"Hydrochidae",        "class_order":"Coleoptera",    "suborder_superfamily":"Hydrophiloidea",   "fssr":"D"},
+	{ family:"Helophoridae",       "class_order":"Coleoptera",    "suborder_superfamily":"Hydrophiloidea",   "fssr":"D"},
+	{ family:"Georissidae",        "class_order":"Coleoptera",    "suborder_superfamily":"Hydrophiloidea",   "fssr":"D"},
+	{ family:"Hydrophilidae",      "class_order":"Coleoptera",    "suborder_superfamily":"Hydrophiloidea",   "fssr":"D"},
+	{ family:"Hydraenidae",        "class_order":"Coleoptera",    "suborder_superfamily":"Staphylinoidea",   "fssr":"B"},
+	{ family:"Scirtidae",          "class_order":"Coleoptera",    "suborder_superfamily":"Eucinetoidea",     "fssr":"B"},
+	{ family:"Dryopidae",          "class_order":"Coleoptera",    "suborder_superfamily":"Dryopoidea",       "fssr":"D"},
+	{ family:"Elmidae",            "class_order":"Coleoptera",    "suborder_superfamily":"Dryopoidea",       "fssr":"B"},
+	{ family:"Limnichidae",        "class_order":"Coleoptera",    "suborder_superfamily":"Dryopoidea",       "fssr":"D"},
+	{ family:"Heteroceridae",      "class_order":"Coleoptera",    "suborder_superfamily":"Dryopoidea",       "fssr":"D"},
+	{ family:"Sialidae",           "class_order":"Megaloptera",   "suborder_superfamily":"",                 "fssr":"D"},
+	{ family:"Osmylidae",          "class_order":"Neuroptera",    "suborder_superfamily":"",                 "fssr":"B"},
+	{ family:"Sisyridae",          "class_order":"Neuroptera",    "suborder_superfamily":"",                 "fssr":"B"},
+	{ family:"Rhyacophilidae",     "class_order":"Trichoptera",   "suborder_superfamily":"Rhyacophiloidea",  "fssr":"A"},
+	{ family:"Glossosomatidae",    "class_order":"Trichoptera",   "suborder_superfamily":"Rhyacophiloidea",  "fssr":"A"},
+	{ family:"Philopotamidae",     "class_order":"Trichoptera",   "suborder_superfamily":"Hydropsychoidea",  "fssr":"A"},
+	{ family:"Psychomyiidae",      "class_order":"Trichoptera",   "suborder_superfamily":"Hydropsychoidea",  "fssr":"B"},
+	{ family:"Ecnomidae",          "class_order":"Trichoptera",   "suborder_superfamily":"Hydropsychoidea",  "fssr":"C"},
+	{ family:"Polycentropodidae",  "class_order":"Trichoptera",   "suborder_superfamily":"Hydropsychoidea",  "fssr":"B"},
+	{ family:"Hydropsychidae",     "class_order":"Trichoptera",   "suborder_superfamily":"Hydropsychoidea",  "fssr":"A"},
+	{ family:"Phryganeidae",       "class_order":"Trichoptera",   "suborder_superfamily":"Limnephiloidea",   "fssr":"D"},
+	{ family:"Brachycentridae",    "class_order":"Trichoptera",   "suborder_superfamily":"Limnephiloidea",   "fssr":"A"},
+	{ family:"Lepidostomatidae",   "class_order":"Trichoptera",   "suborder_superfamily":"Limnephiloidea",   "fssr":"B"},
+	{ family:"Limnephilidae",      "class_order":"Trichoptera",   "suborder_superfamily":"Limnephiloidea",   "fssr":"B"},
+	{ family:"Goeridae",           "class_order":"Trichoptera",   "suborder_superfamily":"Limnephiloidea",   "fssr":"A"},
+	{ family:"Beraeidae",          "class_order":"Trichoptera",   "suborder_superfamily":"Limnephiloidea",   "fssr":"A"},
+	{ family:"Sericostomatidae",   "class_order":"Trichoptera",   "suborder_superfamily":"Limnephiloidea",   "fssr":"B"},
+	{ family:"Odontoceridae",      "class_order":"Trichoptera",   "suborder_superfamily":"Limnephiloidea",   "fssr":"B"},
+	{ family:"Molannidae",         "class_order":"Trichoptera",   "suborder_superfamily":"Limnephiloidea",   "fssr":"C"},
+	{ family:"Apataniidae",        "class_order":"Trichoptera",   "suborder_superfamily":"Limnephiloidea",   "fssr":"A"},
+	{ family:"Tipulidae",          "class_order":"Diptera",       "suborder_superfamily":"Tipuloidea",       "fssr":"B"},
+	{ family:"Limoniidae",         "class_order":"Diptera",       "suborder_superfamily":"Tipuloidea",       "fssr":"B"},
+	{ family:"Pediciidae",         "class_order":"Diptera",       "suborder_superfamily":"Tipuloidea",       "fssr":"B"},
+	{ family:"Psychodidae",        "class_order":"Diptera",       "suborder_superfamily":"Psychodoidea",     "fssr":"D"},
+	{ family:"Ptychopteridae",     "class_order":"Diptera",       "suborder_superfamily":"Psychodoidea",     "fssr":"D"},
+	{ family:"Dixidae",            "class_order":"Diptera",       "suborder_superfamily":"Culicoidea",       "fssr":"B"},
+	{ family:"Simuliidae",         "class_order":"Diptera",       "suborder_superfamily":"Culicoidea",       "fssr":"A"},
+	{ family:"Stratiomyidae",      "class_order":"Diptera",       "suborder_superfamily":"Culicoidea",       "fssr":"C"},
+	{ family:"Rhagionidae",        "class_order":"Diptera",       "suborder_superfamily":"Culicoidea",       "fssr":"D"},
+	{ family:"Tabanidae",          "class_order":"Diptera",       "suborder_superfamily":"Culicoidea",       "fssr":"D"},
+	{ family:"Syrphidae",          "class_order":"Diptera",       "suborder_superfamily":"Culicoidea",       "fssr":"D"},
+]
+
 const AwicCodes: React.SFC<{}> = (props) => {
 	const awicCodedTaxa: ScoringTaxonToPrint[] = awic.map((tx) => {
 		const codedTaxon = Array.from(allTaxa.entries()) .find((testTx) => {
@@ -2698,9 +2801,10 @@ const BmwpCodes: React.SFC<{}> = () => {
 }
 
 
-const errs:any = [];
+let hasErrs:boolean = false;
 
 const CciCodes: React.SFC<{}> = () => {
+	const errs:any = [];
 	const cciCodedTaxa: ScoringTaxonToPrint[] = cci.map((taxon) => {
 		const tx = Array.from(allTaxa.entries()) .find((testTx) => {
 			return (testTx[1].genus === taxon.genus
@@ -2708,11 +2812,12 @@ const CciCodes: React.SFC<{}> = () => {
 				&& testTx[1].species === taxon.species;
 		}) as [TaxonCode, Taxa]
 
-		// // TEMP, TODO: delete
-		// if (tx === undefined) {
-		// 	errs.push(taxon);
-		// 	return { code: '', codeName: '', name: '', scoreStr: '', }
-		// }
+		// TEMP, TODO: delete
+		if (tx === undefined) {
+			hasErrs = true;
+			errs.push(taxon);
+			return { code: '', codeName: '', name: '', scoreStr: '', }
+		}
 
 		const name     = taxon.major_group + ' ' + taxon.family + ' ' + taxon.genus + ' ' + taxon.species;
 		const info     = tx[1];
@@ -2731,17 +2836,19 @@ const CciCodes: React.SFC<{}> = () => {
 
 
 const DehliCodes: React.SFC<{}> = () => {
+	const errs:any = [];
 	const dehliCodedTaxa: ScoringTaxonToPrint[] = dehli.map((taxon) => {
 		const tx = Array.from(allTaxa.entries()) .find((testTx) => {
 			return (testTx[1][taxon.by] === taxon.taxon ||
 					testTx[1][taxon.by].split(' ')[0] === taxon.taxon.split('_')[0]);
 		}) as [TaxonCode, Taxa]
 
-		// // TEMP, TODO: delete
-		// if (tx === undefined) {
-		// 	errs.push(taxon);
-		// 	return { code: '', codeName: '', name: '', scoreStr: '', }
-		// }
+		// TEMP, TODO: delete
+		if (tx === undefined) {
+			hasErrs = true;
+			errs.push(taxon);
+			return { code: '', codeName: '', name: '', scoreStr: '', }
+		}
 
 		const name     = taxon.by + ': ' + taxon.taxon;
 		const info     = tx[1];
@@ -2760,17 +2867,19 @@ const DehliCodes: React.SFC<{}> = () => {
 
 
 const LifeFamCodes: React.SFC<{}> = () => {
+	const errs:any = [];
 	const lifeCodedTaxa: ScoringTaxonToPrint[] = lifeFamily.map((taxon) => {
 		const tx = Array.from(allTaxa.entries()) .find((testTx) => {
 			return testTx[1].major_group === taxon.major_group
 				&& testTx[1].family === taxon.family;
 		}) as [TaxonCode, Taxa]
 
-		// // TEMP, TODO: delete
-		// if (tx === undefined) {
-		// 	errs.push(taxon);
-		// 	return { code: '', codeName: '', name: '', scoreStr: '', }
-		// }
+		// TEMP, TODO: delete
+		if (tx === undefined) {
+			hasErrs = true;
+			errs.push(taxon);
+			return { code: '', codeName: '', name: '', scoreStr: '', }
+		}
 
 		const name     = taxon.major_group + ' ' + taxon.family;
 		const info     = tx[1];
@@ -2788,6 +2897,7 @@ const LifeFamCodes: React.SFC<{}> = () => {
 }
 
 const LifeSpcCodes: React.SFC<{}> = () => {
+	const errs:any = [];
 	const lifeCodedTaxa: ScoringTaxonToPrint[] = lifeSpecies.map((taxon) => {
 		const tx = Array.from(allTaxa.entries()) .find((testTx) => {
 			return testTx[1][taxon.by] === taxon.taxon
@@ -2797,6 +2907,7 @@ const LifeSpcCodes: React.SFC<{}> = () => {
 
 		// TEMP, TODO: delete
 		if (tx === undefined) {
+			hasErrs = true;
 			errs.push(taxon);
 			return { code: '', codeName: '', name: '', scoreStr: '', }
 		}
@@ -2816,14 +2927,49 @@ const LifeSpcCodes: React.SFC<{}> = () => {
 	</div>)
 }
 
+const PsiFamCodes: React.SFC<{}> = () => {
+	const errs:any = [];
+	const psiCodedTaxa: ScoringTaxonToPrint[] = psiFam.map((taxon) => {
+		const tx = Array.from(allTaxa.entries()) .find((testTx) => {
+			return (testTx[1].major_group === taxon.class_order
+				||  testTx[1].major_group === taxon.suborder_superfamily
+				||  taxon.class_order === taxon.family)
+				&& (testTx[1].family === taxon.family
+				||  testTx[1].major_group === taxon.family);
+		}) as [TaxonCode, Taxa]
+
+		// TEMP, TODO: delete
+		if (tx === undefined) {
+			hasErrs = true;
+			errs.push(taxon);
+			return { code: '', codeName: '', name: '', scoreStr: '', }
+		}
+
+		const name     = taxon.class_order + ' ' + taxon.suborder_superfamily + ' ' + taxon.family;
+		const info     = tx[1];
+		const codeName = `${info.major_group} ${info.family}`;
+		const scoreStr = `flow:${taxon.fssr}`;
+
+		return { scoreStr, name, code: tx[0], codeName };
+	})
+
+	return (<div>
+		<h2>PSI errors</h2>
+		{errs.map((err:any) => (<div>{err.class_order} {err.suborder_superfamily} {err.family}</div>))}
+		{printTaxa('PSI (family)', psiCodedTaxa)}
+	</div>)
+}
+
 
 export const NewCodes: React.SFC<{}> = () => (
 	<div>
+		{hasErrs && <h2>Errors</h2>}
+		<PsiFamCodes  /> <hr />
 		<LifeSpcCodes /> <hr />
 		<LifeFamCodes /> <hr />
 		<DehliCodes /> <hr />
 		<CciCodes   /> <hr />
-		<AwicCodes  /> <hr />
 		<BmwpCodes  /> <hr />
+		<AwicCodes  /> <hr />
 	</div>
 )
