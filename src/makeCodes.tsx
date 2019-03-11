@@ -18,11 +18,14 @@ const printTaxa = (name:string, taxa: ScoringTaxonToPrint[]) => (
 			})
 		}
 
-		<h3>New format</h3> {
+		<h3>New format for {name}</h3>
+		<p>const {name} = new Map(</p>
+		{
 			taxa.map((tx) => (
 				<p key={tx.code}>{`[ "${tx.code}", { ${tx.scoreStr} } ],   // ${tx.codeName}`}</p>
 			))
 		}
+		<p>)</p>
 	</div>
 )
 
@@ -1638,7 +1641,7 @@ const lifeFamily = [
 	{ family:"Lymnaeidae",         major_group:"Gastropoda",    flow:"IV"  },
 	{ family:"Physidae",           major_group:"Gastropoda",    flow:"IV"  },
 	{ family:"Planorbidae",        major_group:"Gastropoda",    flow:"IV"  },
-	// { family:"Ancylidae",           major_group:"Gastropoda",    flow:"II"  },
+	// CANT FIND { family:"Ancylidae",           major_group:"Gastropoda",    flow:"II"  },
 	{ family:"Acroloxidae",        major_group:"Gastropoda",    flow:"IV"  },
 	{ family:"Margaritiferidae",   major_group:"Bivalvia",      flow:"II"  },
 	{ family:"Unionidae",          major_group:"Bivalvia",      flow:"IV"  },
@@ -1707,6 +1710,7 @@ const lifeFamily = [
 	{ family:"Pleidae",            major_group:"Hemiptera",     flow:"IV"  },
 	{ family:"Corixidae",          major_group:"Hemiptera",     flow:"IV"  },
 	{ family:"Haliplidae",         major_group:"Coleoptera",    flow:"IV"  },
+	// https://en.wikipedia.org/wiki/Hygrobia
 	// RENAME { family:"Hygrobiidae",        major_group:"Coleoptera",    flow:"V"   },
 	{ family:"Paelobiidae",        major_group:"Coleoptera",    flow:"V"   },
 	{ family:"Noteridae",          major_group:"Coleoptera",    flow:"IV"  },
@@ -3682,6 +3686,120 @@ const psiSpecies = [
 	{ species:"Eristalis",          "by":"genus",   "family":"Syrphidae",         "fssr":"D" },
 ]
 
+const whpt = [
+	{ family:"Planariidae",       "score_presence": 4.9,  "scores": [4.7,  5.4,  5.4,  5.4 ] },
+	{ family:"Dugesiidae",        "score_presence": 2.9,  "scores": [2.8,  3.1,  3.1,  3.1 ] },
+	{ family:"Dendrocoelidae",    "score_presence": 3,    "scores": [3,    2.6,  2.6,  2.6 ] },
+	{ family:"Neritidae",         "score_presence": 6.4,  "scores": [6.4,  6.5,  6.9,  6.9 ] },
+	{ family:"Viviparidae",       "score_presence": 5.7,  "scores": [5.2,  6.7,  6.7,  6.7 ] },
+	{ family:"Valvatidae",        "score_presence": 3.2,  "scores": [3.3,  3.1,  2.7,  2.7 ] },
+	{ family:"Hydrobiidae",       "score_presence": 4.2,  "scores": [4.1,  4.2,  4.6,  3.7 ] },
+	{ family:"Bithyniidae",       "score_presence": 3.7,  "scores": [3.6,  3.8,  3.3,  3.3 ] },
+	{ family:"Physidae",          "score_presence": 2.4,  "scores": [2.7,  2,    0.4,  0.4 ] },
+	{ family:"Lymnaeidae",        "score_presence": 3.3,  "scores": [3.6,  2.5,  1.2,  1.2 ] },
+	{ family:"Planorbidae",       "score_presence": 3.1,  "scores": [3.2,  3,    2.4,  2.4 ] },
+	// CANT FIND { family:"Ancylidae",         "score_presence": 5.7,  "scores": [5.8,  5.5,  5.5,  5.5 ] },
+	{ family:"Acroloxidae",       "score_presence": 3.6,  "scores": [3.6,  3.8,  3.8,  3.8 ] },
+	{ family:"Unionidae",         "score_presence": 5.3,  "scores": [5.2,  6.8,  6.8,  6.8 ] },
+	{ family:"Sphaeriidae",       "score_presence": 3.9,  "scores": [4.4,  3.5,  3.4,  2.3 ] },
+	{ family:"Dreissenidae",      "score_presence": 3.7,  "scores": [3.7,  3.7,  3.7,  3.7 ] },
+	{ family:"Oligochaeta",       "score_presence": 2.7,  "scores": [3.6,  2.3,  1.4,  -0.6] },
+	{ family:"Piscicolidae",      "score_presence": 5.2,  "scores": [5.2,  4.9,  4.9,  4.9 ] },
+	{ family:"Glossiphoniidae",   "score_presence": 3.2,  "scores": [3.4,  2.5,  0.8,  0.8 ] },
+	{ family:"Hirudinidae",       "score_presence": -0.8, "scores": [-0.8, -0.8, -0.8, -0.8] },
+	{ family:"Erpobdellidae",     "score_presence": 3.1,  "scores": [3.6,  2,    -0.8, -0.8] },
+	{ family:"Astacidae",         "score_presence": 7.9,  "scores": [7.9,  7.9,  7.9,  7.9 ] },
+	{ family:"Asellidae",         "score_presence": 2.8,  "scores": [4,    2.3,  0.8,  -1.6] },
+	{ family:"Corophiidae",       "score_presence": 5.8,  "scores": [5.7,  5.8,  5.8,  5.8 ] },
+	{ family:"Crangonyctidae",    "score_presence": 3.9,  "scores": [3.8,  4,    3.6,  3.6 ] },
+	{ family:"Gammaridae",        "score_presence": 4.4,  "scores": [4.2,  4.5,  4.6,  3.9 ] },
+	{ family:"Niphargidae",       "score_presence": 6.3,  "scores": [6.3,  6.3,  6.3,  6.3 ] },
+	{ family:"Siphlonuridae",     "score_presence": 11.5, "scores": [11.3, 12.2, 12.2, 12.2] },
+	{ family:"Baetidae",          "score_presence": 5.5,  "scores": [3.6,  5.9,  7.2,  7.5 ] },
+	{ family:"Heptageniidae",     "score_presence": 9.7,  "scores": [8.5,  10.3, 11.1, 11.1] },
+	{ family:"Leptophlebiidae",   "score_presence": 8.8,  "scores": [8.8,  9.1,  9.2,  9.2 ] },
+	{ family:"Potamanthidae",     "score_presence": 10,   "scores": [9.8,  10.4, 10.4, 10.4] },
+	{ family:"Ephemeridae",       "score_presence": 8.4,  "scores": [8.3,  8.8,  9.4,  9.4 ] },
+	{ family:"Ephemerellidae",    "score_presence": 8.2,  "scores": [7.9,  8.5,  9,    9   ] },
+	{ family:"Caenidae",          "score_presence": 6.5,  "scores": [6.5,  6.5,  6.5,  6.5 ] },
+	{ family:"Taeniopterygidae",  "score_presence": 11.3, "scores": [11,   11.9, 12.1, 12.1] },
+	{ family:"Nemouridae",        "score_presence": 9.3,  "scores": [8.7,  10.7, 10.7, 10.7] },
+	{ family:"Leuctridae",        "score_presence": 10,   "scores": [9.3,  10.6, 10.6, 10.6] },
+	{ family:"Capniidae",         "score_presence": 9.6,  "scores": [9.7,  9.4,  9.4,  9.4 ] },
+	{ family:"Perlodidae",        "score_presence": 10.8, "scores": [10.5, 11.5, 11.5, 11.5] },
+	{ family:"Perlidae",          "score_presence": 12.7, "scores": [12.6, 13,   13,   13  ] },
+	{ family:"Chloroperlidae",    "score_presence": 11.6, "scores": [11.4, 12.2, 12.2, 12.2] },
+	{ family:"Platycnemididae",   "score_presence": 6,    "scores": [6,    6,    6,    6   ] },
+	// https://medusa.jcu.edu.au/Dragonflies/openset/getGenera.php?family=COENAGRIONIDAE
+	// { family:"Coenagriidae",      "score_presence": 3.5,  "scores": [3.4,  3.8,  3.8,  3.8 ] },
+	{ family:"Coenagrionidae",    "score_presence": 3.5,  "scores": [3.4,  3.8,  3.8,  3.8 ] },
+	{ family:"Calopterygidae",    "score_presence": 6,    "scores": [5.9,  6.2,  6.2,  6.2 ] },
+	// { family:"Cordulegasteridae", "score_presence": 9.8,  "scores": [9.8,  9.8,  9.8,  9.8 ] },
+	{ family:"Cordulegastridae",  "score_presence": 9.8,  "scores": [9.8,  9.8,  9.8,  9.8 ] },
+	{ family:"Aeshnidae",         "score_presence": 4.7,  "scores": [4.7,  4.7,  4.7,  4.7 ] },
+	{ family:"Libellulidae",      "score_presence": 4.1,  "scores": [4.1,  4.1,  4.1,  4.1 ] },
+	{ family:"Mesoveliidae",      "score_presence": 4.7,  "scores": [4.7,  4.7,  4.7,  4.7 ] },
+	{ family:"Hydrometridae",     "score_presence": 4.3,  "scores": [4.3,  4.3,  4.3,  4.3 ] },
+	{ family:"Veliidae",          "score_presence": 4.5,  "scores": [4.5,  3.9,  3.9,  3.9 ] },
+	{ family:"Gerridae",          "score_presence": 5.2,  "scores": [5.2,  5.5,  5.5,  5.5 ] },
+	{ family:"Nepidae",           "score_presence": 2.9,  "scores": [2.9,  2.9,  2.9,  2.9 ] },
+	{ family:"Naucoridae",        "score_presence": 3.7,  "scores": [3.7,  3.7,  3.7,  3.7 ] },
+	{ family:"Aphelocheiridae",   "score_presence": 8.5,  "scores": [8.6,  8.5,  8,    8   ] },
+	{ family:"Notonectidae",      "score_presence": 3.4,  "scores": [3.4,  3.9,  3.9,  3.9 ] },
+	{ family:"Pleidae",           "score_presence": 3.3,  "scores": [3.3,  3.3,  3.3,  3.3 ] },
+	{ family:"Corixidae",         "score_presence": 3.8,  "scores": [3.7,  3.9,  3.7,  3.7 ] },
+	{ family:"Haliplidae",        "score_presence": 3.6,  "scores": [3.6,  3.4,  3.4,  3.4 ] },
+	// https://en.wikipedia.org/wiki/Hygrobia
+	// { family:"Hygrobiidae",       "score_presence": 3.8,  "scores": [3.8,  3.8,  3.8,  3.8 ] },
+	{ family:"Paelobiidae",       "score_presence": 3.8,  "scores": [3.8,  3.8,  3.8,  3.8 ] },
+	{ family:"Noteridae",         "score_presence": 3.2,  "scores": [3.2,  3.2,  3.2,  3.2 ] },
+	{ family:"Dytiscidae",        "score_presence": 4.5,  "scores": [4.5,  4.8,  4.8,  4.8 ] },
+	{ family:"Gyrinidae",         "score_presence": 8.2,  "scores": [8.1,  9,    9,    9   ] },
+	{ family:"Hydrophilidae",     "score_presence": 6.2,  "scores": [5.8,  8.8,  8.8,  8.8 ] },
+	{ family:"Hydraenidae",       "score_presence": 8.9,  "scores": [8.5,  10.5, 10.5, 10.5] },
+	{ family:"Scirtidae",         "score_presence": 6.9,  "scores": [6.9,  6.8,  6.8,  6.8 ] },
+	{ family:"Dryopidae",         "score_presence": 6,    "scores": [6,    6,    6,    6   ] },
+	{ family:"Elmidae",           "score_presence": 6.6,  "scores": [5.3,  7.4,  8.3,  8.3 ] },
+	{ family:"Sialidae",          "score_presence": 4.3,  "scores": [4.2,  4.4,  4.4,  4.4 ] },
+	{ family:"Sisyridae",         "score_presence": 5.7,  "scores": [5.7,  5.7,  5.7,  5.7 ] },
+	{ family:"Rhyacophilidae",    "score_presence": 8.4,  "scores": [8.1,  9.2,  8.3,  8.3 ] },
+	{ family:"Glossosomatidae",   "score_presence": 7.7,  "scores": [7.8,  7.6,  7.2,  7.2 ] },
+	{ family:"Hydroptilidae",     "score_presence": 6.2,  "scores": [6.1,  6.5,  6.8,  6.8 ] },
+	{ family:"Philopotamidae",    "score_presence": 11.2, "scores": [11.2, 11.1, 11.1, 11.1] },
+	{ family:"Psychomyiidae",     "score_presence": 5.8,  "scores": [5.8,  5.7,  5.7,  5.7 ] },
+	{ family:"Polycentropodidae", "score_presence": 8.1,  "scores": [8.2,  8.1,  8.1,  8.1 ] },
+	{ family:"Hydropsychidae",    "score_presence": 6.6,  "scores": [5.8,  7.2,  7.4,  7.4 ] },
+	{ family:"Phryganeidae",      "score_presence": 5.5,  "scores": [5.5,  5.5,  5.5,  5.5 ] },
+	{ family:"Brachycentridae",   "score_presence": 9.5,  "scores": [9.6,  9.5,  8.9,  8.9 ] },
+	{ family:"Lepidostomatidae",  "score_presence": 10.1, "scores": [9.9,  10.3, 10.2, 10.2] },
+	{ family:"Limnephilidae",     "score_presence": 6.2,  "scores": [5.9,  6.9,  6.9,  6.9 ] },
+	{ family:"Goeridae",          "score_presence": 8.8,  "scores": [8.8,  8.8,  9.4,  9.4 ] },
+	{ family:"Beraeidae",         "score_presence": 8.7,  "scores": [8.8,  7.3,  7.3,  7.3 ] },
+	{ family:"Sericostomatidae",  "score_presence": 9.1,  "scores": [8.9,  9.4,  9.5,  9.5 ] },
+	{ family:"Odontoceridae",     "score_presence": 11,   "scores": [11.1, 10.3, 10.3, 10.3] },
+	{ family:"Molannidae",        "score_presence": 6.6,  "scores": [6.5,  7.6,  7.6,  7.6 ] },
+	{ family:"Leptoceridae",      "score_presence": 6.7,  "scores": [6.7,  6.9,  7.1,  7.1 ] },
+	{ family:"Tipulidae",         "score_presence": 5.9,  "scores": [5.4,  6.9,  6.9,  7.1 ] },
+	{ family:"Psychodidae",       "score_presence": 4.4,  "scores": [4.5,  3,    3,    3   ] },
+	{ family:"Ptychopteridae",    "score_presence": 6.4,  "scores": [6.4,  6.4,  6.4,  6.4 ] },
+	{ family:"Dixidae",           "score_presence": 7,    "scores": [7,    7,    7,    7   ] },
+	{ family:"Chaoboridae",       "score_presence": 3,    "scores": [3,    3,    3,    3   ] },
+	{ family:"Culicidae",         "score_presence": 2,    "scores": [2,    1.9,  1.9,  1.9 ] },
+	{ family:"Ceratopogonidae",   "score_presence": 5.5,  "scores": [5.4,  5.5,  5.5,  5.5 ] },
+	{ family:"Simuliidae",        "score_presence": 5.8,  "scores": [5.5,  6.1,  5.8,  3.9 ] },
+	{ family:"Chironomidae",      "score_presence": 1.1,  "scores": [1.2,  1.3,  -0.9, -0.9] },
+	{ family:"Stratiomyidae",     "score_presence": 3.6,  "scores": [3.6,  3.6,  3.6,  3.6 ] },
+	{ family:"Rhagionidae",       "score_presence": 9.6,  "scores": [9.6,  9.6,  9.6,  9.6 ] },
+	{ family:"Tabanidae",         "score_presence": 7.1,  "scores": [7.1,  7.3,  7.3,  7.3 ] },
+	{ family:"Athericidae",       "score_presence": 9.3,  "scores": [9.3,  9.5,  9.5,  9.5 ] },
+	{ family:"Empididae",         "score_presence": 7.1,  "scores": [7,    7.6,  7.6,  7.6 ] },
+	{ family:"Dolichopodidae",    "score_presence": 4.9,  "scores": [4.9,  4.9,  4.9,  4.9 ] },
+	{ family:"Syrphidae",         "score_presence": 1.9,  "scores": [1.9,  1.9,  1.9,  1.9 ] },
+	{ family:"Sciomyzidae",       "score_presence": 3.4,  "scores": [3.4,  3.4,  3.4,  3.4 ] },
+	{ family:"Ephydridae",        "score_presence": 4.4,  "scores": [4.4,  4.4,  4.4,  4.4 ] },
+	{ family:"Muscidae",          "score_presence": 3.9,  "scores": [4,    2.6,  2.6,  2.6 ] },
+]
+
 const AwicCodes: React.SFC<{}> = (props) => {
 	const awicCodedTaxa: ScoringTaxonToPrint[] = awic.map((tx) => {
 		const codedTaxon = Array.from(allTaxa.entries()) .find((testTx) => {
@@ -3709,7 +3827,7 @@ const AwicCodes: React.SFC<{}> = (props) => {
 		return { scoreStr, name, code: codedTaxon[0], codeName };
 	})
 
-	return printTaxa('AWIC', awicCodedTaxa);
+	return printTaxa('scoresAwic', awicCodedTaxa);
 }
 
 
@@ -3732,7 +3850,7 @@ const BmwpCodes: React.SFC<{}> = () => {
 		return { scoreStr, name, code: tx[0], codeName };
 	})
 
-	return printTaxa('BMWP', bmwpCodedTaxa);
+	return printTaxa('scoresBmwp', bmwpCodedTaxa);
 }
 
 
@@ -3764,7 +3882,7 @@ const CciCodes: React.SFC<{}> = () => {
 	return (<div>
 		<h2>CCI errors</h2>
 		{errs.map((err:any) => (<div>{err.major_group} {err.family} {err.genus} {err.species} - {err.score}</div>))}
-		{printTaxa('CCI', cciCodedTaxa)}
+		{printTaxa('scoresCci', cciCodedTaxa)}
 	</div>)
 }
 
@@ -3794,7 +3912,7 @@ const DehliCodes: React.SFC<{}> = () => {
 	return (<div>
 		<h2>DEHLI errors</h2>
 		{errs.map((err:any) => (<div>{err.by + ': ' + err.taxon}</div>))}
-		{printTaxa('DEHLI', dehliCodedTaxa)}
+		{printTaxa('scoresDehli', dehliCodedTaxa)}
 	</div>)
 }
 
@@ -3824,7 +3942,7 @@ const LifeFamCodes: React.SFC<{}> = () => {
 	return (<div>
 		<h2>LIFE errors</h2>
 		{errs.map((err:any) => (<div>{err.major_group} {err.family}</div>))}
-		{printTaxa('LIFE (family)', lifeCodedTaxa)}
+		{printTaxa('scoresLifeFamily', lifeCodedTaxa)}
 	</div>)
 }
 
@@ -3854,7 +3972,7 @@ const LifeSpcCodes: React.SFC<{}> = () => {
 	return (<div>
 		<h2>LIFE errors</h2>
 		{errs.map((err:any) => (<div>{err.major_group} {err.genus} {err.taxon}</div>))}
-		{printTaxa('LIFE (species)', lifeCodedTaxa)}
+		{printTaxa('scoresLifeSpecies', lifeCodedTaxa)}
 	</div>)
 }
 
@@ -3886,7 +4004,7 @@ const PsiFamCodes: React.SFC<{}> = () => {
 	return (<div>
 		<h2>PSI errors</h2>
 		{errs.map((err:any) => (<div>{err.class_order} {err.suborder_superfamily} {err.family}</div>))}
-		{printTaxa('PSI (family)', psiCodedTaxa)}
+		{printTaxa('scoresPsiFamily', psiCodedTaxa)}
 	</div>)
 }
 
@@ -3923,13 +4041,46 @@ const PsiSpcCodes: React.SFC<{}> = () => {
 	return (<div>
 		<h2>PSI errors</h2>
 		{errs.map((err:any) => (<div>{err.major_group} {err.genus} {err.taxon}</div>))}
-		{printTaxa('PSI (species)', psiCodedTaxa)}
+		{printTaxa('scoresPsiSpecies', psiCodedTaxa)}
+	</div>)
+}
+
+const WhptCodes: React.SFC<{}> = () => {
+	const errs:any = [];
+	const whptCodedTaxa: ScoringTaxonToPrint[] = whpt.map((taxon) => {
+		const tx = Array.from(allTaxa.entries()) .find((testTx) => {
+			return testTx[1].family === taxon.family
+				|| testTx[1].major_group === taxon.family;
+		}) as [TaxonCode, Taxa]
+
+		if (tx === undefined) {
+			hasErrs = true;
+			errs.push(taxon);
+			return { code: '', codeName: '', name: '', scoreStr: '', }
+		}
+
+		const name     = taxon.family;
+		const info     = tx[1];
+		const codeName = `${info.major_group} ${info.family} ${info.genus} ${info.species}`;
+		const scoreStr = `score_presence:${taxon.score_presence}, ` +
+						 `scores:[${taxon.scores}]`;
+
+		if(name === '') { throw new Error("invalid taxon");}
+
+		return { scoreStr, name, code: tx[0], codeName };
+	})
+
+	return (<div>
+		<h2>WHPT errors</h2>
+		{errs.map((err:any) => (<div>{err.family}</div>))}
+		{ printTaxa('scoresWhpt', whptCodedTaxa) }
 	</div>)
 }
 
 export const NewCodes: React.SFC<{}> = () => (
 	<div>
 		{hasErrs && <h2>Errors</h2>}
+		<WhptCodes    /> <hr />
 		<PsiSpcCodes  /> <hr />
 		<PsiFamCodes  /> <hr />
 		<LifeSpcCodes /> <hr />
