@@ -63,7 +63,7 @@ const maybeTaxonLevel = (taxon: TaxonCode): TaxonLvl | undefined => (
         undefined
     : undefined
 )
-const taxonLevel = (taxon: TaxonCode): TaxonLvl => ( maybeTaxonLevel(taxon) as TaxonLvl ) 
+export const taxonLevel = (taxon: TaxonCode): TaxonLvl => ( maybeTaxonLevel(taxon) as TaxonLvl ) 
 const taxonKeyName = (taxon: TaxonCode): string => {
     const type = taxonLevel(taxon);
     const tx: Taxa =  allTaxa.get(taxon) as Taxa;
