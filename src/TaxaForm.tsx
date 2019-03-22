@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as NumericInput from 'react-numeric-input';
-import { allTaxa, Taxa, TaxonCode as TaxonCode } from './alltaxa';
+import { allTaxa, Taxon, TaxonCode as TaxonCode } from './alltaxa';
 import {
     ScoreAwic,
     ScoreBmwp,
@@ -43,6 +43,10 @@ interface FoundTaxon {
     code: TaxonCode,
 }
 
+interface ScoreInfoLvl {
+    info:ScoreInfo,
+    lvl:TaxonLvl,
+}
 
 const cmp = <T extends {}>(a:T, b:T) => (
     a < b ? -1 :
@@ -64,15 +68,10 @@ const maybeTaxonLevel = (taxon: TaxonCode): TaxonLvl | undefined => (
     : undefined
 )
 export const taxonLevel = (taxon: TaxonCode): TaxonLvl => ( maybeTaxonLevel(taxon) as TaxonLvl ) 
-const taxonKeyName = (taxon: TaxonCode): string => {
-    const type = taxonLevel(taxon);
-    const tx: Taxa =  allTaxa.get(taxon) as Taxa;
-    return tx[type];
-}
 
 const taxonFullName = (taxon: TaxonCode): string => {
     const lvl = taxonLevel(taxon);
-    const tx = allTaxa.get(taxon) as Taxa;
+    const tx = allTaxa.get(taxon) as Taxon;
     return (
         lvl === 'species'     ? `${tx.major_group} ${tx.family} ${tx.genus} ${tx.species}` :
         lvl === 'genus'       ? `${tx.major_group} ${tx.family} ${tx.genus}` : 
@@ -108,7 +107,7 @@ const taxonGetCodeForLevel = (taxon: TaxonCode, lvl: TaxonLvl) => {
 
 const TaxonName: React.SFC<{ taxonCode: TaxonCode }> = (props) => {
     const lvl = taxonLevel(props.taxonCode)
-    const tx = allTaxa.get(props.taxonCode) as Taxa;
+    const tx = allTaxa.get(props.taxonCode) as Taxon;
     return <span>{
         lvl === 'species'     ? <span>{`${tx.major_group} ${tx.family}`} <em>{tx.genus} {tx.species}</em></span> :
         lvl === 'genus'       ? <span>{`${tx.major_group} ${tx.family}`} <em>{tx.genus}</em></span> : 
@@ -164,7 +163,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:number) => void
     const handleChange = (value:number, str:string, input:any) => 
     {   props.setCount(value);   }
     
-    const bmwp    = scoresBmwp.get(taxonKeyName(props.taxon.code));
+    const bmwp    = scoresBmwp.get(props.taxon.code);
     const whpt    = calcSingleWhpt (props.taxon);
     const psiFam  = calcSinglePsi  (props.taxon, scoresPsiFamily);
     const psiSpc  = calcSinglePsi  (props.taxon, scoresPsiSpecies);
@@ -233,13 +232,17 @@ const nextTaxonLevel = (lvl: TaxonLvl | undefined): TaxonLvl | undefined => (
     undefined
 )
 
-const taxonFromMapAtAnyLevel = (taxon: FoundTaxon, scores: Map<any,any>): {info:ScoreInfo, lvl:TaxonLvl} | undefined => {
-    const tx = allTaxa.get(taxon.code);
-    for(let lvl:TaxonLvl | undefined = taxonLevel(taxon.code); tx && lvl; lvl = nextTaxonLevel(lvl)) {
-        const name = tx[lvl];
-        const info = scores.get(name);
+const taxonFromMapAtAnyLevel = (taxon: FoundTaxon, scores: Map<any,any>): ScoreInfoLvl | undefined => {
+    for(let tx = taxon.code, lvl:TaxonLvl | undefined = taxonLevel(tx);
+        tx && lvl;
+        lvl = nextTaxonLevel(lvl))
+    {
+        tx = taxonGetCodeForLevel(taxon.code, lvl) as TaxonCode;
+        const info = scores.get(tx);
         if (info)
         {   return { info, lvl };    }
+        else if (lvl === 'major_group')
+        {   break;   }
     }
     return undefined;
 }
@@ -273,6 +276,7 @@ const calcSingleAwic = (foundTaxon:FoundTaxon): number | undefined => {
         : undefined;
 }
 
+// TODO: add checkboxes for different score options
 const calcSingleBmwp = (foundTaxon:FoundTaxon): number | undefined => {
     const bmwp = taxonFromMapAtAnyLevel(foundTaxon, scoresBmwp);
     return (bmwp)
@@ -459,6 +463,7 @@ const calcWhpt = (foundTaxa: FoundTaxon[]): ScoreCount => calcScore(foundTaxa, s
             : acc;
     }, zeroScoreCount);
 
+// TODO: WhptAspt
 
 // "Standard BMWP/ASPT ratings for habitat rich riffles"
 const calcLqiPartialStandard = ( bmwp:number, aspt:number ): {lqiX:number, lqiY:number} => (
@@ -559,14 +564,6 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => {
     )
 }
 
-const taxonCode = (taxon: string): TaxonCode | undefined => {
-    const allTaxaKeys = Array.from(allTaxa.keys());
-    return allTaxaKeys.find((key: TaxonCode) => {
-        const name = taxonKeyName(key);
-        return !!name && name.toLowerCase() === taxon.toLowerCase();
-    });
-}
-
 // tslint:disable-next-line:max-classes-per-file
 class TaxaForm extends React.Component<{}, {
     buttonText: string,
@@ -595,30 +592,18 @@ class TaxaForm extends React.Component<{}, {
     }
 
     public componentDidMount() {
-        const taxaCodesFor = (names: string[]): TaxonCode[] => (
-            names.reduce((acc: TaxonCode[], name: string) => {
-                const code = taxonCode(name);
-                if (code)
-                {   acc.push(code)   }
-                else
-                // tslint:disable-next-line:no-console
-                {   console.assert("Could not find code for taxon!")   }
-                return acc;
-            }, [])
-        );
-
         // This prevents non-scoring taxa from autocompleting...
         // TODO (ux): is this desired behaviour?
         const taxaAll = new Set([
-            ...taxaCodesFor(Array.from(scoresBmwp       .keys())), 
-            ...taxaCodesFor(Array.from(scoresLifeFamily .keys())),
-            ...taxaCodesFor(Array.from(scoresLifeSpecies.keys())),
-            ...taxaCodesFor(Array.from(scoresPsiFamily  .keys())),
-            ...taxaCodesFor(Array.from(scoresPsiSpecies .keys())),
-            ...taxaCodesFor(Array.from(scoresWhpt       .keys())),
-            ...taxaCodesFor(Array.from(scoresCci        .keys())),
-            ...taxaCodesFor(Array.from(scoresAwic       .keys())),
-            ...taxaCodesFor(Array.from(scoresDehli      .keys())),
+            ...Array.from(scoresBmwp       .keys()), 
+            ...Array.from(scoresLifeFamily .keys()),
+            ...Array.from(scoresLifeSpecies.keys()),
+            ...Array.from(scoresPsiFamily  .keys()),
+            ...Array.from(scoresPsiSpecies .keys()),
+            ...Array.from(scoresWhpt       .keys()),
+            ...Array.from(scoresCci        .keys()),
+            ...Array.from(scoresAwic       .keys()),
+            ...Array.from(scoresDehli      .keys()),
         ]);
         this.setState({taxaAll});
         const node = this.searchBox.current;

@@ -1,4 +1,4 @@
-export interface Taxa {
+export interface Taxon {
     major_group: string,
     family:      string,
     genus:       string,
@@ -11,7 +11,7 @@ export interface Taxa {
 export type TaxonCode = string;
 
 
-export const allTaxa: Map<TaxonCode, Taxa> = new Map([
+export const allTaxa: Map<TaxonCode, Taxon> = new Map([
 	["01000000", { "major_group":"Protozoa",         "family":"",                                                                                 "genus":"",                                            "species":""}],
 	["01100000", { "major_group":"Protozoa",         "family":"Mastigophora",                                                                     "genus":"",                                            "species":""}],
 	["01200000", { "major_group":"Protozoa",         "family":"Opalinata",                                                                        "genus":"",                                            "species":""}],
