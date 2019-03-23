@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './App.css';
-import { NewCodes } from './makeCodes';
+// import { NewCodes } from './makeCodes';
 import TaxaForm from './TaxaForm'
 
 class App extends React.Component {
@@ -9,8 +9,8 @@ class App extends React.Component {
       <div className="App">
         <h1 className="App-title">MEANDR</h1>
         <TaxaForm />
-        <hr/>
-        <NewCodes />
+        {/* <hr/> */}
+        {/* <NewCodes /> */}
       </div>
     );
   }

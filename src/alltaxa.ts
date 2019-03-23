@@ -10,6 +10,24 @@ export interface Taxon {
 // TODO: make type unique via `&` tag or extended type
 export type TaxonCode = string;
 
+export interface FoundTaxon {
+    count:number,
+    code: TaxonCode,
+}
+
+// TODO: enum?
+export type TaxonLvl = 'major_group' | 'family' | 'genus' | 'species';
+
+const maybeTaxonLevel = (taxon: TaxonCode): TaxonLvl | undefined => (
+    (taxon.length === 8) ? 
+        (taxon[6] !== '0' || taxon[7] !== '0') ? 'species'     :
+        (taxon[4] !== '0' || taxon[5] !== '0') ? 'genus'       :
+        (taxon[2] !== '0' || taxon[3] !== '0') ? 'family'      :
+        (taxon[0] !== '0' || taxon[1] !== '0') ? 'major_group' :
+        undefined
+    : undefined
+)
+export const taxonLevel = (taxon: TaxonCode): TaxonLvl => ( maybeTaxonLevel(taxon) as TaxonLvl )
 
 export const allTaxa: Map<TaxonCode, Taxon> = new Map([
 	["01000000", { "major_group":"Protozoa",         "family":"",                                                                                 "genus":"",                                            "species":""}],

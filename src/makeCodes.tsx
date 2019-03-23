@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { allTaxa, Taxon, TaxonCode } from './alltaxa'
-import { taxonLevel } from './TaxaForm'
+import { allTaxa, Taxon, TaxonCode, taxonLevel } from './alltaxa'
 
 interface ScoringTaxonToPrint {
 	code:     TaxonCode,
