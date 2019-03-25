@@ -248,9 +248,7 @@ class TaxaForm extends React.Component<{}, {
             ...Array.from(scoresDehli      .keys()),
         ]);
         this.setState({taxaAll});
-        const node = this.searchBox.current;
-        if (node)
-        {   node.focus()   }
+        this.focusTaxonSearchBox();
     }
 
     public render() {
@@ -288,6 +286,7 @@ class TaxaForm extends React.Component<{}, {
                     this.setState({ found });
                 }
             }
+            this.focusTaxonSearchBox();
         }
 
         const searchTextUpdate = (e: React.FormEvent<HTMLInputElement>) => {
@@ -373,6 +372,14 @@ class TaxaForm extends React.Component<{}, {
 
             <TaxaFoundList foundTaxa={this.state.found} setCount={modifyFound} />
         </div>);
+    }
+
+    private focusTaxonSearchBox = () => {
+        const node = this.searchBox.current;
+        if (node) {
+           node.focus()
+           node.select()
+        }
     }
 
     private taxonTextI = ():number => (+(this.addCount > 1));
