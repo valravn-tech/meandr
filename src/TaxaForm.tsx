@@ -6,7 +6,7 @@ import {
     Taxon,
     TaxonCode,
     taxonLevel
-    } from './alltaxa';
+} from './alltaxa';
 
 import {
     calcAspt,
@@ -223,9 +223,11 @@ class TaxaForm extends React.Component<{}, {
 
 
     public componentWillMount() {
+        const savedFoundStr = localStorage.getItem("foundTaxa");
+        const savedFound = savedFoundStr ? JSON.parse(savedFoundStr) : undefined;
         this.setState({
             buttonText: this.taxonAddText[0],
-            found: new Map(),
+            found: new Map(savedFound),
             iPreselect: 0,
             search: '',
             taxaMatching: [] as TaxonCode[],
@@ -260,11 +262,13 @@ class TaxaForm extends React.Component<{}, {
 
             // TODO(ux): do we want to auto-delete when hitting 0?
             // quicker to use, but more error-prone
+            // maybe only on loss of focus with 0?
             if (tx.count === 0)
             { found.delete(code); }
             else
             { found.set(code, tx); }
             this.setState({ found })
+            localStorage.setItem("foundTaxa", JSON.stringify(Array.from(found)));
         }
 
         const submitTaxon = (e:React.FormEvent<HTMLFormElement>) => {
@@ -284,6 +288,7 @@ class TaxaForm extends React.Component<{}, {
                 else if (! shouldRemove) { // add new taxon
                     found.set(code, { count: this.addCount, code });
                     this.setState({ found });
+                    localStorage.setItem("foundTaxa", JSON.stringify(Array.from(found)));
                 }
             }
             this.focusTaxonSearchBox();
@@ -332,6 +337,14 @@ class TaxaForm extends React.Component<{}, {
 
         const handleTaxonInputFocus = () => { this.setState({ taxonInputIsFocused: true  }) }
         const handleTaxonInputBlur  = () => { this.setState({ taxonInputIsFocused: false }) }
+
+        const clearTaxa = () => {
+            if(confirm("Are you sure you want to clear all taxa?")) {
+                const found = new Map<TaxonCode, FoundTaxon>();
+                this.setState({found});
+                localStorage.removeItem("foundTaxa");
+            }
+        }
  
         return (<div>
             <TaxaScore foundTaxa={ Array.from(this.state.found.values()) } />
@@ -369,6 +382,8 @@ class TaxaForm extends React.Component<{}, {
                 />
                 : <p>Start entering the name of a scoring taxon</p>
             }
+
+            <input type="submit" onClick={clearTaxa} value="Clear Taxa"/>
 
             <TaxaFoundList foundTaxa={this.state.found} setCount={modifyFound} />
         </div>);
