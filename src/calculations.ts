@@ -296,7 +296,7 @@ export const calcPsi = (foundTaxa: FoundTaxon[], scores: Map<string, ScorePsi>):
 
 export const calcWhpt = (foundTaxa: FoundTaxon[]): ScoreCount => calcScore(foundTaxa, scoresWhpt,
     (acc: ScoreCount, taxon: FoundTaxon) => {
-        const taxonScore = calcSingleBmwp({ code: taxon.code, count: taxon.count, });
+        const taxonScore = calcSingleWhpt({ code: taxon.code, count: taxon.count, });
         return (taxonScore)
             ? { score: acc.score + taxonScore, count: acc.count + 1 }
             : acc;
