@@ -14,25 +14,22 @@ import {
     calcBmwp,
     calcCci,
     calcDehli,
-    calcLife,
+    calcLifeFam,
+    calcLifeSpc,
     calcLqi,
-    calcPsi,
+    calcPsiFam,
+    calcPsiSpc,
     calcSingleAwic,
+    calcSingleBmwp,
     calcSingleCci,
     calcSingleDehli,
-    calcSingleLife,
-    calcSinglePsi,
+    calcSingleLifeFam,
+    calcSingleLifeSpc,
+    calcSinglePsiFam,
+    calcSinglePsiSpc,
     calcSingleWhpt,
     calcWhpt,
 } from './calculations'
-
-import {
-    scoresBmwp,
-    scoresLifeFamily,
-    scoresLifeSpecies,
-    scoresPsiFamily,
-    scoresPsiSpecies,
-} from './scores';
 
 const cmp = <T extends {}>(a:T, b:T) => (
     a < b ? -1 :
@@ -107,15 +104,15 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:number) => void
     const handleChange = (value:number, str:string, input:any) => 
     {   props.setCount(value);   }
     
-    const bmwp    = scoresBmwp.get(props.taxon.code);
-    const whpt    = calcSingleWhpt (props.taxon);
-    const psiFam  = calcSinglePsi  (props.taxon, scoresPsiFamily);
-    const psiSpc  = calcSinglePsi  (props.taxon, scoresPsiSpecies);
-    const cci     = calcSingleCci  (props.taxon);
-    const lifeFam = calcSingleLife (props.taxon, scoresLifeFamily);
-    const lifeSpc = calcSingleLife (props.taxon, scoresLifeSpecies);
-    const awic    = calcSingleAwic (props.taxon);
-    const dehli   = calcSingleDehli(props.taxon);
+    const bmwp    = calcSingleBmwp   (props.taxon);
+    const whpt    = calcSingleWhpt   (props.taxon);
+    const psiFam  = calcSinglePsiFam (props.taxon);
+    const psiSpc  = calcSinglePsiSpc (props.taxon);
+    const cci     = calcSingleCci    (props.taxon);
+    const lifeFam = calcSingleLifeFam(props.taxon);
+    const lifeSpc = calcSingleLifeSpc(props.taxon);
+    const awic    = calcSingleAwic   (props.taxon);
+    const dehli   = calcSingleDehli  (props.taxon);
 
     return (
         <tr>
@@ -125,7 +122,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:number) => void
                 onChange={handleChange}
             /></td>
 
-            <td>{ (bmwp)                  ? bmwp.score_orig                    : '-' }</td>
+            <td>{ (bmwp)                  ? bmwp                               : '-' }</td>
             <td>{ (whpt    !== undefined) ? whpt                               : '-' }</td>
             <td>{ (psiFam  !== undefined) ? `${psiFam.score} (${psiFam.fssr})` : '-' }</td>
             <td>{ (psiSpc  !== undefined) ? `${psiSpc.score} (${psiSpc.fssr})` : '-' }</td>
@@ -171,17 +168,17 @@ const TaxaFoundList: React.SFC<{foundTaxa: Map<TaxonCode, FoundTaxon>, setCount:
 
 
 const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => {
-    const bmwp    = calcBmwp(p.foundTaxa);
-    const aspt    = calcAspt(p.foundTaxa);
-    const lqi     = calcLqi(bmwp.score, aspt, "standard");
-    const whpt    = calcWhpt(p.foundTaxa)
-    const psiFam  = calcPsi(p.foundTaxa, scoresPsiFamily)
-    const psiSpc  = calcPsi(p.foundTaxa, scoresPsiSpecies)
-    const cci     = calcCci(p.foundTaxa)
-    const lifeFam = calcLife(p.foundTaxa, scoresLifeFamily)
-    const lifeSpc = calcLife(p.foundTaxa, scoresLifeSpecies)
-    const awic    = calcAwic(p.foundTaxa)
-    const dehli   = calcDehli(p.foundTaxa)
+    const bmwp    = calcBmwp   (p.foundTaxa);
+    const aspt    = calcAspt   (p.foundTaxa);
+    const lqi     = calcLqi    (bmwp.score, aspt, "standard");
+    const whpt    = calcWhpt   (p.foundTaxa)
+    const psiFam  = calcPsiFam (p.foundTaxa)
+    const psiSpc  = calcPsiSpc (p.foundTaxa)
+    const cci     = calcCci    (p.foundTaxa)
+    const lifeFam = calcLifeFam(p.foundTaxa)
+    const lifeSpc = calcLifeSpc(p.foundTaxa)
+    const awic    = calcAwic   (p.foundTaxa)
+    const dehli   = calcDehli  (p.foundTaxa)
     return (
         <div>
             <h2>Scores</h2>
