@@ -27,15 +27,11 @@ import {
 } from './calculations'
 
 import {
-    scoresAwic,
     scoresBmwp,
-    scoresCci,
-    scoresDehli,
     scoresLifeFamily,
     scoresLifeSpecies,
     scoresPsiFamily,
     scoresPsiSpecies,
-    scoresWhpt,
 } from './scores';
 
 const cmp = <T extends {}>(a:T, b:T) => (
@@ -213,7 +209,6 @@ class TaxaForm extends React.Component<{}, {
     iPreselect: number,
     taxonInputIsFocused: boolean,
     search: string,
-    taxaAll: Set<TaxonCode>,
     taxaMatching: TaxonCode[],
 }> {
     private searchBox = React.createRef<HTMLInputElement>();
@@ -236,20 +231,6 @@ class TaxaForm extends React.Component<{}, {
     }
 
     public componentDidMount() {
-        // This prevents non-scoring taxa from autocompleting...
-        // TODO (ux): is this desired behaviour?
-        const taxaAll = new Set([
-            ...Array.from(scoresBmwp       .keys()), 
-            ...Array.from(scoresLifeFamily .keys()),
-            ...Array.from(scoresLifeSpecies.keys()),
-            ...Array.from(scoresPsiFamily  .keys()),
-            ...Array.from(scoresPsiSpecies .keys()),
-            ...Array.from(scoresWhpt       .keys()),
-            ...Array.from(scoresCci        .keys()),
-            ...Array.from(scoresAwic       .keys()),
-            ...Array.from(scoresDehli      .keys()),
-        ]);
-        this.setState({taxaAll});
         this.focusTaxonSearchBox();
     }
 
@@ -300,8 +281,10 @@ class TaxaForm extends React.Component<{}, {
             if (search.length === 0)
             {   this.addCount = 1;   }
 
-            const taxaMatching = (search.length)
-                ? Array.from(this.state.taxaAll) .filter(code =>
+            // TODO (opt): the minimum cutoff is a quick optimisation (there's a large hang otherwise)
+            // ideally this would be fast enough to not require the cutoff
+            const taxaMatching = (search.length >= 3)
+                ? Array.from(allTaxa.keys()) .filter(code =>
                     taxonFullName(code).toLowerCase() .includes (search.toLowerCase()))
                     .sort((a:TaxonCode, b:TaxonCode) => cmp(taxonFullName(a), taxonFullName(b)))
                 : [];
