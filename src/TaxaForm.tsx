@@ -8,6 +8,8 @@ import {
     taxonLevel
 } from './alltaxa';
 
+import { connect } from 'react-redux';
+import { State } from './App';
 import {
     calcAspt,
     calcAwic,
@@ -92,9 +94,11 @@ const TaxaAutocompleteOptions: React.SFC<{
 
     return (
         <table>
-            {listTaxa(taxaBefore)}
-            {listTaxon(selectTaxon, true)}
-            {listTaxa(taxaAfter)}
+            <tbody>
+                {listTaxa(taxaBefore)}
+                {listTaxon(selectTaxon, true)}
+                {listTaxa(taxaAfter)}
+            </tbody>
         </table>
     )
 }
@@ -137,7 +141,7 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:number) => void
 
 
 // tslint:disable-next-line:one-variable-per-declaration
-const TaxaFoundList: React.SFC<{foundTaxa: Map<TaxonCode, FoundTaxon>, setCount: (count:number, code:TaxonCode) => void }> = (props) => (
+const TaxaFoundList: React.SFC<{taxaFound: Map<TaxonCode, FoundTaxon>, setCount: (count:number, code:TaxonCode) => void }> = (props) => (
     <table>
         <thead>
             <tr>
@@ -156,7 +160,7 @@ const TaxaFoundList: React.SFC<{foundTaxa: Map<TaxonCode, FoundTaxon>, setCount:
         </thead>
         <tbody>
             {
-                Array.from(props.foundTaxa.values()) .map((taxon) => {
+                Array.from(props.taxaFound.values()) .map((taxon) => {
                     const setIndex = (count: number) => (props.setCount(count, taxon.code));
                     return <TaxonFound key={taxon.code} taxon={taxon} setCount={setIndex} />;
                 })
@@ -167,18 +171,18 @@ const TaxaFoundList: React.SFC<{foundTaxa: Map<TaxonCode, FoundTaxon>, setCount:
 
 
 
-const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => {
-    const bmwp    = calcBmwp   (p.foundTaxa);
-    const aspt    = calcAspt   (p.foundTaxa);
+const TaxaScore: React.SFC<{taxaFound:FoundTaxon[]}> = (p) => {
+    const bmwp    = calcBmwp   (p.taxaFound);
+    const aspt    = calcAspt   (p.taxaFound);
     const lqi     = calcLqi    (bmwp.score, aspt, "standard");
-    const whpt    = calcWhpt   (p.foundTaxa)
-    const psiFam  = calcPsiFam (p.foundTaxa)
-    const psiSpc  = calcPsiSpc (p.foundTaxa)
-    const cci     = calcCci    (p.foundTaxa)
-    const lifeFam = calcLifeFam(p.foundTaxa)
-    const lifeSpc = calcLifeSpc(p.foundTaxa)
-    const awic    = calcAwic   (p.foundTaxa)
-    const dehli   = calcDehli  (p.foundTaxa)
+    const whpt    = calcWhpt   (p.taxaFound)
+    const psiFam  = calcPsiFam (p.taxaFound)
+    const psiSpc  = calcPsiSpc (p.taxaFound)
+    const cci     = calcCci    (p.taxaFound)
+    const lifeFam = calcLifeFam(p.taxaFound)
+    const lifeSpc = calcLifeSpc(p.taxaFound)
+    const awic    = calcAwic   (p.taxaFound)
+    const dehli   = calcDehli  (p.taxaFound)
     return (
         <div>
             <h2>Scores</h2>
@@ -199,14 +203,44 @@ const TaxaScore: React.SFC<{foundTaxa:FoundTaxon[]}> = (p) => {
     )
 }
 
+export interface TaxaFormProps {
+    taxaFound: Map<TaxonCode, FoundTaxon>,
+}
+
+
+const actionTaxonSetCount = (code:TaxonCode, newCount:number ) => ({
+    code,
+    newCount,
+    type:"TAXON_SET_COUNT",
+})
+
+const actionTaxonAdd = (code:TaxonCode, count:number ) => ({
+    code,
+    count,
+    type:"TAXON_ADD",
+})
+
+const actionTaxaClear = () => ({
+    type:"TAXA_CLEAR",
+})
+
+// const actionTaxonDelete = (code:TaxonCode) => ({
+//     code,
+//     type:"TAXON_DELETE",
+// })
+
+export const mapState = (state:State): TaxaFormProps => {
+    return { taxaFound: state.taxaFound }
+}
+
+// TODO (types): find out what type the props should be
 // tslint:disable-next-line:max-classes-per-file
-class TaxaForm extends React.Component<{}, {
-    buttonText: string,
-    found: Map<TaxonCode, FoundTaxon>,
-    iPreselect: number,
+export class TaxaForm extends React.Component<any, {
+    buttonText:          string,
+    iPreselect:          number,
     taxonInputIsFocused: boolean,
-    search: string,
-    taxaMatching: TaxonCode[],
+    search:              string,
+    taxaMatching:        TaxonCode[],
 }> {
     private searchBox = React.createRef<HTMLInputElement>();
     private taxonRemoveText = ['Remove Taxon', 'Remove Taxa'];
@@ -215,11 +249,8 @@ class TaxaForm extends React.Component<{}, {
 
 
     public componentWillMount() {
-        const savedFoundStr = localStorage.getItem("foundTaxa");
-        const savedFound = savedFoundStr ? JSON.parse(savedFoundStr) : undefined;
         this.setState({
             buttonText: this.taxonAddText[0],
-            found: new Map(savedFound),
             iPreselect: 0,
             search: '',
             taxaMatching: [] as TaxonCode[],
@@ -231,22 +262,23 @@ class TaxaForm extends React.Component<{}, {
         this.focusTaxonSearchBox();
     }
 
-    public render() {
-        const modifyFound = (newCount: number, code: TaxonCode) => {
-            const found = this.state.found;
-            const tx = found.get(code);
-            if (! tx) { return; }
-            tx.count = newCount;
-
-            // TODO(ux): do we want to auto-delete when hitting 0?
-            // quicker to use, but more error-prone
-            // maybe only on loss of focus with 0?
-            if (tx.count === 0)
-            { found.delete(code); }
+    public componentDidUpdate(prevProps:any) {
+        if (this.props.taxaFound !== prevProps.taxaFound) {
+            if (this.props.taxaFound.size)
+            {   localStorage.setItem("taxaFound", JSON.stringify(Array.from(this.props.taxaFound)));   }
             else
-            { found.set(code, tx); }
-            this.setState({ found })
-            localStorage.setItem("foundTaxa", JSON.stringify(Array.from(found)));
+            {   localStorage.removeItem("taxaFound");   }
+        }
+    }
+
+    public render() {
+        const modifyTaxonCount = (newCount: number, code: TaxonCode) => {
+            if (newCount !== null) {
+                this.props.dispatch(actionTaxonSetCount(code, newCount));
+            }
+        }
+        const addTaxon = (newCount: number, code: TaxonCode) => {
+            this.props.dispatch(actionTaxonAdd(code, newCount));
         }
 
         const submitTaxon = (e:React.FormEvent<HTMLFormElement>) => {
@@ -254,20 +286,15 @@ class TaxaForm extends React.Component<{}, {
             const iPreselect = this.state.iPreselect;
             // NOTE: avoids adding for invalid search
             if (this.state.search.length && iPreselect >= 0) {
-                const code         = this.state.taxaMatching[iPreselect];
+                const code = this.state.taxaMatching[iPreselect];
                 const shouldRemove = this.state.buttonText === this.taxonRemoveText[this.taxonTextI()];
-                const found        = this.state.found;
 
-                const tx = found.get(code);
+                const tx = this.props.taxaFound.get(code);
                 if (tx) {
                     const inc = shouldRemove ? -this.addCount : this.addCount;
-                    modifyFound(tx.count + inc, code);
+                    modifyTaxonCount(tx.count + inc, code);
                 }
-                else if (! shouldRemove) { // add new taxon
-                    found.set(code, { count: this.addCount, code });
-                    this.setState({ found });
-                    localStorage.setItem("foundTaxa", JSON.stringify(Array.from(found)));
-                }
+                else if (!shouldRemove) { addTaxon(this.addCount, code); }
             }
             this.focusTaxonSearchBox();
         }
@@ -275,15 +302,14 @@ class TaxaForm extends React.Component<{}, {
         const searchTextUpdate = (e: React.FormEvent<HTMLInputElement>) => {
             const search = e.currentTarget.value;
             // TODO (ux): is this the right trigger to reset the count?
-            if (search.length === 0)
-            {   this.addCount = 1;   }
+            if (search.length === 0) { this.addCount = 1; }
 
             // TODO (opt): the minimum cutoff is a quick optimisation (there's a large hang otherwise)
             // ideally this would be fast enough to not require the cutoff
             const taxaMatching = (search.length >= 3)
-                ? Array.from(allTaxa.keys()) .filter(code =>
-                    taxonFullName(code).toLowerCase() .includes (search.toLowerCase()))
-                    .sort((a:TaxonCode, b:TaxonCode) => cmp(taxonFullName(a), taxonFullName(b)))
+                ? Array.from(allTaxa.keys()).filter(code =>
+                    taxonFullName(code).toLowerCase().includes(search.toLowerCase()))
+                    .sort((a: TaxonCode, b: TaxonCode) => cmp(taxonFullName(a), taxonFullName(b)))
                 : [];
 
             const iPreselect = (taxaMatching.length)
@@ -293,41 +319,36 @@ class TaxaForm extends React.Component<{}, {
         }
 
         const setButtonText = (e: React.KeyboardEvent) => {
-            const buttonText:string = (e.shiftKey)
+            const buttonText: string = (e.shiftKey)
                 ? this.taxonRemoveText[this.taxonTextI()]
-                : this.taxonAddText   [this.taxonTextI()];
-            if (this.state.buttonText !== buttonText)
-            {   this.setState({buttonText});   }
+                : this.taxonAddText[this.taxonTextI()];
+            if (this.state.buttonText !== buttonText) { this.setState({ buttonText }); }
         }
 
         const changeAutoCompleteSelect = (e: React.KeyboardEvent) => {
             const iPreselect = this.state.iPreselect;
             setButtonText(e);
             switch (e.key) {
-                case "ArrowDown": if (iPreselect < this.state.taxaMatching.length - 1)
-                { this.setState({ iPreselect: iPreselect + 1 }); } break;
+                case "ArrowDown": if (iPreselect < this.state.taxaMatching.length - 1) { this.setState({ iPreselect: iPreselect + 1 }); } break;
 
-                case "ArrowUp"  : if(iPreselect > 0)
-                { this.setState({ iPreselect: iPreselect - 1 }); } break;
+                case "ArrowUp": if (iPreselect > 0) { this.setState({ iPreselect: iPreselect - 1 }); } break;
             }
         }
 
-        const handleNumberChange = (val:number) => { this.addCount = val; }
-        const ensureCountHasValue = () => { if(this.addCount === null) { this.addCount = 1; } }
+        const handleNumberChange = (val: number) => { this.addCount = val; }
+        const ensureCountHasValue = () => { if (this.addCount === null) { this.addCount = 1; } }
 
-        const handleTaxonInputFocus = () => { this.setState({ taxonInputIsFocused: true  }) }
-        const handleTaxonInputBlur  = () => { this.setState({ taxonInputIsFocused: false }) }
+        const handleTaxonInputFocus = () => { this.setState({ taxonInputIsFocused: true }) }
+        const handleTaxonInputBlur = () => { this.setState({ taxonInputIsFocused: false }) }
 
         const clearTaxa = () => {
-            if(confirm("Are you sure you want to clear all taxa?")) {
-                const found = new Map<TaxonCode, FoundTaxon>();
-                this.setState({found});
-                localStorage.removeItem("foundTaxa");
+            if (confirm("Are you sure you want to clear all taxa?")) {
+                this.props.dispatch(actionTaxaClear())
             }
         }
- 
+
         return (<div>
-            <TaxaScore foundTaxa={ Array.from(this.state.found.values()) } />
+            <TaxaScore taxaFound={Array.from(this.props.taxaFound.values())} />
 
             <form onSubmit={submitTaxon}>
                 <input
@@ -356,7 +377,7 @@ class TaxaForm extends React.Component<{}, {
             {this.state.taxaMatching.length
                 ? <TaxaAutocompleteOptions
                     taxaMatching={this.state.taxaMatching}
-                    taxaFound={this.state.found}
+                    taxaFound={this.props.taxaFound}
                     isFocused={this.state.taxonInputIsFocused}
                     iSelect={this.state.iPreselect}
                 />
@@ -365,7 +386,7 @@ class TaxaForm extends React.Component<{}, {
 
             <input type="submit" onClick={clearTaxa} value="Clear Taxa"/>
 
-            <TaxaFoundList foundTaxa={this.state.found} setCount={modifyFound} />
+            <TaxaFoundList taxaFound={this.props.taxaFound} setCount={modifyTaxonCount} />
         </div>);
     }
 
@@ -380,4 +401,4 @@ class TaxaForm extends React.Component<{}, {
     private taxonTextI = ():number => (+(this.addCount > 1));
 }
 
-export default TaxaForm
+export default connect(mapState)(TaxaForm) 
