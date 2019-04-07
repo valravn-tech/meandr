@@ -11,7 +11,8 @@ export interface Taxon {
 export type TaxonCode = string;
 
 export interface FoundTaxon {
-    count:number,
+	countAdult: number,
+	countChild: number,
     code: TaxonCode,
 }
 

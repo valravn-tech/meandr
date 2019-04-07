@@ -38,7 +38,7 @@ const reducer = (state:State = persistPreviousState(), action:any): State => {
       // I'm duplicating this based on redux tutorials
       // still not 100% sure it's the best thing to do...
       const taxaFound = new Map(state.taxaFound);
-      const tx:FoundTaxon = { code: action.code, count: action.count}
+      const tx:FoundTaxon = action.taxon;
       taxaFound.set(tx.code, tx);
       return { taxaFound };
     }
@@ -53,12 +53,20 @@ const reducer = (state:State = persistPreviousState(), action:any): State => {
       const taxaFound = new Map(state.taxaFound); // TODO (fix): does this modify the previous state?
       const tx = taxaFound.get(action.code);
       if (! tx) { die("taxon not in state"); return state; }
-      tx.count = action.newCount;
+
+      const newCount = (countOld:number, countNew:number):number => (
+        Math.max(countNew === undefined
+          ? countOld
+          : countNew,
+          0)
+      )
+      tx.countAdult = newCount(tx.countAdult, action.newCount.adult);
+      tx.countChild = newCount(tx.countChild, action.newCount.child);
 
       // TODO(ux): do we want to auto-delete when hitting 0?
       // quicker to use, but more error-prone
       // maybe only on loss of focus with 0?
-      if (tx.count === 0)
+      if (tx.countAdult === 0 && tx.countChild === 0)
       { taxaFound.delete(action.code); }
       else
       { taxaFound.set(action.code, tx); }
