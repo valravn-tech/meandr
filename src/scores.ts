@@ -1,7 +1,7 @@
 import { TaxonCode } from './alltaxa'
 export type ScoreInfo = ScoreAwic | ScoreBmwp | ScoreCci | ScoreDehli | ScoreLife| ScorePsi | ScoreWhpt;
 
-export interface Score      { score:number }
+export type Score  =   number;
 export type      ScoreAwic  = Score;
 export interface ScoreBmwp  { score_orig:number, score_rev?:number, score_riffle?:number, score_riffle_pool?:number, score_pool?:number }
 export type      ScoreCci   = Score;
@@ -9,6 +9,23 @@ export type      ScoreDehli = Score;
 export interface ScoreLife  { flow:string }
 export interface ScorePsi   { fssr:string }
 export interface ScoreWhpt  { score_presence:number,  scores:number[] }
+
+export interface PartialScorePsi {
+    AB: number,
+    AD: number,
+}
+
+export interface ScoreSinglePsi {
+    fssr: string,
+    score: number,
+}
+
+export interface ScoreSingleLife {
+    flow: string,
+    score: number,
+}
+
+export type ScoreSingleWhpt = Score;
 
 export const scoresWhpt = new Map<TaxonCode, ScoreWhpt>([
 	[ "05110000", { score_presence:4.9,  scores:[4.7,  5.4,  5.4,  5.4]  }], // Tricladida Planariidae
@@ -2036,1182 +2053,1182 @@ export const scoresLifeFamily = new Map<TaxonCode, ScoreLife>([
 ])
 
 export const scoresDehli = new Map<TaxonCode, ScoreDehli>([
-	[ "40130000", { score:0  }], // Ephemeroptera Heptageniidae
-	[ "40140000", { score:10 }], // Ephemeroptera Ameletidae
-	[ "41220000", { score:10 }], // Plecoptera Perlidae
-	[ "41230000", { score:10 }], // Plecoptera Chloroperlidae
-	[ "41110300", { score:9  }], // Plecoptera Taeniopterygidae Brachyptera
-	[ "41110200", { score:9  }], // Plecoptera Taeniopterygidae Rhabdiopteryx
-	[ "48210100", { score:10 }], // Trichoptera Philopotamidae Philopotamus
-	[ "48210200", { score:10 }], // Trichoptera Philopotamidae Wormaldia
-	[ "48110000", { score:10 }], // Trichoptera Rhyacophilidae
-	[ "48380000", { score:9  }], // Trichoptera Odontoceridae
-	[ "16140000", { score:7  }], // Gastropoda Hydrobiidae
-	[ "16160000", { score:7  }], // Gastropoda Bithyniidae
-	[ "16130000", { score:7  }], // Gastropoda Valvatidae
-	[ "42110000", { score:7  }], // Odonata Platycnemididae
-	[ "42130000", { score:7  }], // Odonata Lestidae
-	[ "42140000", { score:7  }], // Odonata Calopterygidae
-	[ "42230000", { score:7  }], // Odonata Aeshnidae
-	[ "43310000", { score:7  }], // Hemiptera Nepidae
-	[ "45410000", { score:7  }], // Coleoptera Hydraenidae
-	[ "48310000", { score:7  }], // Trichoptera Phryganeidae
-	[ "48360000", { score:7  }], // Trichoptera Beraeidae
-	[ "49110000", { score:7  }], // Lepidoptera Pyralidae
-	[ "50340000", { score:8  }], // Diptera Thaumaleidae
-	[ "50310000", { score:8  }], // Diptera Dixidae
-	[ "37140000", { score:6  }], // Amphipoda Gammaridae
-	[ "40120100", { score:7  }], // Ephemeroptera Baetidae Baetis
-	[ "40210200", { score:6  }], // Ephemeroptera Leptophlebiidae Paraleptophlebia
-	[ "41210000", { score:7  }], // Plecoptera Perlodidae
-	[ "41120100", { score:7  }], // Plecoptera Nemouridae Protonemura
-	[ "41120200", { score:7  }], // Plecoptera Nemouridae Amphinemura
-	[ "41120300", { score:7  }], // Plecoptera Nemouridae Nemurella
-	[ "41110100", { score:6  }], // Plecoptera Taeniopterygidae Taeniopteryx
-	[ "41130000", { score:7  }], // Plecoptera Leuctridae
-	[ "43420000", { score:7  }], // Hemiptera Aphelocheiridae
-	[ "45510100", { score:6  }], // Coleoptera Scirtidae Elodes
-	[ "48320000", { score:6  }], // Trichoptera Brachycentridae
-	[ "48330000", { score:7  }], // Trichoptera Lepidostomatidae
-	[ "48120000", { score:7  }], // Trichoptera Glossosomatidae
-	[ "48210300", { score:6  }], // Trichoptera Philopotamidae Chimarra
-	[ "48250000", { score:5  }], // Trichoptera Hydropsychidae
-	[ "483A0000", { score:5  }], // Trichoptera Leptoceridae
-	[ "48240000", { score:6  }], // Trichoptera Polycentropodidae
-	[ "48350000", { score:8  }], // Trichoptera Goeridae
-	[ "48370000", { score:7  }], // Trichoptera Sericostomatidae
-	[ "50360000", { score:6  }], // Diptera Simuliidae
-	[ "50140000", { score:7  }], // Diptera Pediciidae
-	[ "50710000", { score:6  }], // Diptera Empididae
-	[ "50610000", { score:7  }], // Diptera Stratiomyidae
-	[ "50850000", { score:5  }], // Diptera Muscidae
-	[ "17120000", { score:6  }], // Bivalvia Unionidae
-	[ "42120000", { score:5  }], // Odonata Coenagrionidae
-	[ "42240000", { score:4  }], // Odonata Corduliidae
-	[ "42250000", { score:4  }], // Odonata Libellulidae
-	[ "42210000", { score:5  }], // Odonata Gomphidae
-	[ "40110000", { score:5  }], // Ephemeroptera Siphlonuridae
-	[ "40320000", { score:5  }], // Ephemeroptera Ephemeridae
-	[ "40120300", { score:4  }], // Ephemeroptera Baetidae Cloeon
-	[ "40510000", { score:5  }], // Ephemeroptera Caenidae
-	[ "40210100", { score:5  }], // Ephemeroptera Leptophlebiidae Leptophlebia
-	[ "40210300", { score:5  }], // Ephemeroptera Leptophlebiidae Habrophlebia
-	[ "41120400", { score:6  }], // Plecoptera Nemouridae Nemoura
-	[ "46110000", { score:5  }], // Megaloptera Sialidae
-	[ "47120000", { score:6  }], // Neuroptera Sisyridae
-	[ "45630000", { score:5  }], // Coleoptera Elmidae
-	[ "45360000", { score:5  }], // Coleoptera Hydrochidae
-	[ "45330000", { score:3  }], // Coleoptera Helophoridae
-	[ "48230000", { score:4  }], // Trichoptera Ecnomidae
-	[ "48390000", { score:5  }], // Trichoptera Molannidae
-	[ "50420000", { score:5  }], // Diptera Tanypodinae
-	[ "50460000", { score:5  }], // Diptera Orthocladiinae
-	[ "50130000", { score:5  }], // Diptera Limoniidae
-	[ "50110000", { score:4  }], // Diptera Tipulidae
-	[ "50220000", { score:5  }], // Diptera Ptychopteridae
-	[ "50720000", { score:5  }], // Diptera Dolichopodidae
-	[ "50210000", { score:4  }], // Diptera Psychodidae
-	[ "50630000", { score:4  }], // Diptera Tabanidae
-	[ "50620000", { score:5  }], // Diptera Rhagionidae
-	[ "50640000", { score:5  }], // Diptera Athericidae
-	[ "05110000", { score:3  }], // Tricladida Planariidae
-	[ "05120000", { score:3  }], // Tricladida Dugesiidae
-	[ "16220000", { score:2  }], // Gastropoda Lymnaeidae
-	[ "16210000", { score:3  }], // Gastropoda Physidae
-	[ "17130000", { score:2  }], // Bivalvia Sphaeriidae
-	[ "36110000", { score:2  }], // Isopoda Asellidae
-	[ "43610000", { score:2  }], // Hemiptera Corixidae
-	[ "43230000", { score:2  }], // Hemiptera Gerridae
-	[ "43210000", { score:2  }], // Hemiptera Hydrometridae
-	[ "43510000", { score:1  }], // Hemiptera Notonectidae
-	[ "43410000", { score:3  }], // Hemiptera Naucoridae
-	[ "43220000", { score:2  }], // Hemiptera Veliidae
-	[ "43110000", { score:2  }], // Hemiptera Mesoveliidae
-	[ "45150000", { score:2  }], // Coleoptera Gyrinidae
-	[ "45350000", { score:3  }], // Coleoptera Hydrophilidae
-	[ "45510000", { score:3  }], // Coleoptera Scirtidae
-	[ "45140000", { score:1  }], // Coleoptera Dytiscidae
-	[ "50830000", { score:2  }], // Diptera Ephydridae
-	[ "50470000", { score:1  }], // Diptera Chironominae (Chironomini)
-	[ "50330000", { score:1  }], // Diptera Culicidae
-	[ "50810000", { score:1  }], // Diptera Syrphidae
-	[ "50350000", { score:1  }], // Diptera Ceratopogonidae
-	[ "16230000", { score:1  }], // Gastropoda Planorbidae
-	[ "45140000", { score:1  }], // Coleoptera Dytiscidae
-	[ "50350000", { score:1  }], // Diptera Ceratopogonidae
+	[ "40130000", 0  ], // Ephemeroptera Heptageniidae
+	[ "40140000", 10 ], // Ephemeroptera Ameletidae
+	[ "41220000", 10 ], // Plecoptera Perlidae
+	[ "41230000", 10 ], // Plecoptera Chloroperlidae
+	[ "41110300", 9  ], // Plecoptera Taeniopterygidae Brachyptera
+	[ "41110200", 9  ], // Plecoptera Taeniopterygidae Rhabdiopteryx
+	[ "48210100", 10 ], // Trichoptera Philopotamidae Philopotamus
+	[ "48210200", 10 ], // Trichoptera Philopotamidae Wormaldia
+	[ "48110000", 10 ], // Trichoptera Rhyacophilidae
+	[ "48380000", 9  ], // Trichoptera Odontoceridae
+	[ "16140000", 7  ], // Gastropoda Hydrobiidae
+	[ "16160000", 7  ], // Gastropoda Bithyniidae
+	[ "16130000", 7  ], // Gastropoda Valvatidae
+	[ "42110000", 7  ], // Odonata Platycnemididae
+	[ "42130000", 7  ], // Odonata Lestidae
+	[ "42140000", 7  ], // Odonata Calopterygidae
+	[ "42230000", 7  ], // Odonata Aeshnidae
+	[ "43310000", 7  ], // Hemiptera Nepidae
+	[ "45410000", 7  ], // Coleoptera Hydraenidae
+	[ "48310000", 7  ], // Trichoptera Phryganeidae
+	[ "48360000", 7  ], // Trichoptera Beraeidae
+	[ "49110000", 7  ], // Lepidoptera Pyralidae
+	[ "50340000", 8  ], // Diptera Thaumaleidae
+	[ "50310000", 8  ], // Diptera Dixidae
+	[ "37140000", 6  ], // Amphipoda Gammaridae
+	[ "40120100", 7  ], // Ephemeroptera Baetidae Baetis
+	[ "40210200", 6  ], // Ephemeroptera Leptophlebiidae Paraleptophlebia
+	[ "41210000", 7  ], // Plecoptera Perlodidae
+	[ "41120100", 7  ], // Plecoptera Nemouridae Protonemura
+	[ "41120200", 7  ], // Plecoptera Nemouridae Amphinemura
+	[ "41120300", 7  ], // Plecoptera Nemouridae Nemurella
+	[ "41110100", 6  ], // Plecoptera Taeniopterygidae Taeniopteryx
+	[ "41130000", 7  ], // Plecoptera Leuctridae
+	[ "43420000", 7  ], // Hemiptera Aphelocheiridae
+	[ "45510100", 6  ], // Coleoptera Scirtidae Elodes
+	[ "48320000", 6  ], // Trichoptera Brachycentridae
+	[ "48330000", 7  ], // Trichoptera Lepidostomatidae
+	[ "48120000", 7  ], // Trichoptera Glossosomatidae
+	[ "48210300", 6  ], // Trichoptera Philopotamidae Chimarra
+	[ "48250000", 5  ], // Trichoptera Hydropsychidae
+	[ "483A0000", 5  ], // Trichoptera Leptoceridae
+	[ "48240000", 6  ], // Trichoptera Polycentropodidae
+	[ "48350000", 8  ], // Trichoptera Goeridae
+	[ "48370000", 7  ], // Trichoptera Sericostomatidae
+	[ "50360000", 6  ], // Diptera Simuliidae
+	[ "50140000", 7  ], // Diptera Pediciidae
+	[ "50710000", 6  ], // Diptera Empididae
+	[ "50610000", 7  ], // Diptera Stratiomyidae
+	[ "50850000", 5  ], // Diptera Muscidae
+	[ "17120000", 6  ], // Bivalvia Unionidae
+	[ "42120000", 5  ], // Odonata Coenagrionidae
+	[ "42240000", 4  ], // Odonata Corduliidae
+	[ "42250000", 4  ], // Odonata Libellulidae
+	[ "42210000", 5  ], // Odonata Gomphidae
+	[ "40110000", 5  ], // Ephemeroptera Siphlonuridae
+	[ "40320000", 5  ], // Ephemeroptera Ephemeridae
+	[ "40120300", 4  ], // Ephemeroptera Baetidae Cloeon
+	[ "40510000", 5  ], // Ephemeroptera Caenidae
+	[ "40210100", 5  ], // Ephemeroptera Leptophlebiidae Leptophlebia
+	[ "40210300", 5  ], // Ephemeroptera Leptophlebiidae Habrophlebia
+	[ "41120400", 6  ], // Plecoptera Nemouridae Nemoura
+	[ "46110000", 5  ], // Megaloptera Sialidae
+	[ "47120000", 6  ], // Neuroptera Sisyridae
+	[ "45630000", 5  ], // Coleoptera Elmidae
+	[ "45360000", 5  ], // Coleoptera Hydrochidae
+	[ "45330000", 3  ], // Coleoptera Helophoridae
+	[ "48230000", 4  ], // Trichoptera Ecnomidae
+	[ "48390000", 5  ], // Trichoptera Molannidae
+	[ "50420000", 5  ], // Diptera Tanypodinae
+	[ "50460000", 5  ], // Diptera Orthocladiinae
+	[ "50130000", 5  ], // Diptera Limoniidae
+	[ "50110000", 4  ], // Diptera Tipulidae
+	[ "50220000", 5  ], // Diptera Ptychopteridae
+	[ "50720000", 5  ], // Diptera Dolichopodidae
+	[ "50210000", 4  ], // Diptera Psychodidae
+	[ "50630000", 4  ], // Diptera Tabanidae
+	[ "50620000", 5  ], // Diptera Rhagionidae
+	[ "50640000", 5  ], // Diptera Athericidae
+	[ "05110000", 3  ], // Tricladida Planariidae
+	[ "05120000", 3  ], // Tricladida Dugesiidae
+	[ "16220000", 2  ], // Gastropoda Lymnaeidae
+	[ "16210000", 3  ], // Gastropoda Physidae
+	[ "17130000", 2  ], // Bivalvia Sphaeriidae
+	[ "36110000", 2  ], // Isopoda Asellidae
+	[ "43610000", 2  ], // Hemiptera Corixidae
+	[ "43230000", 2  ], // Hemiptera Gerridae
+	[ "43210000", 2  ], // Hemiptera Hydrometridae
+	[ "43510000", 1  ], // Hemiptera Notonectidae
+	[ "43410000", 3  ], // Hemiptera Naucoridae
+	[ "43220000", 2  ], // Hemiptera Veliidae
+	[ "43110000", 2  ], // Hemiptera Mesoveliidae
+	[ "45150000", 2  ], // Coleoptera Gyrinidae
+	[ "45350000", 3  ], // Coleoptera Hydrophilidae
+	[ "45510000", 3  ], // Coleoptera Scirtidae
+	[ "45140000", 1  ], // Coleoptera Dytiscidae
+	[ "50830000", 2  ], // Diptera Ephydridae
+	[ "50470000", 1  ], // Diptera Chironominae (Chironomini)
+	[ "50330000", 1  ], // Diptera Culicidae
+	[ "50810000", 1  ], // Diptera Syrphidae
+	[ "50350000", 1  ], // Diptera Ceratopogonidae
+	[ "16230000", 1  ], // Gastropoda Planorbidae
+	[ "45140000", 1  ], // Coleoptera Dytiscidae
+	[ "50350000", 1  ], // Diptera Ceratopogonidae
 ])
 
 export const scoresCciCommunity = [ 0, 1, 1, 3, 3, 5, 5, 7, 10, 12, 15 ];
 
 export const scoresCci = new Map<TaxonCode, ScoreCci>([
-	[ "05110101", { score:6 } ], // Tricladida Planariidae Planaria torva
-	[ "05110202", { score:1 } ], // Tricladida Planariidae Polycelis nigra
-	[ "05110203", { score:1 } ], // Tricladida Planariidae Polycelis tenuis
-	[ "05110201", { score:3 } ], // Tricladida Planariidae Polycelis felina
-	[ "05110301", { score:3 } ], // Tricladida Planariidae Phagocata vitta
-	[ "05110401", { score:2 } ], // Tricladida Planariidae Crenobia alpina
-	[ "05120101", { score:2 } ], // Tricladida Dugesiidae Dugesia lugubris
-	[ "05120103", { score:3 } ], // Tricladida Dugesiidae Dugesia tigrina
-	[ "05120102", { score:2 } ], // Tricladida Dugesiidae Dugesia polychroa
-	[ "05130201", { score:2 } ], // Tricladida Dendrocoelidae Dendrocoelum lacteum
-	[ "05130101", { score:7 } ], // Tricladida Dendrocoelidae Bdellocephala punctata
-	[ "16110101", { score:3 } ], // Gastropoda Neritidae Theodoxus fluviatilis
-	[ "16120102", { score:3 } ], // Gastropoda Viviparidae Viviparus viviparus
-	[ "16120101", { score:5 } ], // Gastropoda Viviparidae Viviparus contectus
-	[ "16130111", { score:2 } ], // Gastropoda Valvatidae Valvata (Valvata) cristata
-	[ "16130121", { score:9 } ], // Gastropoda Valvatidae Valvata (Tropidina) macrostoma
-	[ "16130131", { score:1 } ], // Gastropoda Valvatidae Valvata (Cincinna) piscinalis
-	[ "16140801", { score:4 } ], // Gastropoda Hydrobiidae Ventrosia ventrosa
-	[ "16140111", { score:6 } ], // Gastropoda Hydrobiidae Hydrobia (Hydrobia) acuta
-	[ "16140701", { score:1 } ], // Gastropoda Hydrobiidae Peringia ulvae
-	[ "16140301", { score:1 } ], // Gastropoda Hydrobiidae Potamopyrgus antipodarum
-	[ "16140401", { score:8 } ], // Gastropoda Hydrobiidae Marstoniopsis insubrica
-	[ "16160111", { score:1 } ], // Gastropoda Bithyniidae Bithynia (Bithynia) tentaculata
-	[ "16160121", { score:5 } ], // Gastropoda Bithyniidae Bithynia (Codiella) leachii
-	[ "16170101", { score:2 } ], // Gastropoda Assimineidae Assiminea grayana
-	[ "16220301", { score:3 } ], // Gastropoda Lymnaeidae Galba truncatula
-	[ "16220501", { score:9 } ], // Gastropoda Lymnaeidae Omphiscola glabra
-	[ "16220401", { score:2 } ], // Gastropoda Lymnaeidae Stagnicola palustris
-	[ "16220105", { score:1 } ], // Gastropoda Lymnaeidae Lymnaea stagnalis
-	[ "16220601", { score:2 } ], // Gastropoda Lymnaeidae Radix auricularia
-	[ "16220201", { score:10 } ], // Gastropoda Lymnaeidae Myxas glutinosa
-	[ "16210101", { score:5 } ], // Gastropoda Physidae Aplexa hypnorum
-	[ "16210202", { score:1 } ], // Gastropoda Physidae Physa fontinalis
-	[ "16230801", { score:4 } ], // Gastropoda Planorbidae Planorbarius corneus
-	[ "16230911", { score:7 } ], // Gastropoda Planorbidae Menetus (Dilatata) dilatatus
-	[ "16230111", { score:1 } ], // Gastropoda Planorbidae Planorbis (Planorbis) carinatus
-	[ "16230112", { score:1 } ], // Gastropoda Planorbidae Planorbis (Planorbis) planorbis
-	[ "16230222", { score:9 } ], // Gastropoda Planorbidae Anisus (Disculifer) vorticulus
-	[ "16230221", { score:1 } ], // Gastropoda Planorbidae Anisus (Disculifer) vortex
-	[ "16230211", { score:5 } ], // Gastropoda Planorbidae Anisus (Anisus) leucostoma
-	[ "16230421", { score:6 } ], // Gastropoda Planorbidae Gyraulus (Torquis) laevis
-	[ "16230412", { score:1 } ], // Gastropoda Planorbidae Gyraulus (Gyraulus) albus
-	[ "16230411", { score:9 } ], // Gastropoda Planorbidae Gyraulus (Gyraulus) acronicus
-	[ "16230431", { score:2 } ], // Gastropoda Planorbidae Gyraulus (Armiger) crista
-	[ "16230301", { score:2 } ], // Gastropoda Planorbidae Bathyomphalus contortus
-	[ "16230601", { score:3 } ], // Gastropoda Planorbidae Hippeutis complanatus
-	[ "16230701", { score:10 } ], // Gastropoda Planorbidae Segmentina nitida
-	[ "16250101", { score:2 } ], // Gastropoda Acroloxidae Acroloxus lacustris
-	[ "16231101", { score:1 } ], // Gastropoda Planorbidae Ancylus fluviatilis
-	[ "16320501", { score:8 } ], // Gastropoda Succineidae Succinella oblonga
-	[ "16320201", { score:1 } ], // Gastropoda Succineidae Succinea putris
-	[ "16320311", { score:1 } ], // Gastropoda Succineidae Oxyloma (Oxyloma) pfeifferi
-	[ "16320401", { score:10 } ], // Gastropoda Succineidae Quickella arenaria
-	[ "16330221", { score:3 } ], // Gastropoda Vertiginidae Vertigo (Vertigo) antivertigo
-	[ "16330224", { score:8 } ], // Gastropoda Vertiginidae Vertigo (Vertigo) moulinsiana
-	[ "16330223", { score:8 } ], // Gastropoda Vertiginidae Vertigo (Vertigo) lilljeborgi
-	[ "16330211", { score:10 } ], // Gastropoda Vertiginidae Vertigo (Vertilla) angustior
-	[ "16350111", { score:4 } ], // Gastropoda Zonitidae Zonitoides (Zonitoides) nitidus
-	[ "17110101", { score:7 } ], // Bivalvia Margaritiferidae Margaritifera margaritifera
-	[ "17120101", { score:3 } ], // Bivalvia Unionidae Unio pictorum
-	[ "17120102", { score:5 } ], // Bivalvia Unionidae Unio tumidus
-	[ "17120202", { score:2 } ], // Bivalvia Unionidae Anodonta cygnea
-	[ "17120201", { score:3 } ], // Bivalvia Unionidae Anodonta anatina
-	[ "17120301", { score:7 } ], // Bivalvia Unionidae Pseudanodonta complanata
-	[ "17130103", { score:3 } ], // Bivalvia Sphaeriidae Sphaerium rivicola
-	[ "17130101", { score:1 } ], // Bivalvia Sphaeriidae Sphaerium corneum
-	[ "17130104", { score:10 } ], // Bivalvia Sphaeriidae Sphaerium solidum
-	[ "17130301", { score:3 } ], // Bivalvia Sphaeriidae Musculium lacustre
-	[ "17130302", { score:5 } ], // Bivalvia Sphaeriidae Musculium transversum
-	[ "17130201", { score:3 } ], // Bivalvia Sphaeriidae Pisidium amnicum
-	[ "17130202", { score:1 } ], // Bivalvia Sphaeriidae Pisidium casertanum
-	[ "17130203", { score:7 } ], // Bivalvia Sphaeriidae Pisidium conventus
-	[ "17130212", { score:3 } ], // Bivalvia Sphaeriidae Pisidium personatum
-	[ "17130211", { score:4 } ], // Bivalvia Sphaeriidae Pisidium obtusale
-	[ "17130207", { score:4 } ], // Bivalvia Sphaeriidae Pisidium milium
-	[ "17130213", { score:8 } ], // Bivalvia Sphaeriidae Pisidium pseudosphaerium
-	[ "17130215", { score:1 } ], // Bivalvia Sphaeriidae Pisidium subtruncatum
-	[ "17130216", { score:5 } ], // Bivalvia Sphaeriidae Pisidium supinum
-	[ "17130204", { score:4 } ], // Bivalvia Sphaeriidae Pisidium henslowanum
-	[ "17130206", { score:5 } ], // Bivalvia Sphaeriidae Pisidium lilljeborgii
-	[ "17130205", { score:4 } ], // Bivalvia Sphaeriidae Pisidium hibernicum
-	[ "17130209", { score:3 } ], // Bivalvia Sphaeriidae Pisidium nitidum
-	[ "17130214", { score:5 } ], // Bivalvia Sphaeriidae Pisidium pulchellum
-	[ "17130208", { score:4 } ], // Bivalvia Sphaeriidae Pisidium moitessierianum
-	[ "17130217", { score:8 } ], // Bivalvia Sphaeriidae Pisidium tenuilineatum
-	[ "17140101", { score:2 } ], // Bivalvia Dreissenidae Dreissena polymorpha
-	[ "22110101", { score:2 } ], // Hirudinea Piscicolidae Piscicola geometra
-	[ "22120201", { score:2 } ], // Hirudinea Glossiphoniidae Theromyzon tessulatum
-	[ "22120301", { score:4 } ], // Hirudinea Glossiphoniidae Hemiclepsis marginata
-	[ "22120801", { score:4 } ], // Hirudinea Glossiphoniidae Alboglossiphonia heteroclita
-	[ "22120401", { score:1 } ], // Hirudinea Glossiphoniidae Glossiphonia complanata
-	[ "22120403", { score:7 } ], // Hirudinea Glossiphoniidae Glossiphonia verrucata
-	[ "22120901", { score:7 } ], // Hirudinea Glossiphoniidae Placobdella costata
-	[ "22120404", { score:7 } ], // Hirudinea Glossiphoniidae Glossiphonia paludosa
-	[ "22120701", { score:1 } ], // Hirudinea Glossiphoniidae Helobdella stagnalis
-	[ "22210201", { score:8 } ], // Hirudinea Hirudinidae Hirudo medicinalis
-	[ "22220101", { score:5 } ], // Hirudinea Haemopidae Haemopis sanguisuga
-	[ "22230102", { score:5 } ], // Hirudinea Erpobdellidae Erpobdella testacea
-	[ "22230101", { score:1 } ], // Hirudinea Erpobdellidae Erpobdella octoculata
-	[ "22230201", { score:6 } ], // Hirudinea Erpobdellidae Dina lineata
-	[ "22230302", { score:4 } ], // Hirudinea Erpobdellidae Trocheta subviridis
-	[ "22230301", { score:5 } ], // Hirudinea Erpobdellidae Trocheta bykowskii
-	[ "26010101", { score:3 } ], // Araneae Argyroneta aquatica
-	[ "27010101", { score:10 } ], // Anostraca Artemia salina
-	[ "27020101", { score:9 } ], // Anostraca Chirocephalus diaphanus
-	[ "28010101", { score:10 } ], // Notostraca Triopsidae Triops cancriformis
-	[ "33010101", { score:7 } ], // Bathynellacea Bathynellidae Bathynella natans
-	[ "33010201", { score:7 } ], // Bathynellacea Bathynellidae Antrobathynella stammeri
-	[ "35110101", { score:10 } ], // Mysidacea Mysidae Mysis relicta
-	[ "35110201", { score:1 } ], // Mysidacea Mysidae Neomysis integer
-	[ "36110101", { score:1 } ], // Isopoda Asellidae Asellus aquaticus
-	[ "36110201", { score:7 } ], // Isopoda Asellidae Proasellus cavaticus
-	[ "36110301", { score:7 } ], // Isopoda Asellidae Caecidotea communis
-	[ "36110202", { score:3 } ], // Isopoda Asellidae Proasellus meridianus
-	[ "36220101", { score:2 } ], // Isopoda Sphaeromatidae Sphaeroma hookeri
-	[ "36220102", { score:2 } ], // Isopoda Sphaeromatidae Sphaeroma rugicauda
-	[ "36210101", { score:2 } ], // Isopoda Janiridae Jaera nordmanni
-	[ "37110101", { score:3 } ], // Amphipoda Corophiidae Corophium curvispinum
-	[ "37110102", { score:7 } ], // Amphipoda Corophiidae Corophium insidiosum
-	[ "37110103", { score:8 } ], // Amphipoda Corophiidae Corophium lacustre
-	[ "37110104", { score:2 } ], // Amphipoda Corophiidae Corophium multisetosum
-	[ "37110105", { score:3 } ], // Amphipoda Corophiidae Corophium volutator
-	[ "37130101", { score:1 } ], // Amphipoda Crangonyctidae Crangonyx pseudogracilis
-	[ "37130102", { score:7 } ], // Amphipoda Crangonyctidae Crangonyx subterraneus
-	[ "37140202", { score:4 } ], // Amphipoda Gammaridae Gammarus duebeni
-	[ "37140203", { score:5 } ], // Amphipoda Gammaridae Gammarus lacustris
-	[ "37140206", { score:1 } ], // Amphipoda Gammaridae Gammarus pulex
-	[ "37140208", { score:1 } ], // Amphipoda Gammaridae Gammarus tigrinus
-	[ "37140209", { score:1 } ], // Amphipoda Gammaridae Gammarus zaddachi
-	[ "37140101", { score:7 } ], // Amphipoda Gammaridae Echinogammarus berilloni
-	[ "37150205", { score:7 } ], // Amphipoda Niphargidae Niphargus glenniei
-	[ "37150201", { score:6 } ], // Amphipoda Niphargidae Niphargus aquilex
-	[ "37150202", { score:7 } ], // Amphipoda Niphargidae Niphargus fontanus
-	[ "37150203", { score:7 } ], // Amphipoda Niphargidae Niphargus kochianus
-	[ "37120101", { score:5 } ], // Amphipoda Talitridae Orchestia cavimana
-	[ "34110101", { score:1 } ], // Decapoda Palaemonidae Palaemonetes varians
-	[ "34110201", { score:5 } ], // Decapoda Palaemonidae Palaemon longirostris
-	[ "34310101", { score:7 } ], // Decapoda Astacidae Austropotamobius pallipes
-	[ "40110102", { score:6 } ], // Ephemeroptera Siphlonuridae Siphlonurus armatus
-	[ "40110103", { score:4 } ], // Ephemeroptera Siphlonuridae Siphlonurus lacustris
-	[ "40110101", { score:6 } ], // Ephemeroptera Siphlonuridae Siphlonurus alternatus
-	[ "40140101", { score:5 } ], // Ephemeroptera Ameletidae Ameletus inopinatus
-	[ "40120102", { score:6 } ], // Ephemeroptera Baetidae Baetis buceratus
-	[ "40120104", { score:4 } ], // Ephemeroptera Baetidae Baetis fuscatus
-	[ "40120107", { score:1 } ], // Ephemeroptera Baetidae Baetis rhodani
-	[ "40120108", { score:4 } ], // Ephemeroptera Baetidae Baetis scambus
-	[ "40120111", { score:3 } ], // Ephemeroptera Baetidae Baetis vernus
-	[ "40120501", { score:2 } ], // Ephemeroptera Baetidae Alainites muticus
-	[ "40120601", { score:6 } ], // Ephemeroptera Baetidae Labiobaetis atrebatinus
-	[ "40120701", { score:5 } ], // Ephemeroptera Baetidae Nigrobaetis digitatus
-	[ "40120702", { score:4 } ], // Ephemeroptera Baetidae Nigrobaetis niger
-	[ "40120201", { score:4 } ], // Ephemeroptera Baetidae Centroptilum luteolum
-	[ "40120301", { score:1 } ], // Ephemeroptera Baetidae Cloeon dipterum
-	[ "40120302", { score:2 } ], // Ephemeroptera Baetidae Cloeon simile
-	[ "40120401", { score:6 } ], // Ephemeroptera Baetidae Procloeon bifidum
-	[ "40120402", { score:5 } ], // Ephemeroptera Baetidae Procloeon pennulatum
-	[ "40130101", { score:5 } ], // Ephemeroptera Heptageniidae Rhithrogena germanica
-	[ "40130102", { score:2 } ], // Ephemeroptera Heptageniidae Rhithrogena semicolorata
-	[ "40130601", { score:7 } ], // Ephemeroptera Heptageniidae Kageronia fuscogrisea
-	[ "40130502", { score:2 } ], // Ephemeroptera Heptageniidae Electrogena lateralis
-	[ "40130203", { score:10 } ], // Ephemeroptera Heptageniidae Heptagenia longicauda
-	[ "40130204", { score:4 } ], // Ephemeroptera Heptageniidae Heptagenia sulphurea
-	[ "40130401", { score:2 } ], // Ephemeroptera Heptageniidae Ecdyonurus dispar
-	[ "40130402", { score:5 } ], // Ephemeroptera Heptageniidae Ecdyonurus insignis
-	[ "40130403", { score:2 } ], // Ephemeroptera Heptageniidae Ecdyonurus torrentis
-	[ "40130404", { score:2 } ], // Ephemeroptera Heptageniidae Ecdyonurus venosus
-	[ "40150101", { score:10 } ], // Ephemeroptera Arthropleidae Arthroplea congener
-	[ "40210101", { score:3 } ], // Ephemeroptera Leptophlebiidae Leptophlebia marginata
-	[ "40210102", { score:3 } ], // Ephemeroptera Leptophlebiidae Leptophlebia vespertina
-	[ "40210201", { score:3 } ], // Ephemeroptera Leptophlebiidae Paraleptophlebia cincta
-	[ "40210202", { score:2 } ], // Ephemeroptera Leptophlebiidae Paraleptophlebia submarginata
-	[ "40210203", { score:8 } ], // Ephemeroptera Leptophlebiidae Paraleptophlebia werneri
-	[ "40210301", { score:2 } ], // Ephemeroptera Leptophlebiidae Habrophlebia fusca
-	[ "40410102", { score:6 } ], // Ephemeroptera Ephemerellidae Ephemerella notata
-	[ "40410201", { score:1 } ], // Ephemeroptera Ephemerellidae Serratella ignita
-	[ "40310101", { score:9 } ], // Ephemeroptera Potamanthidae Potamanthus luteus
-	[ "40320101", { score:1 } ], // Ephemeroptera Ephemeridae Ephemera danica
-	[ "40320102", { score:9 } ], // Ephemeroptera Ephemeridae Ephemera lineata
-	[ "40320103", { score:4 } ], // Ephemeroptera Ephemeridae Ephemera vulgata
-	[ "40510101", { score:6 } ], // Ephemeroptera Caenidae Brachycercus harrisellus
-	[ "40510206", { score:7 } ], // Ephemeroptera Caenidae Caenis beskidensis
-	[ "40510201", { score:1 } ], // Ephemeroptera Caenidae Caenis horaria
-	[ "40510202", { score:1 } ], // Ephemeroptera Caenidae Caenis luctuosa
-	[ "40510203", { score:4 } ], // Ephemeroptera Caenidae Caenis macrura
-	[ "40510207", { score:6 } ], // Ephemeroptera Caenidae Caenis pseudorivulorum
-	[ "41110101", { score:4 } ], // Plecoptera Taeniopterygidae Taeniopteryx nebulosa
-	[ "41110201", { score:7 } ], // Plecoptera Taeniopterygidae Rhabdiopteryx acuminata
-	[ "41110301", { score:7 } ], // Plecoptera Taeniopterygidae Brachyptera putata
-	[ "41110302", { score:3 } ], // Plecoptera Taeniopterygidae Brachyptera risi
-	[ "41120103", { score:5 } ], // Plecoptera Nemouridae Protonemura praecox
-	[ "41120102", { score:6 } ], // Plecoptera Nemouridae Protonemura montana
-	[ "41120101", { score:6 } ], // Plecoptera Nemouridae Protonemura meyeri
-	[ "41120201", { score:6 } ], // Plecoptera Nemouridae Amphinemura standfussi
-	[ "41120202", { score:2 } ], // Plecoptera Nemouridae Amphinemura sulcicollis
-	[ "41120301", { score:2 } ], // Plecoptera Nemouridae Nemurella pictetii
-	[ "41120403", { score:1 } ], // Plecoptera Nemouridae Nemoura cinerea
-	[ "41120404", { score:7 } ], // Plecoptera Nemouridae Nemoura dubitans
-	[ "41120401", { score:4 } ], // Plecoptera Nemouridae Nemoura avicularis
-	[ "41120402", { score:2 } ], // Plecoptera Nemouridae Nemoura cambrica
-	[ "41120405", { score:5 } ], // Plecoptera Nemouridae Nemoura erratica
-	[ "41130102", { score:4 } ], // Plecoptera Leuctridae Leuctra geniculata
-	[ "41130104", { score:1 } ], // Plecoptera Leuctridae Leuctra inermis
-	[ "41130103", { score:3 } ], // Plecoptera Leuctridae Leuctra hippopus
-	[ "41130106", { score:4 } ], // Plecoptera Leuctridae Leuctra nigra
-	[ "41130101", { score:1 } ], // Plecoptera Leuctridae Leuctra fusca
-	[ "41130105", { score:6 } ], // Plecoptera Leuctridae Leuctra moselyi
-	[ "41140102", { score:6 } ], // Plecoptera Capniidae Capnia bifrons
-	[ "41140101", { score:5 } ], // Plecoptera Capniidae Capnia atra
-	[ "41140103", { score:7 } ], // Plecoptera Capniidae Capnia vidua
-	[ "41210101", { score:9 } ], // Plecoptera Perlodidae Isogenus nubecula
-	[ "41210201", { score:3 } ], // Plecoptera Perlodidae Perlodes microcephalus
-	[ "41210301", { score:3 } ], // Plecoptera Perlodidae Diura bicaudata
-	[ "41210401", { score:2 } ], // Plecoptera Perlodidae Isoperla grammatica
-	[ "41210402", { score:10 } ], // Plecoptera Perlodidae Isoperla obscura
-	[ "41220101", { score:4 } ], // Plecoptera Perlidae Dinocras cephalotes
-	[ "41220201", { score:3 } ], // Plecoptera Perlidae Perla bipunctata
-	[ "41230301", { score:1 } ], // Plecoptera Chloroperlidae Siphonoperla torrentium
-	[ "41230103", { score:4 } ], // Plecoptera Chloroperlidae Chloroperla tripunctata
-	[ "41230201", { score:10 } ], // Plecoptera Chloroperlidae Xanthoperla apicalis
-	[ "42110101", { score:5 } ], // Odonata Platycnemididae Platycnemis pennipes
-	[ "42120101", { score:3 } ], // Odonata Coenagrionidae Pyrrhosoma nymphula
-	[ "42120201", { score:1 } ], // Odonata Coenagrionidae Ischnura elegans
-	[ "42120202", { score:7 } ], // Odonata Coenagrionidae Ischnura pumilio
-	[ "42120301", { score:2 } ], // Odonata Coenagrionidae Enallagma cyathigerum
-	[ "42120401", { score:10 } ], // Odonata Coenagrionidae Coenagrion armatum
-	[ "42120402", { score:9 } ], // Odonata Coenagrionidae Coenagrion hastulatum
-	[ "42120404", { score:8 } ], // Odonata Coenagrionidae Coenagrion mercuriale
-	[ "42120405", { score:2 } ], // Odonata Coenagrionidae Coenagrion puella
-	[ "42120406", { score:5 } ], // Odonata Coenagrionidae Coenagrion pulchellum
-	[ "42120407", { score:10 } ], // Odonata Coenagrionidae Coenagrion scitulum
-	[ "42120501", { score:6 } ], // Odonata Coenagrionidae Ceriagrion tenellum
-	[ "42120601", { score:4 } ], // Odonata Coenagrionidae Erythromma najas
-	[ "42130101", { score:9 } ], // Odonata Lestidae Lestes dryas
-	[ "42130102", { score:4 } ], // Odonata Lestidae Lestes sponsa
-	[ "42140101", { score:2 } ], // Odonata Calopterygidae Calopteryx splendens
-	[ "42140102", { score:5 } ], // Odonata Calopterygidae Calopteryx virgo
-	[ "42210101", { score:7 } ], // Odonata Gomphidae Gomphus vulgatissimus
-	[ "42220101", { score:4 } ], // Odonata Cordulegastridae Cordulegaster boltonii
-	[ "42230101", { score:5 } ], // Odonata Aeshnidae Brachytron pratense
-	[ "42230201", { score:7 } ], // Odonata Aeshnidae Aeshna caerulea
-	[ "42230202", { score:2 } ], // Odonata Aeshnidae Aeshna cyanea
-	[ "42230203", { score:2 } ], // Odonata Aeshnidae Aeshna grandis
-	[ "42230204", { score:10 } ], // Odonata Aeshnidae Aeshna isosceles
-	[ "42230205", { score:4 } ], // Odonata Aeshnidae Aeshna juncea
-	[ "42230206", { score:3 } ], // Odonata Aeshnidae Aeshna mixta
-	[ "42230301", { score:5 } ], // Odonata Aeshnidae Anax imperator
-	[ "42240101", { score:6 } ], // Odonata Corduliidae Cordulia aenea
-	[ "42240201", { score:8 } ], // Odonata Corduliidae Somatochlora arctica
-	[ "42240202", { score:7 } ], // Odonata Corduliidae Somatochlora metallica
-	[ "42240301", { score:10 } ], // Odonata Corduliidae Oxygastra curtisii
-	[ "42250101", { score:5 } ], // Odonata Libellulidae Orthetrum cancellatum
-	[ "42250102", { score:5 } ], // Odonata Libellulidae Orthetrum coerulescens
-	[ "42250201", { score:5 } ], // Odonata Libellulidae Libellula depressa
-	[ "42250202", { score:8 } ], // Odonata Libellulidae Libellula fulva
-	[ "42250203", { score:4 } ], // Odonata Libellulidae Libellula quadrimaculata
-	[ "42250301", { score:7 } ], // Odonata Libellulidae Sympetrum flaveolum
-	[ "42250302", { score:7 } ], // Odonata Libellulidae Sympetrum fonscolombii
-	[ "42250303", { score:7 } ], // Odonata Libellulidae Sympetrum nigrescens
-	[ "42250304", { score:5 } ], // Odonata Libellulidae Sympetrum sanguineum
-	[ "42250305", { score:5 } ], // Odonata Libellulidae Sympetrum danae
-	[ "42250306", { score:1 } ], // Odonata Libellulidae Sympetrum striolatum
-	[ "42250307", { score:7 } ], // Odonata Libellulidae Sympetrum vulgatum
-	[ "42250401", { score:7 } ], // Odonata Libellulidae Leucorrhinia dubia
-	[ "43110101", { score:6 } ], // Hemiptera Mesoveliidae Mesovelia furcata
-	[ "43120111", { score:7 } ], // Hemiptera Hebridae Hebrus (Hebrus) pusillus
-	[ "43120121", { score:5 } ], // Hemiptera Hebridae Hebrus (Hebrusella) ruficeps
-	[ "43210101", { score:8 } ], // Hemiptera Hydrometridae Hydrometra gracilenta
-	[ "43210102", { score:2 } ], // Hemiptera Hydrometridae Hydrometra stagnorum
-	[ "43220111", { score:2 } ], // Hemiptera Veliidae Velia (Plesiovelia) caprai
-	[ "43220112", { score:5 } ], // Hemiptera Veliidae Velia (Plesiovelia) saulii
-	[ "43220201", { score:7 } ], // Hemiptera Veliidae Microvelia pygmaea
-	[ "43220202", { score:5 } ], // Hemiptera Veliidae Microvelia reticulata
-	[ "43220203", { score:8 } ], // Hemiptera Veliidae Microvelia buenoi
-	[ "43230112", { score:4 } ], // Hemiptera Gerridae Gerris costae
-	[ "43230115", { score:5 } ], // Hemiptera Gerridae Gerris lateralis
-	[ "43230117", { score:4 } ], // Hemiptera Gerridae Gerris thoracicus
-	[ "43230113", { score:4 } ], // Hemiptera Gerridae Gerris gibbifer
-	[ "43230111", { score:5 } ], // Hemiptera Gerridae Gerris argentatus
-	[ "43230114", { score:1 } ], // Hemiptera Gerridae Gerris lacustris
-	[ "43230116", { score:2 } ], // Hemiptera Gerridae Gerris odontogaster
-	[ "43230301", { score:5 } ], // Hemiptera Gerridae Aquarius najas
-	[ "43230302", { score:7 } ], // Hemiptera Gerridae Aquarius paludum
-	[ "43230201", { score:6 } ], // Hemiptera Gerridae Limnoporus rufoscutellatus
-	[ "43310101", { score:3 } ], // Hemiptera Nepidae Nepa cinerea
-	[ "43310201", { score:5 } ], // Hemiptera Nepidae Ranatra linearis
-	[ "43410101", { score:4 } ], // Hemiptera Naucoridae Ilyocoris cimicoides
-	[ "43420101", { score:5 } ], // Hemiptera Aphelocheiridae Aphelocheirus aestivalis
-	[ "43510101", { score:1 } ], // Hemiptera Notonectidae Notonecta glauca
-	[ "43510104", { score:5 } ], // Hemiptera Notonectidae Notonecta viridis
-	[ "43510103", { score:5 } ], // Hemiptera Notonectidae Notonecta obliqua
-	[ "43510102", { score:5 } ], // Hemiptera Notonectidae Notonecta maculata
-	[ "43520101", { score:4 } ], // Hemiptera Pleidae Plea minutissima
-	[ "43610111", { score:6 } ], // Hemiptera Corixidae Micronecta (Dichaetonecta) scholtzi
-	[ "43610121", { score:8 } ], // Hemiptera Corixidae Micronecta (Micronecta) minutissima
-	[ "43610122", { score:4 } ], // Hemiptera Corixidae Micronecta (Micronecta) poweri
-	[ "43610301", { score:4 } ], // Hemiptera Corixidae Cymatia bonsdorffii
-	[ "43610302", { score:4 } ], // Hemiptera Corixidae Cymatia coleoptrata
-	[ "43610401", { score:5 } ], // Hemiptera Corixidae Glaenocorisa propinqua
-	[ "43610501", { score:3 } ], // Hemiptera Corixidae Callicorixa praeusta
-	[ "43610502", { score:5 } ], // Hemiptera Corixidae Callicorixa wollastoni
-	[ "43610602", { score:5 } ], // Hemiptera Corixidae Corixa dentipes
-	[ "43610604", { score:1 } ], // Hemiptera Corixidae Corixa punctata
-	[ "43610601", { score:6 } ], // Hemiptera Corixidae Corixa affinis
-	[ "43610603", { score:5 } ], // Hemiptera Corixidae Corixa panzeri
-	[ "43610605", { score:7 } ], // Hemiptera Corixidae Corixa iberica
-	[ "43610702", { score:4 } ], // Hemiptera Corixidae Hesperocorixa linnaei
-	[ "43610704", { score:2 } ], // Hemiptera Corixidae Hesperocorixa sahlbergi
-	[ "43610701", { score:4 } ], // Hemiptera Corixidae Hesperocorixa castanea
-	[ "43610703", { score:6 } ], // Hemiptera Corixidae Hesperocorixa moesta
-	[ "43610801", { score:6 } ], // Hemiptera Corixidae Arctocorisa carinata
-	[ "43610802", { score:5 } ], // Hemiptera Corixidae Arctocorisa germari
-	[ "43610911", { score:1 } ], // Hemiptera Corixidae Sigara (Sigara) dorsalis
-	[ "43610912", { score:7 } ], // Hemiptera Corixidae Sigara (Sigara) striata
-	[ "43610921", { score:3 } ], // Hemiptera Corixidae Sigara (Subsigara) distincta
-	[ "43610922", { score:1 } ], // Hemiptera Corixidae Sigara (Subsigara) falleni
-	[ "43610923", { score:6 } ], // Hemiptera Corixidae Sigara (Subsigara) fallenoidea
-	[ "43610924", { score:3 } ], // Hemiptera Corixidae Sigara (Subsigara) fossarum
-	[ "43610925", { score:5 } ], // Hemiptera Corixidae Sigara (Subsigara) scotti
-	[ "43610941", { score:2 } ], // Hemiptera Corixidae Sigara (Vermicorixa) lateralis
-	[ "43610951", { score:2 } ], // Hemiptera Corixidae Sigara (Pseudovermicorixa) nigrolineata
-	[ "43611101", { score:5 } ], // Hemiptera Corixinae Paracorixa concinna
-	[ "43610971", { score:5 } ], // Hemiptera Corixidae Sigara (Retrocorixa) limitata
-	[ "43610972", { score:5 } ], // Hemiptera Corixidae Sigara (Retrocorixa) semistriata
-	[ "43610973", { score:4 } ], // Hemiptera Corixidae Sigara (Retrocorixa) venusta
-	[ "43610981", { score:6 } ], // Hemiptera Corixidae Sigara (Halicorixa) selecta
-	[ "43610982", { score:5 } ], // Hemiptera Corixidae Sigara (Halicorixa) stagnalis
-	[ "45110101", { score:3 } ], // Coleoptera Haliplidae Brychius elevatus
-	[ "45110201", { score:7 } ], // Coleoptera Haliplidae Peltodytes caesus
-	[ "45110341", { score:7 } ], // Coleoptera Haliplidae Haliplus (Haliplinus) apicalis
-	[ "45110321", { score:2 } ], // Coleoptera Haliplidae Haliplus (Haliplus) confinis
-	[ "45110351", { score:4 } ], // Coleoptera Haliplidae Haliplus (Liaphlus) flavicollis
-	[ "45110342", { score:2 } ], // Coleoptera Haliplidae Haliplus (Haliplinus) fluviatilis
-	[ "45110352", { score:4 } ], // Coleoptera Haliplidae Haliplus (Liaphlus) fulvus
-	[ "45110343", { score:10 } ], // Coleoptera Haliplidae Haliplus (Haliplinus) furcatus
-	[ "45110344", { score:7 } ], // Coleoptera Haliplidae Haliplus (Haliplinus) heydeni
-	[ "45110345", { score:4 } ], // Coleoptera Haliplidae Haliplus (Haliplinus) immaculatus
-	[ "45110353", { score:7 } ], // Coleoptera Haliplidae Haliplus (Liaphlus) laminatus
-	[ "45110331", { score:1 } ], // Coleoptera Haliplidae Haliplus (Neohaliplus) lineatocollis
-	[ "45110346", { score:4 } ], // Coleoptera Haliplidae Haliplus (Haliplinus) lineolatus
-	[ "45110354", { score:8 } ], // Coleoptera Haliplidae Haliplus (Liaphlus) mucronatus
-	[ "45110322", { score:4 } ], // Coleoptera Haliplidae Haliplus (Haliplus) obliquus
-	[ "45110347", { score:1 } ], // Coleoptera Haliplidae Haliplus (Haliplinus) ruficollis
-	[ "45110355", { score:8 } ], // Coleoptera Haliplidae Haliplus (Liaphlus) variegatus
-	[ "45110323", { score:8 } ], // Coleoptera Haliplidae Haliplus (Haliplus) varius
-	[ "45110348", { score:3 } ], // Coleoptera Haliplidae Haliplus (Haliplinus) sibiricus
-	[ "45120101", { score:4 } ], // Coleoptera Paelobiidae Hygrobia hermanni
-	[ "45130101", { score:2 } ], // Coleoptera Noteridae Noterus clavicornis
-	[ "45130102", { score:7 } ], // Coleoptera Noteridae Noterus crassicornis
-	[ "45140101", { score:1 } ], // Coleoptera Dytiscidae Laccophilus hyalinus
-	[ "45140102", { score:2 } ], // Coleoptera Dytiscidae Laccophilus minutus
-	[ "45140103", { score:9 } ], // Coleoptera Dytiscidae Laccophilus poecilus
-	[ "45140201", { score:8 } ], // Coleoptera Dytiscidae Hydrovatus clypealis
-	[ "45140301", { score:2 } ], // Coleoptera Dytiscidae Hyphydrus ovatus
-	[ "45140401", { score:7 } ], // Coleoptera Dytiscidae Hydroglyphus geminus
-	[ "45140501", { score:8 } ], // Coleoptera Dytiscidae Bidessus minutissimus
-	[ "45140502", { score:10 } ], // Coleoptera Dytiscidae Bidessus unistriatus
-	[ "45140611", { score:7 } ], // Coleoptera Dytiscidae Hygrotus (Hygrotus) decoratus
-	[ "45140612", { score:2 } ], // Coleoptera Dytiscidae Hygrotus (Hygrotus) inaequalis
-	[ "45140613", { score:7 } ], // Coleoptera Dytiscidae Hygrotus (Hygrotus) quinquelineatus
-	[ "45140614", { score:5 } ], // Coleoptera Dytiscidae Hygrotus (Hygrotus) versicolor
-	[ "45140621", { score:7 } ], // Coleoptera Dytiscidae Hygrotus (Coelambus) confluens
-	[ "45140622", { score:5 } ], // Coleoptera Dytiscidae Hygrotus (Coelambus) impressopunctatus
-	[ "45140623", { score:8 } ], // Coleoptera Dytiscidae Hygrotus (Coelambus) nigrolineatus
-	[ "45140624", { score:7 } ], // Coleoptera Dytiscidae Hygrotus (Coelambus) novemlineatus
-	[ "45140625", { score:7 } ], // Coleoptera Dytiscidae Hygrotus (Coelambus) parallellogrammus
-	[ "45140801", { score:2 } ], // Coleoptera Dytiscidae Hydroporus angustatus
-	[ "45140803", { score:3 } ], // Coleoptera Dytiscidae Hydroporus discretus
-	[ "45140805", { score:8 } ], // Coleoptera Dytiscidae Hydroporus elongatulus
-	[ "45140806", { score:3 } ], // Coleoptera Dytiscidae Hydroporus erythrocephalus
-	[ "45140807", { score:7 } ], // Coleoptera Dytiscidae Hydroporus ferrugineus
-	[ "45140809", { score:8 } ], // Coleoptera Dytiscidae Hydroporus glabriusculus
-	[ "45140811", { score:2 } ], // Coleoptera Dytiscidae Hydroporus gyllenhalii
-	[ "45140812", { score:3 } ], // Coleoptera Dytiscidae Hydroporus incognitus
-	[ "45140813", { score:7 } ], // Coleoptera Dytiscidae Hydroporus longicornis
-	[ "45140814", { score:5 } ], // Coleoptera Dytiscidae Hydroporus longulus
-	[ "45140815", { score:7 } ], // Coleoptera Dytiscidae Hydroporus marginatus
-	[ "45140816", { score:5 } ], // Coleoptera Dytiscidae Hydroporus melanarius
-	[ "45140817", { score:4 } ], // Coleoptera Dytiscidae Hydroporus memnonius
-	[ "45140818", { score:6 } ], // Coleoptera Dytiscidae Hydroporus morio
-	[ "45140819", { score:7 } ], // Coleoptera Dytiscidae Hydroporus neglectus
-	[ "45140821", { score:3 } ], // Coleoptera Dytiscidae Hydroporus nigrita
-	[ "45140822", { score:5 } ], // Coleoptera Dytiscidae Hydroporus obscurus
-	[ "45140823", { score:7 } ], // Coleoptera Dytiscidae Hydroporus obsoletus
-	[ "45140824", { score:1 } ], // Coleoptera Dytiscidae Hydroporus palustris
-	[ "45140825", { score:2 } ], // Coleoptera Dytiscidae Hydroporus planus
-	[ "45140826", { score:2 } ], // Coleoptera Dytiscidae Hydroporus pubescens
-	[ "45140827", { score:9 } ], // Coleoptera Dytiscidae Hydroporus rufifrons
-	[ "45140828", { score:9 } ], // Coleoptera Dytiscidae Hydroporus scalesianus
-	[ "45140829", { score:2 } ], // Coleoptera Dytiscidae Hydroporus striola
-	[ "45140831", { score:2 } ], // Coleoptera Dytiscidae Hydroporus tessellatus
-	[ "45140832", { score:5 } ], // Coleoptera Dytiscidae Hydroporus tristis
-	[ "45140833", { score:4 } ], // Coleoptera Dytiscidae Hydroporus umbrosus
-	[ "45142901", { score:5 } ], // Coleoptera Dytiscidae Suphrodytes dorsalis
-	[ "45140901", { score:7 } ], // Coleoptera Dytiscidae Stictonectes lepidus
-	[ "45141001", { score:8 } ], // Coleoptera Dytiscidae Graptodytes bilineatus
-	[ "45141002", { score:9 } ], // Coleoptera Dytiscidae Graptodytes flavipes
-	[ "45141003", { score:7 } ], // Coleoptera Dytiscidae Graptodytes granularis
-	[ "45141004", { score:3 } ], // Coleoptera Dytiscidae Graptodytes pictus
-	[ "45141101", { score:6 } ], // Coleoptera Dytiscidae Porhydrus lineatus
-	[ "45141201", { score:7 } ], // Coleoptera Dytiscidae Deronectes latus
-	[ "45141311", { score:5 } ], // Coleoptera Dytiscidae Nebrioporus (Nebrioporus) assimilis
-	[ "45141312", { score:7 } ], // Coleoptera Dytiscidae Nebrioporus (Nebrioporus) depressus
-	[ "45141402", { score:7 } ], // Coleoptera Dytiscidae Stictotarsus multilineatus
-	[ "45141313", { score:1 } ], // Coleoptera Dytiscidae Nebrioporus (Nebrioporus) elegans
-	[ "45141401", { score:2 } ], // Coleoptera Dytiscidae Stictotarsus duodecimpustulatus
-	[ "45141504", { score:8 } ], // Coleoptera Dytiscidae Oreodytes alpinus
-	[ "45141501", { score:6 } ], // Coleoptera Dytiscidae Oreodytes davisii
-	[ "45141502", { score:2 } ], // Coleoptera Dytiscidae Oreodytes sanmarkii
-	[ "45141503", { score:3 } ], // Coleoptera Dytiscidae Oreodytes septentrionalis
-	[ "45141601", { score:7 } ], // Coleoptera Dytiscidae Scarodytes halensis
-	[ "45141701", { score:7 } ], // Coleoptera Dytiscidae Laccornis oblongus
-	[ "45141901", { score:2 } ], // Coleoptera Dytiscidae Platambus maculatus
-	[ "45142051", { score:4 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) affinis
-	[ "45142031", { score:6 } ], // Coleoptera Dytiscidae Agabus (Acatodes) arcticus
-	[ "45142052", { score:7 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) biguttatus
-	[ "45142053", { score:1 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) bipustulatus
-	[ "45142054", { score:9 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) brunneus
-	[ "45142108", { score:7 } ], // Coleoptera Dytiscidae Ilybius chalconatus
-	[ "45142032", { score:5 } ], // Coleoptera Dytiscidae Agabus (Acatodes) congener
-	[ "45142055", { score:7 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) conspersus
-	[ "45142056", { score:1 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) didymus
-	[ "45142057", { score:5 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) guttatus
-	[ "45142041", { score:7 } ], // Coleoptera Dytiscidae Agabus (Agabus) labiatus
-	[ "45142058", { score:7 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) melanarius
-	[ "45142109", { score:5 } ], // Coleoptera Dytiscidae Ilybius montanus
-	[ "45142059", { score:1 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) nebulosus
-	[ "4514205A", { score:1 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) paludosus
-	[ "4514205B", { score:9 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) striolatus
-	[ "45142033", { score:1 } ], // Coleoptera Dytiscidae Agabus (Acatodes) sturmii
-	[ "45142042", { score:7 } ], // Coleoptera Dytiscidae Agabus (Agabus) uliginosus
-	[ "45142043", { score:9 } ], // Coleoptera Dytiscidae Agabus (Agabus) undulatus
-	[ "4514205C", { score:7 } ], // Coleoptera Dytiscidae Agabus (Gaurodytes) unguicularis
-	[ "45142101", { score:7 } ], // Coleoptera Dytiscidae Ilybius aenescens
-	[ "45142102", { score:3 } ], // Coleoptera Dytiscidae Ilybius ater
-	[ "45142103", { score:7 } ], // Coleoptera Dytiscidae Ilybius fenestratus
-	[ "45142104", { score:1 } ], // Coleoptera Dytiscidae Ilybius fuliginosus
-	[ "45142105", { score:7 } ], // Coleoptera Dytiscidae Ilybius guttiger
-	[ "45142106", { score:5 } ], // Coleoptera Dytiscidae Ilybius quadriguttatus
-	[ "45142107", { score:7 } ], // Coleoptera Dytiscidae Ilybius subaeneus
-	[ "45142221", { score:6 } ], // Coleoptera Dytiscidae Rhantus (Rhantus) bistriatus
-	[ "45142222", { score:5 } ], // Coleoptera Dytiscidae Rhantus (Rhantus) exsoletus
-	[ "45142223", { score:7 } ], // Coleoptera Dytiscidae Rhantus (Rhantus) frontalis
-	[ "45142211", { score:7 } ], // Coleoptera Dytiscidae Rhantus (Nartus) grapii
-	[ "45142224", { score:7 } ], // Coleoptera Dytiscidae Rhantus (Rhantus) suturalis
-	[ "45142301", { score:1 } ], // Coleoptera Dytiscidae Colymbetes fuscus
-	[ "45142402", { score:7 } ], // Coleoptera Dytiscidae Hydaticus seminiger
-	[ "45142403", { score:7 } ], // Coleoptera Dytiscidae Hydaticus transversalis
-	[ "45142601", { score:7 } ], // Coleoptera Dytiscidae Acilius canaliculatus
-	[ "45142602", { score:5 } ], // Coleoptera Dytiscidae Acilius sulcatus
-	[ "45142501", { score:10 } ], // Coleoptera Dytiscidae Graphoderus bilineatus
-	[ "45142502", { score:8 } ], // Coleoptera Dytiscidae Graphoderus cinereus
-	[ "45142503", { score:10 } ], // Coleoptera Dytiscidae Graphoderus zonatus
-	[ "45142701", { score:7 } ], // Coleoptera Dytiscidae Dytiscus circumcinctus
-	[ "45142702", { score:7 } ], // Coleoptera Dytiscidae Dytiscus circumflexus
-	[ "45142703", { score:7 } ], // Coleoptera Dytiscidae Dytiscus dimidiatus
-	[ "45142704", { score:7 } ], // Coleoptera Dytiscidae Dytiscus lapponicus
-	[ "45142705", { score:1 } ], // Coleoptera Dytiscidae Dytiscus marginalis
-	[ "45142706", { score:4 } ], // Coleoptera Dytiscidae Dytiscus semisulcatus
-	[ "45150201", { score:7 } ], // Coleoptera Gyrinidae Gyrinus aeratus
-	[ "45150203", { score:3 } ], // Coleoptera Gyrinidae Gyrinus caspius
-	[ "45150204", { score:7 } ], // Coleoptera Gyrinidae Gyrinus distinctus
-	[ "45150205", { score:2 } ], // Coleoptera Gyrinidae Gyrinus marinus
-	[ "45150206", { score:7 } ], // Coleoptera Gyrinidae Gyrinus minutus
-	[ "45150208", { score:7 } ], // Coleoptera Gyrinidae Gyrinus opacus
-	[ "45150202", { score:7 } ], // Coleoptera Gyrinidae Gyrinus paykulli
-	[ "45150209", { score:1 } ], // Coleoptera Gyrinidae Gyrinus substriatus
-	[ "45150211", { score:7 } ], // Coleoptera Gyrinidae Gyrinus suffriani
-	[ "45150212", { score:7 } ], // Coleoptera Gyrinidae Gyrinus urinator
-	[ "45150401", { score:3 } ], // Coleoptera Gyrinidae Orectochilus villosus
-	[ "45340101", { score:7 } ], // Coleoptera Georissidae Georissus crenulatus
-	[ "45370101", { score:10 } ], // Coleoptera Spercheidae Spercheus emarginatus
-	[ "45360101", { score:7 } ], // Coleoptera Hydrochidae Hydrochus angustatus
-	[ "45360102", { score:8 } ], // Coleoptera Hydrochidae Hydrochus brevis
-	[ "45360103", { score:8 } ], // Coleoptera Hydrochidae Hydrochus crenatus
-	[ "45360104", { score:8 } ], // Coleoptera Hydrochidae Hydrochus elongatus
-	[ "45360105", { score:8 } ], // Coleoptera Hydrochidae Hydrochus ignicollis
-	[ "45360107", { score:8 } ], // Coleoptera Hydrochidae Hydrochus megaphallus
-	[ "45360106", { score:8 } ], // Coleoptera Hydrochidae Hydrochus nitidicollis
-	[ "45330141", { score:1 } ], // Coleoptera Helophoridae Helophorus (Megahelophorus) aequalis
-	[ "45330131", { score:7 } ], // Coleoptera Helophoridae Helophorus (Trichohelophorus) alternans
-	[ "45330151", { score:7 } ], // Coleoptera Helophoridae Helophorus (Atracthelophorus) arvernicus
-	[ "45330152", { score:1 } ], // Coleoptera Helophoridae Helophorus (Atracthelophorus) brevipalpis
-	[ "45330161", { score:8 } ], // Coleoptera Helophoridae Helophorus (Helophorus) dorsalis
-	[ "45330162", { score:2 } ], // Coleoptera Helophoridae Helophorus (Helophorus) flavipes
-	[ "45330163", { score:7 } ], // Coleoptera Helophoridae Helophorus (Helophorus) fulgidicollis
-	[ "45330142", { score:2 } ], // Coleoptera Helophoridae Helophorus (Megahelophorus) grandis
-	[ "45330164", { score:5 } ], // Coleoptera Helophoridae Helophorus (Helophorus) granularis
-	[ "45330165", { score:7 } ], // Coleoptera Helophoridae Helophorus (Helophorus) griseus
-	[ "45330166", { score:9 } ], // Coleoptera Helophoridae Helophorus (Helophorus) laticollis
-	[ "45330167", { score:8 } ], // Coleoptera Helophoridae Helophorus (Helophorus) longitarsis
-	[ "45330168", { score:3 } ], // Coleoptera Helophoridae Helophorus (Helophorus) minutus
-	[ "45330169", { score:7 } ], // Coleoptera Helophoridae Helophorus (Helophorus) nanus
-	[ "45330111", { score:4 } ], // Coleoptera Helophoridae Helophorus (Empleurus) nubilus
-	[ "4533016A", { score:3 } ], // Coleoptera Helophoridae Helophorus (Helophorus) obscurus
-	[ "4533016B", { score:7 } ], // Coleoptera Helophoridae Helophorus (Helophorus) strigifrons
-	[ "45330121", { score:8 } ], // Coleoptera Helophoridae Helophorus (Cyphelophorus) tuberculatus
-	[ "45353001", { score:6 } ], // Coleoptera Hydrophilidae Coelostoma orbiculare
-	[ "45353143", { score:8 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) bifenestratus
-	[ "45353144", { score:7 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) convexiusculus
-	[ "45353145", { score:7 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) depressus
-	[ "45353146", { score:8 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) granarius
-	[ "45353148", { score:1 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) impressus
-	[ "4535314A", { score:3 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) lateralis
-	[ "4535314B", { score:3 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) littoralis
-	[ "4535314E", { score:7 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) obsoletus
-	[ "4535314C", { score:3 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) marinus
-	[ "4535314D", { score:2 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) melanocephalus
-	[ "4535314H", { score:7 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) sternalis
-	[ "4535314K", { score:7 } ], // Coleoptera Hydrophilidae Cercyon (Cercyon) tristis
-	[ "45353151", { score:7 } ], // Coleoptera Hydrophilidae Cercyon (Dicyrtocercyon) ustulatus
-	[ "45351001", { score:10 } ], // Coleoptera Hydrophilidae Paracymus aeneus
-	[ "45351002", { score:7 } ], // Coleoptera Hydrophilidae Paracymus scutellaris
-	[ "45351101", { score:1 } ], // Coleoptera Hydrophilidae Hydrobius fuscipes
-	[ "45351201", { score:7 } ], // Coleoptera Hydrophilidae Limnoxenus niger
-	[ "45351301", { score:7 } ], // Coleoptera Hydrophilidae Anacaena bipustulata
-	[ "45351302", { score:1 } ], // Coleoptera Hydrophilidae Anacaena globulus
-	[ "45351303", { score:1 } ], // Coleoptera Hydrophilidae Anacaena limbata
-	[ "45351304", { score:3 } ], // Coleoptera Hydrophilidae Anacaena lutescens
-	[ "45351421", { score:7 } ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) atratus
-	[ "45351422", { score:7 } ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) ytenensis
-	[ "45351411", { score:5 } ], // Coleoptera Hydrophilidae Laccobius (Laccobius) colon
-	[ "45351423", { score:2 } ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) bipunctatus
-	[ "45351412", { score:2 } ], // Coleoptera Hydrophilidae Laccobius (Laccobius) minutus
-	[ "45351425", { score:8 } ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) simulatrix
-	[ "45351426", { score:7 } ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) sinuatus
-	[ "45351427", { score:2 } ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) striatulus
-	[ "45351601", { score:7 } ], // Coleoptera Hydrophilidae Helochares lividus
-	[ "45351602", { score:8 } ], // Coleoptera Hydrophilidae Helochares obscurus
-	[ "45351603", { score:7 } ], // Coleoptera Hydrophilidae Helochares punctatus
-	[ "45351701", { score:7 } ], // Coleoptera Hydrophilidae Enochrus affinis
-	[ "45351702", { score:7 } ], // Coleoptera Hydrophilidae Enochrus bicolor
-	[ "45351703", { score:7 } ], // Coleoptera Hydrophilidae Enochrus coarctatus
-	[ "45351709", { score:5 } ], // Coleoptera Hydrophilidae Enochrus fuscipennis
-	[ "45351711", { score:7 } ], // Coleoptera Hydrophilidae Enochrus halophilus
-	[ "45351712", { score:8 } ], // Coleoptera Hydrophilidae Enochrus nigritus
-	[ "45351705", { score:7 } ], // Coleoptera Hydrophilidae Enochrus melanocephalus
-	[ "45351706", { score:7 } ], // Coleoptera Hydrophilidae Enochrus ochropterus
-	[ "45351707", { score:7 } ], // Coleoptera Hydrophilidae Enochrus quadripunctatus
-	[ "45351708", { score:3 } ], // Coleoptera Hydrophilidae Enochrus testaceus
-	[ "45352001", { score:5 } ], // Coleoptera Hydrophilidae Cymbiodyta marginellus
-	[ "45352101", { score:7 } ], // Coleoptera Hydrophilidae Chaetarthria seminulum
-	[ "45352201", { score:10 } ], // Coleoptera Hydrophilidae Hydrochara caraboides
-	[ "45352301", { score:8 } ], // Coleoptera Hydrophilidae Hydrophilus piceus
-	[ "45352411", { score:7 } ], // Coleoptera Hydrophilidae Berosus (Berosus) affinis
-	[ "45352412", { score:7 } ], // Coleoptera Hydrophilidae Berosus (Berosus) luridus
-	[ "45352413", { score:7 } ], // Coleoptera Hydrophilidae Berosus (Berosus) signaticollis
-	[ "45352421", { score:8 } ], // Coleoptera Hydrophilidae Berosus (Enoplurus) fulvus
-	[ "45410131", { score:10 } ], // Coleoptera Hydraenidae Ochthebius (Homalochthebius) aeneus
-	[ "45410121", { score:7 } ], // Coleoptera Hydraenidae Ochthebius (Asiobates) auriculatus
-	[ "45410122", { score:7 } ], // Coleoptera Hydraenidae Ochthebius (Asiobates) bicolon
-	[ "45410123", { score:3 } ], // Coleoptera Hydraenidae Ochthebius (Asiobates) dilatatus
-	[ "45410501", { score:7 } ], // Coleoptera Hydraenidae Enicocerus exsculptus
-	[ "45410151", { score:9 } ], // Coleoptera Hydraenidae Ochthebius (Ochthebius) lenensis
-	[ "45410152", { score:7 } ], // Coleoptera Hydraenidae Ochthebius (Ochthebius) marinus
-	[ "45410132", { score:1 } ], // Coleoptera Hydraenidae Ochthebius (Homalochthebius) minimus
-	[ "45410141", { score:7 } ], // Coleoptera Hydraenidae Ochthebius (Hymenodes) nanus
-	[ "45410142", { score:8 } ], // Coleoptera Hydraenidae Ochthebius (Hymenodes) poweri
-	[ "45410143", { score:7 } ], // Coleoptera Hydraenidae Ochthebius (Hymenodes) punctatus
-	[ "45410153", { score:7 } ], // Coleoptera Hydraenidae Ochthebius (Ochthebius) pusillus
-	[ "45410154", { score:7 } ], // Coleoptera Hydraenidae Ochthebius (Ochthebius) viridis
-	[ "45410201", { score:5 } ], // Coleoptera Hydraenidae Hydraena britteni
-	[ "45410202", { score:1 } ], // Coleoptera Hydraenidae Hydraena gracilis
-	[ "45410203", { score:7 } ], // Coleoptera Hydraenidae Hydraena flavipes
-	[ "45410204", { score:7 } ], // Coleoptera Hydraenidae Hydraena nigrita
-	[ "45410205", { score:9 } ], // Coleoptera Hydraenidae Hydraena palustris
-	[ "45410206", { score:7 } ], // Coleoptera Hydraenidae Hydraena pulchella
-	[ "45410207", { score:8 } ], // Coleoptera Hydraenidae Hydraena pygmaea
-	[ "45410208", { score:1 } ], // Coleoptera Hydraenidae Hydraena riparia
-	[ "45410209", { score:7 } ], // Coleoptera Hydraenidae Hydraena rufipes
-	[ "45410211", { score:7 } ], // Coleoptera Hydraenidae Hydraena testacea
-	[ "45410301", { score:7 } ], // Coleoptera Hydraenidae Limnebius aluta
-	[ "45410302", { score:8 } ], // Coleoptera Hydraenidae Limnebius crinifer
-	[ "45410303", { score:7 } ], // Coleoptera Hydraenidae Limnebius nitidus
-	[ "45410304", { score:7 } ], // Coleoptera Hydraenidae Limnebius papposus
-	[ "45410305", { score:1 } ], // Coleoptera Hydraenidae Limnebius truncatellus
-	[ "45630101", { score:1 } ], // Coleoptera Elmidae Elmis aenea
-	[ "45630201", { score:4 } ], // Coleoptera Elmidae Esolus parallelepipedus
-	[ "45630301", { score:2 } ], // Coleoptera Elmidae Limnius volckmari
-	[ "45630401", { score:8 } ], // Coleoptera Elmidae Macronychus quadrituberculatus
-	[ "45630501", { score:9 } ], // Coleoptera Elmidae Normandia nitens
-	[ "45630601", { score:8 } ], // Coleoptera Elmidae Oulimnius major
-	[ "45630602", { score:7 } ], // Coleoptera Elmidae Oulimnius rivularis
-	[ "45630603", { score:7 } ], // Coleoptera Elmidae Oulimnius troglodytes
-	[ "45630604", { score:2 } ], // Coleoptera Elmidae Oulimnius tuberculatus
-	[ "45630701", { score:7 } ], // Coleoptera Elmidae Riolus cupreus
-	[ "45630702", { score:7 } ], // Coleoptera Elmidae Riolus subviolaceus
-	[ "45630801", { score:9 } ], // Coleoptera Elmidae Stenelmis canaliculata
-	[ "45620101", { score:7 } ], // Coleoptera Dryopidae Pomatinus substriatus
-	[ "45620211", { score:8 } ], // Coleoptera Dryopidae Dryops (Dryops) anglicanus
-	[ "45620212", { score:7 } ], // Coleoptera Dryopidae Dryops (Dryops) auriculatus
-	[ "45620213", { score:3 } ], // Coleoptera Dryopidae Dryops (Dryops) ernesti
-	[ "45620214", { score:8 } ], // Coleoptera Dryopidae Dryops (Dryops) griseus
-	[ "45620215", { score:1 } ], // Coleoptera Dryopidae Dryops (Dryops) luridus
-	[ "45620221", { score:7 } ], // Coleoptera Dryopidae Dryops (Yrdops) nitidulus
-	[ "45620217", { score:7 } ], // Coleoptera Dryopidae Dryops (Dryops) similaris
-	[ "45620216", { score:7 } ], // Coleoptera Dryopidae Dryops (Dryops) striatellus
-	[ "45650108", { score:3 } ], // Coleoptera Heteroceridae Heterocerus fenestratus
-	[ "45650101", { score:5 } ], // Coleoptera Heteroceridae Heterocerus flexuosus
-	[ "45650201", { score:8 } ], // Coleoptera Heteroceridae Augyles hispidulus
-	[ "45650107", { score:3 } ], // Coleoptera Heteroceridae Heterocerus obsoletus
-	[ "45710201", { score:7 } ], // Coleoptera Chrysomelidae Donacia aquatica
-	[ "45710202", { score:7 } ], // Coleoptera Chrysomelidae Donacia bicolora
-	[ "45710203", { score:7 } ], // Coleoptera Chrysomelidae Donacia cinerea
-	[ "45710204", { score:7 } ], // Coleoptera Chrysomelidae Donacia clavipes
-	[ "45710205", { score:7 } ], // Coleoptera Chrysomelidae Donacia crassipes
-	[ "45710206", { score:7 } ], // Coleoptera Chrysomelidae Donacia dentata
-	[ "45710207", { score:7 } ], // Coleoptera Chrysomelidae Donacia impressa
-	[ "45710208", { score:4 } ], // Coleoptera Chrysomelidae Donacia marginata
-	[ "45710209", { score:9 } ], // Coleoptera Chrysomelidae Donacia obscura
-	[ "45710211", { score:5 } ], // Coleoptera Chrysomelidae Donacia semicuprea
-	[ "45710212", { score:5 } ], // Coleoptera Chrysomelidae Donacia simplex
-	[ "45710213", { score:7 } ], // Coleoptera Chrysomelidae Donacia sparganii
-	[ "45710214", { score:7 } ], // Coleoptera Chrysomelidae Donacia thalassina
-	[ "45710215", { score:5 } ], // Coleoptera Chrysomelidae Donacia versicolorea
-	[ "45710216", { score:5 } ], // Coleoptera Chrysomelidae Donacia vulgaris
-	[ "45710305", { score:7 } ], // Coleoptera Chrysomelidae Plateumaris affinis
-	[ "45710302", { score:7 } ], // Coleoptera Chrysomelidae Plateumaris braccata
-	[ "45710303", { score:5 } ], // Coleoptera Chrysomelidae Plateumaris discolor
-	[ "45710304", { score:3 } ], // Coleoptera Chrysomelidae Plateumaris sericea
-	[ "45810501", { score:5 } ], // Coleoptera Curculionidae Tanysphyrus lemnae
-	[ "45811301", { score:7 } ], // Coleoptera Curculionidae Eubrychius velutus
-	[ "45811602", { score:7 } ], // Coleoptera Curculionidae Phytobius leucogaster
-	[ "45812601", { score:7 } ], // Coleoptera Curculionidae Pelenomus canaliculatus
-	[ "45812604", { score:7 } ], // Coleoptera Curculionidae Pelenomus quadricorniger
-	[ "45812702", { score:8 } ], // Coleoptera Curculionidae Neophytobius quadrinodosus
-	[ "45812301", { score:7 } ], // Coleoptera Curculionidae Gymnetron beccabungae
-	[ "45812302", { score:7 } ], // Coleoptera Curculionidae Gymnetron veronicae
-	[ "45812001", { score:5 } ], // Coleoptera Curculionidae Poophagus sisymbrii
-	[ "45810671", { score:7 } ], // Coleoptera Curculionidae Bagous (Hydronomus) alismatis
-	[ "45510103", { score:8 } ], // Coleoptera Scirtidae Elodes elongata
-	[ "45510307", { score:8 } ], // Coleoptera Scirtidae Cyphon pubescens
-	[ "45510401", { score:8 } ], // Coleoptera Scirtidae Prionocyphon serricornis
-	[ "45510602", { score:8 } ], // Coleoptera Scirtidae Scirtes orbicularis
-	[ "46110102", { score:1 } ], // Megaloptera Sialidae Sialis lutaria
-	[ "46110101", { score:5 } ], // Megaloptera Sialidae Sialis fuliginosa
-	[ "46110103", { score:7 } ], // Megaloptera Sialidae Sialis nigripes
-	[ "47110101", { score:5 } ], // Neuroptera Osmylidae Osmylus fulvicephalus
-	[ "47120102", { score:5 } ], // Neuroptera Sisyridae Sisyra fuscata
-	[ "47120101", { score:7 } ], // Neuroptera Sisyridae Sisyra dalii
-	[ "47120103", { score:5 } ], // Neuroptera Sisyridae Sisyra terminalis
-	[ "48110101", { score:1 } ], // Trichoptera Rhyacophilidae Rhyacophila dorsalis
-	[ "48110104", { score:7 } ], // Trichoptera Rhyacophilidae Rhyacophila fasciata
-	[ "48110103", { score:4 } ], // Trichoptera Rhyacophilidae Rhyacophila obliterata
-	[ "48110102", { score:3 } ], // Trichoptera Rhyacophilidae Rhyacophila munda
-	[ "48120102", { score:4 } ], // Trichoptera Glossosomatidae Glossosoma conformis
-	[ "48120101", { score:3 } ], // Trichoptera Glossosomatidae Glossosoma boltoni
-	[ "48120103", { score:8 } ], // Trichoptera Glossosomatidae Glossosoma intermedium
-	[ "48120202", { score:1 } ], // Trichoptera Glossosomatidae Agapetus fuscipes
-	[ "48120203", { score:3 } ], // Trichoptera Glossosomatidae Agapetus ochripes
-	[ "48120201", { score:3 } ], // Trichoptera Glossosomatidae Agapetus delicatulus
-	[ "48210101", { score:2 } ], // Trichoptera Philopotamidae Philopotamus montanus
-	[ "48210202", { score:2 } ], // Trichoptera Philopotamidae Wormaldia occipitalis
-	[ "48210201", { score:5 } ], // Trichoptera Philopotamidae Wormaldia mediana
-	[ "48210203", { score:5 } ], // Trichoptera Philopotamidae Wormaldia subnigra
-	[ "48210301", { score:7 } ], // Trichoptera Philopotamidae Chimarra marginata
-	[ "48240301", { score:3 } ], // Trichoptera Polycentropodidae Neureclipsis bimaculata
-	[ "48240402", { score:2 } ], // Trichoptera Polycentropodidae Plectrocnemia conspersa
-	[ "48240403", { score:3 } ], // Trichoptera Polycentropodidae Plectrocnemia geniculata
-	[ "48240401", { score:8 } ], // Trichoptera Polycentropodidae Plectrocnemia brevis
-	[ "48240501", { score:2 } ], // Trichoptera Polycentropodidae Polycentropus flavomaculatus
-	[ "48240502", { score:5 } ], // Trichoptera Polycentropodidae Polycentropus irroratus
-	[ "48240503", { score:5 } ], // Trichoptera Polycentropodidae Polycentropus kingi
-	[ "48240201", { score:4 } ], // Trichoptera Polycentropodidae Holocentropus dubius
-	[ "48240202", { score:3 } ], // Trichoptera Polycentropodidae Holocentropus picicornis
-	[ "48240203", { score:4 } ], // Trichoptera Polycentropodidae Holocentropus stagnalis
-	[ "48240103", { score:3 } ], // Trichoptera Polycentropodidae Cyrnus trimaculatus
-	[ "48240102", { score:10 } ], // Trichoptera Polycentropodidae Cyrnus insolutus
-	[ "48240101", { score:5 } ], // Trichoptera Polycentropodidae Cyrnus flavidus
-	[ "48230101", { score:5 } ], // Trichoptera Ecnomidae Ecnomus tenellus
-	[ "48220408", { score:1 } ], // Trichoptera Psychomyiidae Tinodes waeneri
-	[ "48220403", { score:4 } ], // Trichoptera Psychomyiidae Tinodes maclachlani
-	[ "48220401", { score:5 } ], // Trichoptera Psychomyiidae Tinodes assimilis
-	[ "48220405", { score:9 } ], // Trichoptera Psychomyiidae Tinodes pallidulus
-	[ "48220404", { score:7 } ], // Trichoptera Psychomyiidae Tinodes maculicornis
-	[ "48220407", { score:7 } ], // Trichoptera Psychomyiidae Tinodes unicolor
-	[ "48220406", { score:7 } ], // Trichoptera Psychomyiidae Tinodes rostocki
-	[ "48220402", { score:7 } ], // Trichoptera Psychomyiidae Tinodes dives
-	[ "48220101", { score:4 } ], // Trichoptera Psychomyiidae Lype phaeopa
-	[ "48220102", { score:3 } ], // Trichoptera Psychomyiidae Lype reducta
-	[ "48220201", { score:7 } ], // Trichoptera Psychomyiidae Metalype fragilis
-	[ "48220301", { score:4 } ], // Trichoptera Psychomyiidae Psychomyia pusilla
-	[ "48250207", { score:2 } ], // Trichoptera Hydropsychidae Hydropsyche pellucidula
-	[ "48250201", { score:1 } ], // Trichoptera Hydropsychidae Hydropsyche angustipennis
-	[ "48250209", { score:1 } ], // Trichoptera Hydropsychidae Hydropsyche siltalai
-	[ "48250208", { score:10 } ], // Trichoptera Hydropsychidae Hydropsyche saxonica
-	[ "48250203", { score:4 } ], // Trichoptera Hydropsychidae Hydropsyche contubernalis
-	[ "48250202", { score:10 } ], // Trichoptera Hydropsychidae Hydropsyche bulgaromanorum
-	[ "48250206", { score:4 } ], // Trichoptera Hydropsychidae Hydropsyche instabilis
-	[ "48250205", { score:7 } ], // Trichoptera Hydropsychidae Hydropsyche fulvipes
-	[ "48250204", { score:10 } ], // Trichoptera Hydropsychidae Hydropsyche exocellata
-	[ "48250101", { score:4 } ], // Trichoptera Hydropsychidae Cheumatopsyche lepida
-	[ "48250301", { score:4 } ], // Trichoptera Hydropsychidae Diplectrona felix
-	[ "48130101", { score:1 } ], // Trichoptera Hydroptilidae Agraylea multipunctata
-	[ "48130102", { score:5 } ], // Trichoptera Hydroptilidae Agraylea sexmaculata
-	[ "48130201", { score:5 } ], // Trichoptera Hydroptilidae Allotrichia pallicornis
-	[ "48130309", { score:4 } ], // Trichoptera Hydroptilidae Hydroptila sparsa
-	[ "48130308", { score:3 } ], // Trichoptera Hydroptilidae Hydroptila simulans
-	[ "48130302", { score:7 } ], // Trichoptera Hydroptilidae Hydroptila cornuta
-	[ "48130304", { score:9 } ], // Trichoptera Hydroptilidae Hydroptila lotensis
-	[ "48130301", { score:5 } ], // Trichoptera Hydroptilidae Hydroptila angulata
-	[ "48130311", { score:7 } ], // Trichoptera Hydroptilidae Hydroptila sylvestris
-	[ "48130305", { score:6 } ], // Trichoptera Hydroptilidae Hydroptila martini
-	[ "48130306", { score:5 } ], // Trichoptera Hydroptilidae Hydroptila occulta
-	[ "48130313", { score:2 } ], // Trichoptera Hydroptilidae Hydroptila tineoides
-	[ "48130307", { score:6 } ], // Trichoptera Hydroptilidae Hydroptila pulchricornis
-	[ "48130303", { score:3 } ], // Trichoptera Hydroptilidae Hydroptila forcipata
-	[ "48130315", { score:2 } ], // Trichoptera Hydroptilidae Hydroptila vectis
-	[ "48130312", { score:10 } ], // Trichoptera Hydroptilidae Hydroptila tigurina
-	[ "48130314", { score:7 } ], // Trichoptera Hydroptilidae Hydroptila valesiaca
-	[ "48130602", { score:4 } ], // Trichoptera Hydroptilidae Ithytrichia lamellaris
-	[ "48130601", { score:8 } ], // Trichoptera Hydroptilidae Ithytrichia clavata
-	[ "48130701", { score:5 } ], // Trichoptera Hydroptilidae Orthotrichia angustella
-	[ "48130703", { score:10 } ], // Trichoptera Hydroptilidae Orthotrichia tragetti
-	[ "48130702", { score:5 } ], // Trichoptera Hydroptilidae Orthotrichia costalis
-	[ "48130403", { score:3 } ], // Trichoptera Hydroptilidae Oxyethira flavicornis
-	[ "48130408", { score:10 } ], // Trichoptera Hydroptilidae Oxyethira tristella
-	[ "48130407", { score:6 } ], // Trichoptera Hydroptilidae Oxyethira simplex
-	[ "48130402", { score:3 } ], // Trichoptera Hydroptilidae Oxyethira falcata
-	[ "48130404", { score:4 } ], // Trichoptera Hydroptilidae Oxyethira frici
-	[ "48130401", { score:10 } ], // Trichoptera Hydroptilidae Oxyethira distinctella
-	[ "48130406", { score:8 } ], // Trichoptera Hydroptilidae Oxyethira sagittifera
-	[ "48130405", { score:8 } ], // Trichoptera Hydroptilidae Oxyethira mirabilis
-	[ "48130501", { score:8 } ], // Trichoptera Hydroptilidae Tricholeiochiton fagesii
-	[ "48310301", { score:10 } ], // Trichoptera Phryganeidae Hagenella clathrata
-	[ "48310502", { score:5 } ], // Trichoptera Phryganeidae Phryganea grandis
-	[ "48310501", { score:2 } ], // Trichoptera Phryganeidae Phryganea bipunctata
-	[ "48310401", { score:4 } ], // Trichoptera Phryganeidae Oligotricha striata
-	[ "48310105", { score:3 } ], // Trichoptera Phryganeidae Agrypnia varia
-	[ "48310102", { score:5 } ], // Trichoptera Phryganeidae Agrypnia obsoleta
-	[ "48310104", { score:10 } ], // Trichoptera Phryganeidae Agrypnia picta
-	[ "48310103", { score:5 } ], // Trichoptera Phryganeidae Agrypnia pagetana
-	[ "48310601", { score:5 } ], // Trichoptera Phryganeidae Trichostegia minor
-	[ "48340101", { score:9 } ], // Trichoptera Limnephilidae Ironoquia dubia
-	[ "483B0104", { score:5 } ], // Trichoptera Apataniidae Apatania wallengreni
-	[ "483B0101", { score:7 } ], // Trichoptera Apataniidae Apatania auricula
-	[ "483B0102", { score:5 } ], // Trichoptera Apataniidae Apatania muliebris
-	[ "48340301", { score:1 } ], // Trichoptera Limnephilidae Drusus annulatus
-	[ "48340401", { score:4 } ], // Trichoptera Limnephilidae Ecclisopteryx guttulata
-	[ "48341726", { score:3 } ], // Trichoptera Limnephilidae Limnephilus rhombicus
-	[ "48341712", { score:2 } ], // Trichoptera Limnephilidae Limnephilus flavicornis
-	[ "48341729", { score:7 } ], // Trichoptera Limnephilidae Limnephilus subcentralis
-	[ "48341705", { score:7 } ], // Trichoptera Limnephilidae Limnephilus borealis
-	[ "48341722", { score:3 } ], // Trichoptera Limnephilidae Limnephilus marmoratus
-	[ "48341725", { score:4 } ], // Trichoptera Limnephilidae Limnephilus politus
-	[ "48341731", { score:9 } ], // Trichoptera Limnephilidae Limnephilus tauricus
-	[ "48341724", { score:10 } ], // Trichoptera Limnephilidae Limnephilus pati
-	[ "48341728", { score:4 } ], // Trichoptera Limnephilidae Limnephilus stigma
-	[ "48341703", { score:5 } ], // Trichoptera Limnephilidae Limnephilus binotatus
-	[ "48341708", { score:5 } ], // Trichoptera Limnephilidae Limnephilus decipiens
-	[ "48341719", { score:1 } ], // Trichoptera Limnephilidae Limnephilus lunatus
-	[ "48341721", { score:2 } ], // Trichoptera Limnephilidae Limnephilus luridus
-	[ "48341717", { score:6 } ], // Trichoptera Limnephilidae Limnephilus ignavus
-	[ "48341714", { score:7 } ], // Trichoptera Limnephilidae Limnephilus fuscinervis
-	[ "48341709", { score:7 } ], // Trichoptera Limnephilidae Limnephilus elegans
-	[ "48341715", { score:4 } ], // Trichoptera Limnephilidae Limnephilus griseus
-	[ "48341704", { score:5 } ], // Trichoptera Limnephilidae Limnephilus bipunctatus
-	[ "48341701", { score:3 } ], // Trichoptera Limnephilidae Limnephilus affinis
-	[ "48341718", { score:3 } ], // Trichoptera Limnephilidae Limnephilus incisus
-	[ "48341716", { score:4 } ], // Trichoptera Limnephilidae Limnephilus hirsutus
-	[ "48341706", { score:3 } ], // Trichoptera Limnephilidae Limnephilus centralis
-	[ "48341727", { score:2 } ], // Trichoptera Limnephilidae Limnephilus sparsus
-	[ "48341702", { score:3 } ], // Trichoptera Limnephilidae Limnephilus auricula
-	[ "48341732", { score:3 } ], // Trichoptera Limnephilidae Limnephilus vittatus
-	[ "48341723", { score:6 } ], // Trichoptera Limnephilidae Limnephilus nigriceps
-	[ "48341711", { score:2 } ], // Trichoptera Limnephilidae Limnephilus extricatus
-	[ "48341713", { score:5 } ], // Trichoptera Limnephilidae Limnephilus fuscicornis
-	[ "48341707", { score:4 } ], // Trichoptera Limnephilidae Limnephilus coenosus
-	[ "48341602", { score:10 } ], // Trichoptera Limnephilidae Grammotaulius nitidus
-	[ "48341601", { score:4 } ], // Trichoptera Limnephilidae Grammotaulius nigropunctatus
-	[ "48341501", { score:3 } ], // Trichoptera Limnephilidae Glyphotaelius pellucidus
-	[ "48341801", { score:8 } ], // Trichoptera Limnephilidae Nemotaulius punctatolineatus
-	[ "48341401", { score:2 } ], // Trichoptera Limnephilidae Anabolia nervosa
-	[ "48341402", { score:7 } ], // Trichoptera Limnephilidae Anabolia brevipennis
-	[ "48342001", { score:5 } ], // Trichoptera Limnephilidae Rhadicoleptus alpestris
-	[ "48341102", { score:2 } ], // Trichoptera Limnephilidae Potamophylax latipennis
-	[ "48341101", { score:2 } ], // Trichoptera Limnephilidae Potamophylax cingulatus
-	[ "48341103", { score:6 } ], // Trichoptera Limnephilidae Potamophylax rotundipennis
-	[ "48340602", { score:2 } ], // Trichoptera Limnephilidae Halesus radiatus
-	[ "48340601", { score:3 } ], // Trichoptera Limnephilidae Halesus digitatus
-	[ "48340801", { score:5 } ], // Trichoptera Limnephilidae Melampophylax mucoreus
-	[ "48341201", { score:3 } ], // Trichoptera Limnephilidae Stenophylax permistus
-	[ "48341202", { score:5 } ], // Trichoptera Limnephilidae Stenophylax vibex
-	[ "48341001", { score:2 } ], // Trichoptera Limnephilidae Micropterna lateralis
-	[ "48341002", { score:1 } ], // Trichoptera Limnephilidae Micropterna sequax
-	[ "48340902", { score:5 } ], // Trichoptera Limnephilidae Mesophylax impunctatus
-	[ "48340901", { score:8 } ], // Trichoptera Limnephilidae Mesophylax aspersus
-	[ "48340501", { score:4 } ], // Trichoptera Limnephilidae Allogamus auricollis
-	[ "48340701", { score:5 } ], // Trichoptera Limnephilidae Hydatophylax infumatus
-	[ "48341301", { score:3 } ], // Trichoptera Limnephilidae Chaetopteryx villosa
-	[ "48390101", { score:2 } ], // Trichoptera Molannidae Molanna angustata
-	[ "48390102", { score:5 } ], // Trichoptera Molannidae Molanna albicans
-	[ "48360102", { score:4 } ], // Trichoptera Beraeidae Beraea pullata
-	[ "48360101", { score:3 } ], // Trichoptera Beraeidae Beraea maurus
-	[ "48360301", { score:8 } ], // Trichoptera Beraeidae Ernodes articularis
-	[ "48360201", { score:5 } ], // Trichoptera Beraeidae Beraeodes minutus
-	[ "48380101", { score:3 } ], // Trichoptera Odontoceridae Odontocerum albicorne
-	[ "483A0201", { score:5 } ], // Trichoptera Leptoceridae Ceraclea albimacula
-	[ "483A0205", { score:4 } ], // Trichoptera Leptoceridae Ceraclea nigronervosa
-	[ "483A0204", { score:5 } ], // Trichoptera Leptoceridae Ceraclea fulva
-	[ "483A0206", { score:7 } ], // Trichoptera Leptoceridae Ceraclea senilis
-	[ "483A0202", { score:4 } ], // Trichoptera Leptoceridae Ceraclea annulicornis
-	[ "483A0203", { score:3 } ], // Trichoptera Leptoceridae Ceraclea dissimilis
-	[ "483A0102", { score:1 } ], // Trichoptera Leptoceridae Athripsodes aterrimus
-	[ "483A0104", { score:1 } ], // Trichoptera Leptoceridae Athripsodes cinereus
-	[ "483A0101", { score:4 } ], // Trichoptera Leptoceridae Athripsodes albifrons
-	[ "483A0103", { score:5 } ], // Trichoptera Leptoceridae Athripsodes bilineatus
-	[ "483A0105", { score:6 } ], // Trichoptera Leptoceridae Athripsodes commutatus
-	[ "483A0403", { score:6 } ], // Trichoptera Leptoceridae Mystacides nigra
-	[ "483A0401", { score:2 } ], // Trichoptera Leptoceridae Mystacides azurea
-	[ "483A0402", { score:1 } ], // Trichoptera Leptoceridae Mystacides longicornis
-	[ "483A0701", { score:2 } ], // Trichoptera Leptoceridae Triaenodes bicolor
-	[ "483A0801", { score:7 } ], // Trichoptera Leptoceridae Ylodes conspersus
-	[ "483A0803", { score:8 } ], // Trichoptera Leptoceridae Ylodes simulans
-	[ "483A0802", { score:8 } ], // Trichoptera Leptoceridae Ylodes reuteri
-	[ "483A0601", { score:8 } ], // Trichoptera Leptoceridae Erotesis baltica
-	[ "483A0502", { score:3 } ], // Trichoptera Leptoceridae Adicella reducta
-	[ "483A0501", { score:8 } ], // Trichoptera Leptoceridae Adicella filicornis
-	[ "483A0904", { score:2 } ], // Trichoptera Leptoceridae Oecetis ochracea
-	[ "483A0901", { score:5 } ], // Trichoptera Leptoceridae Oecetis furva
-	[ "483A0902", { score:3 } ], // Trichoptera Leptoceridae Oecetis lacustris
-	[ "483A0903", { score:8 } ], // Trichoptera Leptoceridae Oecetis notata
-	[ "483A0905", { score:4 } ], // Trichoptera Leptoceridae Oecetis testacea
-	[ "483A0303", { score:5 } ], // Trichoptera Leptoceridae Leptocerus tineiformis
-	[ "483A0302", { score:9 } ], // Trichoptera Leptoceridae Leptocerus lusitanicus
-	[ "483A0301", { score:8 } ], // Trichoptera Leptoceridae Leptocerus interruptus
-	[ "483A1002", { score:8 } ], // Trichoptera Leptoceridae Setodes punctatus
-	[ "483A1001", { score:8 } ], // Trichoptera Leptoceridae Setodes argentipunctellus
-	[ "48350101", { score:3 } ], // Trichoptera Goeridae Goera pilosa
-	[ "48350202", { score:2 } ], // Trichoptera Goeridae Silo pallipes
-	[ "48350201", { score:5 } ], // Trichoptera Goeridae Silo nigricornis
-	[ "48330101", { score:3 } ], // Trichoptera Lepidostomatidae Crunoecia irrorata
-	[ "48330301", { score:2 } ], // Trichoptera Lepidostomatidae Lepidostoma hirtum
-	[ "48330201", { score:6 } ], // Trichoptera Lepidostomatidae Lasiocephala basalis
-	[ "48320101", { score:6 } ], // Trichoptera Brachycentridae Brachycentrus subnubilus
-	[ "48370201", { score:1 } ], // Trichoptera Sericostomatidae Sericostoma personatum
-	[ "48370101", { score:6 } ], // Trichoptera Sericostomatidae Notidobia ciliaris
-	[ "50135501", { score:9 } ], // Diptera Limoniidae Arctoconopa melampodia
-	[ "50133911", { score:7 } ], // Diptera Limoniidae Cheilotrichia (Cheilotrichia) imbuta
-	[ "50131811", { score:7 } ], // Diptera Limoniidae Dactylolabis (Dactylolabis) sexmaculata
-	[ "50131812", { score:7 } ], // Diptera Limoniidae Dactylolabis (Dactylolabis) transversa
-	[ "50140522", { score:7 } ], // Diptera Pediciidae Dicranota (Paradicranota) gracilipes
-	[ "50140512", { score:7 } ], // Diptera Pediciidae Dicranota (Dicranota) guerini
-	[ "50140524", { score:7 } ], // Diptera Pediciidae Dicranota (Paradicranota) robusta
-	[ "50140526", { score:8 } ], // Diptera Pediciidae Dicranota (Paradicranota) simulans
-	[ "50134161", { score:9 } ], // Diptera Limoniidae Erioptera (Mesocyphona) bivittata
-	[ "50134137", { score:9 } ], // Diptera Limoniidae Erioptera (Erioptera) limbata
-	[ "50134139", { score:9 } ], // Diptera Limoniidae Erioptera (Erioptera) meijerei
-	[ "5013413A", { score:7 } ], // Diptera Limoniidae Erioptera (Erioptera) nielseni
-	[ "5013413B", { score:8 } ], // Diptera Limoniidae Erioptera (Erioptera) verralli
-	[ "5013413C", { score:8 } ], // Diptera Limoniidae Erioptera (Erioptera) sordida
-	[ "50133151", { score:8 } ], // Diptera Limoniidae Gonomyia (Prolipophleps) abbreviata
-	[ "50133221", { score:10 } ], // Diptera Limoniidae Ellipteroides (Protogonomyia) alboscutellatus
-	[ "50133141", { score:7 } ], // Diptera Limoniidae Gonomyia (Gonomyia) bifida
-	[ "50133311", { score:9 } ], // Diptera Limoniidae Idiocera (Idiocera) bradleyi
-	[ "50133315", { score:10 } ], // Diptera Limoniidae Idiocera (Idiocera) sziladyi
-	[ "50133142", { score:7 } ], // Diptera Limoniidae Gonomyia (Gonomyia) conoviensis
-	[ "50133314", { score:10 } ], // Diptera Limoniidae Idiocera (Idiocera) sexguttata
-	[ "50130915", { score:7 } ], // Diptera Limoniidae Helius (Helius) pallirostris
-	[ "50132411", { score:7 } ], // Diptera Limoniidae Phylidorea (Phylidorea) abdominalis
-	[ "50132413", { score:10 } ], // Diptera Limoniidae Phylidorea (Phylidorea) heterogyna
-	[ "50132051", { score:9 } ], // Diptera Limoniidae Limnophila (Limnophila) pictipennis
-	[ "50135334", { score:7 } ], // Diptera Limoniidae Molophilus (Molophilus) bihamatus
-	[ "50135336", { score:7 } ], // Diptera Limoniidae Molophilus (Molophilus) corniger
-	[ "50135338", { score:8 } ], // Diptera Limoniidae Molophilus (Molophilus) czizeki
-	[ "5013533B", { score:8 } ], // Diptera Limoniidae Molophilus (Molophilus) lackschewitzianus
-	[ "5013533D", { score:7 } ], // Diptera Limoniidae Molophilus (Molophilus) niger
-	[ "5013533K", { score:7 } ], // Diptera Limoniidae Molophilus (Molophilus) propinquus
-	[ "50132901", { score:7 } ], // Diptera Limoniidae Neolimnophila carteri
-	[ "50132902", { score:7 } ], // Diptera Limoniidae Neolimnophila placida
-	[ "50110505", { score:8 } ], // Diptera Tipulidae Nephrotoma crocata
-	[ "50130701", { score:7 } ], // Diptera Limoniidae Orimarga juvenilis
-	[ "50130702", { score:8 } ], // Diptera Limoniidae Orimarga virgo
-	[ "50134811", { score:9 } ], // Diptera Limoniidae Ormosia (Ormosia) aciculata
-	[ "50134813", { score:9 } ], // Diptera Limoniidae Ormosia (Ormosia) bicornis
-	[ "50134819", { score:7 } ], // Diptera Limoniidae Ormosia (Ormosia) staegeriana
-	[ "50135412", { score:9 } ], // Diptera Limoniidae Paradelphomyia (Oxyrhiza) ecalcarata
-	[ "50135413", { score:7 } ], // Diptera Limoniidae Paradelphomyia (Oxyrhiza) fuscula
-	[ "50135414", { score:7 } ], // Diptera Limoniidae Paradelphomyia (Oxyrhiza) nielseni
-	[ "50120201", { score:7 } ], // Diptera Cylindrotomidae Phalacrocera replicata
-	[ "50132622", { score:7 } ], // Diptera Limoniidae Pilaria fuscipennis
-	[ "50132623", { score:7 } ], // Diptera Limoniidae Pilaria meridiana
-	[ "50132624", { score:7 } ], // Diptera Limoniidae Pilaria scutellata
-	[ "50110101", { score:9 } ], // Diptera Tipulidae Prionocera pubescens
-	[ "50110102", { score:9 } ], // Diptera Tipulidae Prionocera subserricornis
-	[ "50133622", { score:8 } ], // Diptera Limoniidae Rhabdomastix (Sacandaga) laeta
-	[ "50133631", { score:9 } ], // Diptera Limoniidae Rhabdomastix (Lurdia) inclinata
-	[ "50135001", { score:8 } ], // Diptera Limoniidae Scleroprocta pentagonalis
-	[ "50135002", { score:7 } ], // Diptera Limoniidae Scleroprocta sororcula
-	[ "50135121", { score:10 } ], // Diptera Limoniidae Tasiocera (Dasymolophilus) collini
-	[ "50135122", { score:10 } ], // Diptera Limoniidae Tasiocera (Dasymolophilus) fuscescens
-	[ "50135123", { score:10 } ], // Diptera Limoniidae Tasiocera (Dasymolophilus) jenkinsoni
-	[ "50135127", { score:7 } ], // Diptera Limoniidae Tasiocera (Dasymolophilus) robusta
-	[ "50130601", { score:7 } ], // Diptera Limoniidae Thaumastoptera calceata
-	[ "50110381", { score:9 } ], // Diptera Tipulidae Tipula (Lindnerina) bistilata
-	[ "50110332", { score:7 } ], // Diptera Tipulidae Tipula (Savtshenkia) cheethami
-	[ "501103A1", { score:8 } ], // Diptera Tipulidae Tipula (Yamatotipula) coerulescens
-	[ "50110333", { score:8 } ], // Diptera Tipulidae Tipula (Savtshenkia) gimmerthali
-	[ "50110334", { score:8 } ], // Diptera Tipulidae Tipula (Savtshenkia) grisescens
-	[ "50110335", { score:8 } ], // Diptera Tipulidae Tipula (Savtshenkia) limbata
-	[ "501103A4", { score:8 } ], // Diptera Tipulidae Tipula (Yamatotipula) marginella
-	[ "5011033A", { score:10 } ], // Diptera Tipulidae Tipula (Savtshenkia) serrulifera
-	[ "50110372", { score:10 } ], // Diptera Tipulidae Tipula (Mediotipula) siebkei
-	[ "50110352", { score:7 } ], // Diptera Tipulidae Tipula (Pterelachisus) truncorum
-	[ "50120101", { score:8 } ], // Diptera Cylindrotomidae Triogma trisulcata
-	[ "50310101", { score:5 } ], // Diptera Dixidae Dixa dilatata
-	[ "50310102", { score:7 } ], // Diptera Dixidae Dixa maculata
-	[ "50310103", { score:4 } ], // Diptera Dixidae Dixa nebulosa
-	[ "50310104", { score:5 } ], // Diptera Dixidae Dixa nubilipennis
-	[ "50310105", { score:5 } ], // Diptera Dixidae Dixa puberula
-	[ "50310106", { score:4 } ], // Diptera Dixidae Dixa submaculata
-	[ "50310201", { score:4 } ], // Diptera Dixidae Dixella aestivalis
-	[ "50310202", { score:4 } ], // Diptera Dixidae Dixella amphibia
-	[ "50310203", { score:7 } ], // Diptera Dixidae Dixella attica
-	[ "50310204", { score:3 } ], // Diptera Dixidae Dixella autumnalis
-	[ "50310205", { score:7 } ], // Diptera Dixidae Dixella filicornis
-	[ "50310209", { score:9 } ], // Diptera Dixidae Dixella graeca
-	[ "50310206", { score:4 } ], // Diptera Dixidae Dixella martinii
-	[ "50310207", { score:7 } ], // Diptera Dixidae Dixella obscura
-	[ "50310208", { score:7 } ], // Diptera Dixidae Dixella serotina
-	[ "50330734", { score:10 } ], // Diptera Culicidae Ochlerotatus (Ochlerotatus) communis
-	[ "50330736", { score:8 } ], // Diptera Culicidae Ochlerotatus (Ochlerotatus) dorsalis
-	[ "50330737", { score:9 } ], // Diptera Culicidae Ochlerotatus (Ochlerotatus) flavescens
-	[ "50330738", { score:10 } ], // Diptera Culicidae Ochlerotatus (Ochlerotatus) leucomelas
-	[ "5033073A", { score:8 } ], // Diptera Culicidae Ochlerotatus (Ochlerotatus) sticticus
-	[ "50330111", { score:10 } ], // Diptera Culicidae Anopheles (Anopheles) algeriensis
-	[ "50331131", { score:10 } ], // Diptera Culicidae Culiseta (Allotheobaldia) longiareolata
-	[ "50330501", { score:8 } ], // Diptera Culicidae Orthopodomyia pulcripalpis
-	[ "50340101", { score:6 } ], // Diptera Thaumaleidae Thaumalea testacea
-	[ "50340102", { score:8 } ], // Diptera Thaumaleidae Thaumalea truncata
-	[ "50340103", { score:6 } ], // Diptera Thaumaleidae Thaumalea verralli
-	[ "50351624", { score:9 } ], // Diptera Ceratopogonidae Dasyhelea (Dasyhelea) saxicola
-	[ "50360101", { score:5 } ], // Diptera Simuliidae Prosimulium hirtipes
-	[ "50360102", { score:7 } ], // Diptera Simuliidae Prosimulium latimucro
-	[ "50360103", { score:7 } ], // Diptera Simuliidae Prosimulium tomosvaryi
-	[ "50360201", { score:7 } ], // Diptera Simuliidae Metacnephia amphora
-	[ "50360311", { score:6 } ], // Diptera Simuliidae Simulium (Hellichiella) latipes
-	[ "50360321", { score:6 } ], // Diptera Simuliidae Simulium (Nevermannia) angustitarse
-	[ "50360327", { score:4 } ], // Diptera Simuliidae Simulium (Nevermannia) lundstromi
-	[ "50360322", { score:5 } ], // Diptera Simuliidae Simulium (Nevermannia) armoricanum
-	[ "50360324", { score:4 } ], // Diptera Simuliidae Simulium (Nevermannia) cryophilum
-	[ "5036032A", { score:6 } ], // Diptera Simuliidae Simulium (Nevermannia) juxtacrenobium
-	[ "50360329", { score:7 } ], // Diptera Simuliidae Simulium (Nevermannia) urbanum
-	[ "50360325", { score:5 } ], // Diptera Simuliidae Simulium (Nevermannia) dunfellense
-	[ "50360323", { score:5 } ], // Diptera Simuliidae Simulium (Nevermannia) costatum
-	[ "50360341", { score:4 } ], // Diptera Simuliidae Simulium (Eusimulium) angustipes
-	[ "50360343", { score:4 } ], // Diptera Simuliidae Simulium (Eusimulium) velutinum
-	[ "50360342", { score:5 } ], // Diptera Simuliidae Simulium (Eusimulium) aureum
-	[ "50360352", { score:3 } ], // Diptera Simuliidae Simulium (Wilhelmia) lineatum
-	[ "50360353", { score:5 } ], // Diptera Simuliidae Simulium (Wilhelmia) pseudequinum
-	[ "50360351", { score:2 } ], // Diptera Simuliidae Simulium (Wilhelmia) equinum
-	[ "50360361", { score:3 } ], // Diptera Simuliidae Simulium (Boophthora) erythrocephalum
-	[ "50360386", { score:1 } ], // Diptera Simuliidae Simulium (Simulium) ornatum
-	[ "50360383", { score:5 } ], // Diptera Simuliidae Simulium (Simulium) intermedium
-	[ "50360389", { score:5 } ], // Diptera Simuliidae Simulium (Simulium) trifasciatum
-	[ "50360381", { score:3 } ], // Diptera Simuliidae Simulium (Simulium) argyreatum
-	[ "5036038B", { score:4 } ], // Diptera Simuliidae Simulium (Simulium) variegatum
-	[ "5036038A", { score:4 } ], // Diptera Simuliidae Simulium (Simulium) tuberosum
-	[ "50360382", { score:6 } ], // Diptera Simuliidae Simulium (Simulium) rostratum
-	[ "50360384", { score:7 } ], // Diptera Simuliidae Simulium (Simulium) morsitans
-	[ "50360387", { score:5 } ], // Diptera Simuliidae Simulium (Simulium) posticatum
-	[ "50360388", { score:5 } ], // Diptera Simuliidae Simulium (Simulium) reptans
-	[ "50360385", { score:3 } ], // Diptera Simuliidae Simulium (Simulium) noelleri
-	[ "50610101", { score:7 } ], // Diptera Stratiomyidae Beris clavipes
-	[ "50610102", { score:7 } ], // Diptera Stratiomyidae Beris fuscipes
-	[ "50610501", { score:10 } ], // Diptera Stratiomyidae Odontomyia angulata
-	[ "50610502", { score:9 } ], // Diptera Stratiomyidae Odontomyia argentata
-	[ "50610503", { score:10 } ], // Diptera Stratiomyidae Odontomyia hydroleon
-	[ "50610504", { score:9 } ], // Diptera Stratiomyidae Odontomyia ornata
-	[ "50610505", { score:7 } ], // Diptera Stratiomyidae Odontomyia tigrina
-	[ "50610301", { score:9 } ], // Diptera Stratiomyidae Oxycera analis
-	[ "50610302", { score:8 } ], // Diptera Stratiomyidae Oxycera dives
-	[ "50610313", { score:10 } ], // Diptera Stratiomyidae Oxycera leonina
-	[ "50610305", { score:7 } ], // Diptera Stratiomyidae Oxycera morrisii
-	[ "50610307", { score:7 } ], // Diptera Stratiomyidae Oxycera pardalina
-	[ "50610309", { score:7 } ], // Diptera Stratiomyidae Oxycera pygmaea
-	[ "50610311", { score:9 } ], // Diptera Stratiomyidae Oxycera terminata
-	[ "50610601", { score:10 } ], // Diptera Stratiomyidae Stratiomys chamaeleon
-	[ "50610603", { score:9 } ], // Diptera Stratiomyidae Stratiomys longicornis
-	[ "50610604", { score:7 } ], // Diptera Stratiomyidae Stratiomys potamida
-	[ "50610401", { score:7 } ], // Diptera Stratiomyidae Vanoyia tenuicornis
-	[ "50640201", { score:8 } ], // Diptera Athericidae Atrichops crassipes
-	[ "50630303", { score:10 } ], // Diptera Tabanidae Atylotus plebeius
-	[ "50630103", { score:9 } ], // Diptera Tabanidae Chrysops sepulcralis
-	[ "50630203", { score:8 } ], // Diptera Tabanidae Haematopota grandis
-	[ "50630504", { score:7 } ], // Diptera Tabanidae Tabanus cordiger
-	[ "50630505", { score:8 } ], // Diptera Tabanidae Tabanus glaucopis
-	[ "50711201", { score:7 } ], // Diptera Empididae Chelifera angusta
-	[ "50711202", { score:7 } ], // Diptera Empididae Chelifera aperticauda
-	[ "50711203", { score:10 } ], // Diptera Empididae Chelifera astigma
-	[ "50711204", { score:7 } ], // Diptera Empididae Chelifera concinnicauda
-	[ "50711207", { score:7 } ], // Diptera Empididae Chelifera monostigma
-	[ "50711213", { score:7 } ], // Diptera Empididae Chelifera subangusta
-	[ "50711722", { score:8 } ], // Diptera Empididae Clinocera nivalis
-	[ "50711802", { score:8 } ], // Diptera Empididae Kowarzia tenella
-	[ "50711724", { score:7 } ], // Diptera Empididae Clinocera wesmaeli
-	[ "50711503", { score:8 } ], // Diptera Empididae Dolichocephala ocellata
-	[ "50711401", { score:7 } ], // Diptera Empididae Dryodromia testacea
-	[ "50711301", { score:7 } ], // Diptera Empididae Hemerodromia adulatoria
-	[ "50711303", { score:7 } ], // Diptera Empididae Hemerodromia laudatoria
-	[ "50711304", { score:9 } ], // Diptera Empididae Hemerodromia melangyna
-	[ "50730102", { score:7 } ], // Diptera Hybotidae Stilpon lunatus
-	[ "50730104", { score:7 } ], // Diptera Hybotidae Stilpon sublunatus
-	[ "50712041", { score:10 } ], // Diptera Empididae Wiedemannia (Philolutra) simplex
-	[ "50712021", { score:10 } ], // Diptera Empididae Wiedemannia (Pseudowiedemannia) lamellata
-	[ "50712031", { score:7 } ], // Diptera Empididae Wiedemannia (Chamaedipsia) lota
-	[ "50712042", { score:8 } ], // Diptera Empididae Wiedemannia (Philolutra) phantasma
-	[ "50722201", { score:10 } ], // Diptera Dolichopodidae Acropsilus niger
-	[ "50721101", { score:8 } ], // Diptera Dolichopodidae Aphrosylus mitis
-	[ "50722012", { score:7 } ], // Diptera Dolichopodidae Campsicnemus compeditus
-	[ "50722015", { score:8 } ], // Diptera Dolichopodidae Campsicnemus magius
-	[ "50722016", { score:7 } ], // Diptera Dolichopodidae Campsicnemus marginatus
-	[ "50722017", { score:7 } ], // Diptera Dolichopodidae Campsicnemus pumilio
-	[ "50722019", { score:7 } ], // Diptera Dolichopodidae Campsicnemus pusillus
-	[ "50721803", { score:7 } ], // Diptera Dolichopodidae Chrysotus monochaetus
-	[ "50721804", { score:7 } ], // Diptera Dolichopodidae Chrysotus suavis
-	[ "50720111", { score:8 } ], // Diptera Dolichopodidae Dolichopus (Dolichopus) arbustorum
-	[ "50720113", { score:9 } ], // Diptera Dolichopodidae Dolichopus (Dolichopus) cilifemoratus
-	[ "50720908", { score:8 } ], // Diptera Dolichopodidae Hydrophorus viridis
-	[ "50721205", { score:7 } ], // Diptera Dolichopodidae Rhaphium fractum
-	[ "50721312", { score:8 } ], // Diptera Dolichopodidae Syntormon macula
-	[ "50721311", { score:7 } ], // Diptera Dolichopodidae Syntormon filiger
-	[ "50721313", { score:9 } ], // Diptera Dolichopodidae Syntormon mikii
-	[ "50721319", { score:7 } ], // Diptera Dolichopodidae Syntormon zelleri
-	[ "50721601", { score:8 } ], // Diptera Dolichopodidae Systenus bipartitus
-	[ "50721602", { score:7 } ], // Diptera Dolichopodidae Systenus leucurus
-	[ "50721603", { score:7 } ], // Diptera Dolichopodidae Systenus pallipes
-	[ "50721604", { score:7 } ], // Diptera Dolichopodidae Systenus scholtzii
-	[ "50721605", { score:8 } ], // Diptera Dolichopodidae Systenus tener
-	[ "50722401", { score:8 } ], // Diptera Dolichopodidae Telmaturgus tumidulus
-	[ "50810602", { score:8 } ], // Diptera Syrphidae Anasimyia interpuncta
-	[ "50810604", { score:7 } ], // Diptera Syrphidae Anasimyia lunulata
-	[ "50811401", { score:7 } ], // Diptera Syrphidae Melanogaster aerosa
-	[ "50811013", { score:9 } ], // Diptera Syrphidae Eristalis (Eoseristalis) cryptarum
-	[ "50811018", { score:7 } ], // Diptera Syrphidae Eristalis (Eoseristalis) rupium
-	[ "50810501", { score:9 } ], // Diptera Syrphidae Helophilus groenlandicus
-	[ "50810202", { score:7 } ], // Diptera Syrphidae Lejogaster tarsata
-	[ "50810701", { score:9 } ], // Diptera Syrphidae Lejops vittata
-	[ "50810901", { score:7 } ], // Diptera Syrphidae Mallota cimbiciformis
-	[ "50810301", { score:7 } ], // Diptera Syrphidae Orthonevra brevicornis
-	[ "50810302", { score:7 } ], // Diptera Syrphidae Orthonevra geniculata
-	[ "50810801", { score:9 } ], // Diptera Syrphidae Parhelophilus consimilis
-	[ "50820501", { score:8 } ], // Diptera Sciomyzidae Antichaeta analis
-	[ "50820502", { score:9 } ], // Diptera Sciomyzidae Antichaeta brevipennis
-	[ "50820101", { score:7 } ], // Diptera Sciomyzidae Colobaea bifasciella
-	[ "50820102", { score:7 } ], // Diptera Sciomyzidae Colobaea distincta
-	[ "50820103", { score:9 } ], // Diptera Sciomyzidae Colobaea pectoralis
-	[ "50820104", { score:7 } ], // Diptera Sciomyzidae Colobaea punctata
-	[ "50820601", { score:7 } ], // Diptera Sciomyzidae Dictya umbrarum
-	[ "50820203", { score:9 } ], // Diptera Sciomyzidae Pherbellia argyra
-	[ "50820204", { score:7 } ], // Diptera Sciomyzidae Pherbellia brunnipes
-	[ "50820209", { score:7 } ], // Diptera Sciomyzidae Pherbellia griseola
-	[ "50821601", { score:7 } ], // Diptera Sciomyzidae Ditaeniella grisescens
-	[ "50820213", { score:7 } ], // Diptera Sciomyzidae Pherbellia nana
-	[ "50821202", { score:9 } ], // Diptera Sciomyzidae Psacadina vittigera
-	[ "50821203", { score:9 } ], // Diptera Sciomyzidae Psacadina zernyi
-	[ "50820302", { score:7 } ], // Diptera Sciomyzidae Pteromicra glabricula
-	[ "50820303", { score:9 } ], // Diptera Sciomyzidae Pteromicra leucopeza
-	[ "50820304", { score:9 } ], // Diptera Sciomyzidae Pteromicra pectorosa
-	[ "50821303", { score:7 } ], // Diptera Sciomyzidae Renocera striata
-	[ "50820401", { score:9 } ], // Diptera Sciomyzidae Sciomyza dryomyzina
-	[ "50820402", { score:7 } ], // Diptera Sciomyzidae Sciomyza simplex
-	[ "50821504", { score:8 } ], // Diptera Sciomyzidae Tetanocera freyi
-	[ "50840121", { score:7 } ], // Diptera Scathophagidae Acanthocnema (Clinoceroides) glaucescens
-	[ "50840112", { score:8 } ], // Diptera Scathophagidae Acanthocnema (Acanthocnema) nigrimana
-	[ "50850501", { score:7 } ], // Diptera Muscidae Lispe caesia
-	[ "50850502", { score:9 } ], // Diptera Muscidae Lispe consanguinea
-	[ "50850511", { score:7 } ], // Diptera Muscidae Lispe uliginosa
-	[ "50850101", { score:8 } ], // Diptera Muscidae Phaonia exoleta
+	[ "05110101", 6  ], // Tricladida Planariidae Planaria torva
+	[ "05110202", 1  ], // Tricladida Planariidae Polycelis nigra
+	[ "05110203", 1  ], // Tricladida Planariidae Polycelis tenuis
+	[ "05110201", 3  ], // Tricladida Planariidae Polycelis felina
+	[ "05110301", 3  ], // Tricladida Planariidae Phagocata vitta
+	[ "05110401", 2  ], // Tricladida Planariidae Crenobia alpina
+	[ "05120101", 2  ], // Tricladida Dugesiidae Dugesia lugubris
+	[ "05120103", 3  ], // Tricladida Dugesiidae Dugesia tigrina
+	[ "05120102", 2  ], // Tricladida Dugesiidae Dugesia polychroa
+	[ "05130201", 2  ], // Tricladida Dendrocoelidae Dendrocoelum lacteum
+	[ "05130101", 7  ], // Tricladida Dendrocoelidae Bdellocephala punctata
+	[ "16110101", 3  ], // Gastropoda Neritidae Theodoxus fluviatilis
+	[ "16120102", 3  ], // Gastropoda Viviparidae Viviparus viviparus
+	[ "16120101", 5  ], // Gastropoda Viviparidae Viviparus contectus
+	[ "16130111", 2  ], // Gastropoda Valvatidae Valvata (Valvata) cristata
+	[ "16130121", 9  ], // Gastropoda Valvatidae Valvata (Tropidina) macrostoma
+	[ "16130131", 1  ], // Gastropoda Valvatidae Valvata (Cincinna) piscinalis
+	[ "16140801", 4  ], // Gastropoda Hydrobiidae Ventrosia ventrosa
+	[ "16140111", 6  ], // Gastropoda Hydrobiidae Hydrobia (Hydrobia) acuta
+	[ "16140701", 1  ], // Gastropoda Hydrobiidae Peringia ulvae
+	[ "16140301", 1  ], // Gastropoda Hydrobiidae Potamopyrgus antipodarum
+	[ "16140401", 8  ], // Gastropoda Hydrobiidae Marstoniopsis insubrica
+	[ "16160111", 1  ], // Gastropoda Bithyniidae Bithynia (Bithynia) tentaculata
+	[ "16160121", 5  ], // Gastropoda Bithyniidae Bithynia (Codiella) leachii
+	[ "16170101", 2  ], // Gastropoda Assimineidae Assiminea grayana
+	[ "16220301", 3  ], // Gastropoda Lymnaeidae Galba truncatula
+	[ "16220501", 9  ], // Gastropoda Lymnaeidae Omphiscola glabra
+	[ "16220401", 2  ], // Gastropoda Lymnaeidae Stagnicola palustris
+	[ "16220105", 1  ], // Gastropoda Lymnaeidae Lymnaea stagnalis
+	[ "16220601", 2  ], // Gastropoda Lymnaeidae Radix auricularia
+	[ "16220201", 10  ], // Gastropoda Lymnaeidae Myxas glutinosa
+	[ "16210101", 5  ], // Gastropoda Physidae Aplexa hypnorum
+	[ "16210202", 1  ], // Gastropoda Physidae Physa fontinalis
+	[ "16230801", 4  ], // Gastropoda Planorbidae Planorbarius corneus
+	[ "16230911", 7  ], // Gastropoda Planorbidae Menetus (Dilatata) dilatatus
+	[ "16230111", 1  ], // Gastropoda Planorbidae Planorbis (Planorbis) carinatus
+	[ "16230112", 1  ], // Gastropoda Planorbidae Planorbis (Planorbis) planorbis
+	[ "16230222", 9  ], // Gastropoda Planorbidae Anisus (Disculifer) vorticulus
+	[ "16230221", 1  ], // Gastropoda Planorbidae Anisus (Disculifer) vortex
+	[ "16230211", 5  ], // Gastropoda Planorbidae Anisus (Anisus) leucostoma
+	[ "16230421", 6  ], // Gastropoda Planorbidae Gyraulus (Torquis) laevis
+	[ "16230412", 1  ], // Gastropoda Planorbidae Gyraulus (Gyraulus) albus
+	[ "16230411", 9  ], // Gastropoda Planorbidae Gyraulus (Gyraulus) acronicus
+	[ "16230431", 2  ], // Gastropoda Planorbidae Gyraulus (Armiger) crista
+	[ "16230301", 2  ], // Gastropoda Planorbidae Bathyomphalus contortus
+	[ "16230601", 3  ], // Gastropoda Planorbidae Hippeutis complanatus
+	[ "16230701", 10  ], // Gastropoda Planorbidae Segmentina nitida
+	[ "16250101", 2  ], // Gastropoda Acroloxidae Acroloxus lacustris
+	[ "16231101", 1  ], // Gastropoda Planorbidae Ancylus fluviatilis
+	[ "16320501", 8  ], // Gastropoda Succineidae Succinella oblonga
+	[ "16320201", 1  ], // Gastropoda Succineidae Succinea putris
+	[ "16320311", 1  ], // Gastropoda Succineidae Oxyloma (Oxyloma) pfeifferi
+	[ "16320401", 10  ], // Gastropoda Succineidae Quickella arenaria
+	[ "16330221", 3  ], // Gastropoda Vertiginidae Vertigo (Vertigo) antivertigo
+	[ "16330224", 8  ], // Gastropoda Vertiginidae Vertigo (Vertigo) moulinsiana
+	[ "16330223", 8  ], // Gastropoda Vertiginidae Vertigo (Vertigo) lilljeborgi
+	[ "16330211", 10  ], // Gastropoda Vertiginidae Vertigo (Vertilla) angustior
+	[ "16350111", 4  ], // Gastropoda Zonitidae Zonitoides (Zonitoides) nitidus
+	[ "17110101", 7  ], // Bivalvia Margaritiferidae Margaritifera margaritifera
+	[ "17120101", 3  ], // Bivalvia Unionidae Unio pictorum
+	[ "17120102", 5  ], // Bivalvia Unionidae Unio tumidus
+	[ "17120202", 2  ], // Bivalvia Unionidae Anodonta cygnea
+	[ "17120201", 3  ], // Bivalvia Unionidae Anodonta anatina
+	[ "17120301", 7  ], // Bivalvia Unionidae Pseudanodonta complanata
+	[ "17130103", 3  ], // Bivalvia Sphaeriidae Sphaerium rivicola
+	[ "17130101", 1  ], // Bivalvia Sphaeriidae Sphaerium corneum
+	[ "17130104", 10  ], // Bivalvia Sphaeriidae Sphaerium solidum
+	[ "17130301", 3  ], // Bivalvia Sphaeriidae Musculium lacustre
+	[ "17130302", 5  ], // Bivalvia Sphaeriidae Musculium transversum
+	[ "17130201", 3  ], // Bivalvia Sphaeriidae Pisidium amnicum
+	[ "17130202", 1  ], // Bivalvia Sphaeriidae Pisidium casertanum
+	[ "17130203", 7  ], // Bivalvia Sphaeriidae Pisidium conventus
+	[ "17130212", 3  ], // Bivalvia Sphaeriidae Pisidium personatum
+	[ "17130211", 4  ], // Bivalvia Sphaeriidae Pisidium obtusale
+	[ "17130207", 4  ], // Bivalvia Sphaeriidae Pisidium milium
+	[ "17130213", 8  ], // Bivalvia Sphaeriidae Pisidium pseudosphaerium
+	[ "17130215", 1  ], // Bivalvia Sphaeriidae Pisidium subtruncatum
+	[ "17130216", 5  ], // Bivalvia Sphaeriidae Pisidium supinum
+	[ "17130204", 4  ], // Bivalvia Sphaeriidae Pisidium henslowanum
+	[ "17130206", 5  ], // Bivalvia Sphaeriidae Pisidium lilljeborgii
+	[ "17130205", 4  ], // Bivalvia Sphaeriidae Pisidium hibernicum
+	[ "17130209", 3  ], // Bivalvia Sphaeriidae Pisidium nitidum
+	[ "17130214", 5  ], // Bivalvia Sphaeriidae Pisidium pulchellum
+	[ "17130208", 4  ], // Bivalvia Sphaeriidae Pisidium moitessierianum
+	[ "17130217", 8  ], // Bivalvia Sphaeriidae Pisidium tenuilineatum
+	[ "17140101", 2  ], // Bivalvia Dreissenidae Dreissena polymorpha
+	[ "22110101", 2  ], // Hirudinea Piscicolidae Piscicola geometra
+	[ "22120201", 2  ], // Hirudinea Glossiphoniidae Theromyzon tessulatum
+	[ "22120301", 4  ], // Hirudinea Glossiphoniidae Hemiclepsis marginata
+	[ "22120801", 4  ], // Hirudinea Glossiphoniidae Alboglossiphonia heteroclita
+	[ "22120401", 1  ], // Hirudinea Glossiphoniidae Glossiphonia complanata
+	[ "22120403", 7  ], // Hirudinea Glossiphoniidae Glossiphonia verrucata
+	[ "22120901", 7  ], // Hirudinea Glossiphoniidae Placobdella costata
+	[ "22120404", 7  ], // Hirudinea Glossiphoniidae Glossiphonia paludosa
+	[ "22120701", 1  ], // Hirudinea Glossiphoniidae Helobdella stagnalis
+	[ "22210201", 8  ], // Hirudinea Hirudinidae Hirudo medicinalis
+	[ "22220101", 5  ], // Hirudinea Haemopidae Haemopis sanguisuga
+	[ "22230102", 5  ], // Hirudinea Erpobdellidae Erpobdella testacea
+	[ "22230101", 1  ], // Hirudinea Erpobdellidae Erpobdella octoculata
+	[ "22230201", 6  ], // Hirudinea Erpobdellidae Dina lineata
+	[ "22230302", 4  ], // Hirudinea Erpobdellidae Trocheta subviridis
+	[ "22230301", 5  ], // Hirudinea Erpobdellidae Trocheta bykowskii
+	[ "26010101", 3  ], // Araneae Argyroneta aquatica
+	[ "27010101", 10  ], // Anostraca Artemia salina
+	[ "27020101", 9  ], // Anostraca Chirocephalus diaphanus
+	[ "28010101", 10  ], // Notostraca Triopsidae Triops cancriformis
+	[ "33010101", 7  ], // Bathynellacea Bathynellidae Bathynella natans
+	[ "33010201", 7  ], // Bathynellacea Bathynellidae Antrobathynella stammeri
+	[ "35110101", 10  ], // Mysidacea Mysidae Mysis relicta
+	[ "35110201", 1  ], // Mysidacea Mysidae Neomysis integer
+	[ "36110101", 1  ], // Isopoda Asellidae Asellus aquaticus
+	[ "36110201", 7  ], // Isopoda Asellidae Proasellus cavaticus
+	[ "36110301", 7  ], // Isopoda Asellidae Caecidotea communis
+	[ "36110202", 3  ], // Isopoda Asellidae Proasellus meridianus
+	[ "36220101", 2  ], // Isopoda Sphaeromatidae Sphaeroma hookeri
+	[ "36220102", 2  ], // Isopoda Sphaeromatidae Sphaeroma rugicauda
+	[ "36210101", 2  ], // Isopoda Janiridae Jaera nordmanni
+	[ "37110101", 3  ], // Amphipoda Corophiidae Corophium curvispinum
+	[ "37110102", 7  ], // Amphipoda Corophiidae Corophium insidiosum
+	[ "37110103", 8  ], // Amphipoda Corophiidae Corophium lacustre
+	[ "37110104", 2  ], // Amphipoda Corophiidae Corophium multisetosum
+	[ "37110105", 3  ], // Amphipoda Corophiidae Corophium volutator
+	[ "37130101", 1  ], // Amphipoda Crangonyctidae Crangonyx pseudogracilis
+	[ "37130102", 7  ], // Amphipoda Crangonyctidae Crangonyx subterraneus
+	[ "37140202", 4  ], // Amphipoda Gammaridae Gammarus duebeni
+	[ "37140203", 5  ], // Amphipoda Gammaridae Gammarus lacustris
+	[ "37140206", 1  ], // Amphipoda Gammaridae Gammarus pulex
+	[ "37140208", 1  ], // Amphipoda Gammaridae Gammarus tigrinus
+	[ "37140209", 1  ], // Amphipoda Gammaridae Gammarus zaddachi
+	[ "37140101", 7  ], // Amphipoda Gammaridae Echinogammarus berilloni
+	[ "37150205", 7  ], // Amphipoda Niphargidae Niphargus glenniei
+	[ "37150201", 6  ], // Amphipoda Niphargidae Niphargus aquilex
+	[ "37150202", 7  ], // Amphipoda Niphargidae Niphargus fontanus
+	[ "37150203", 7  ], // Amphipoda Niphargidae Niphargus kochianus
+	[ "37120101", 5  ], // Amphipoda Talitridae Orchestia cavimana
+	[ "34110101", 1  ], // Decapoda Palaemonidae Palaemonetes varians
+	[ "34110201", 5  ], // Decapoda Palaemonidae Palaemon longirostris
+	[ "34310101", 7  ], // Decapoda Astacidae Austropotamobius pallipes
+	[ "40110102", 6  ], // Ephemeroptera Siphlonuridae Siphlonurus armatus
+	[ "40110103", 4  ], // Ephemeroptera Siphlonuridae Siphlonurus lacustris
+	[ "40110101", 6  ], // Ephemeroptera Siphlonuridae Siphlonurus alternatus
+	[ "40140101", 5  ], // Ephemeroptera Ameletidae Ameletus inopinatus
+	[ "40120102", 6  ], // Ephemeroptera Baetidae Baetis buceratus
+	[ "40120104", 4  ], // Ephemeroptera Baetidae Baetis fuscatus
+	[ "40120107", 1  ], // Ephemeroptera Baetidae Baetis rhodani
+	[ "40120108", 4  ], // Ephemeroptera Baetidae Baetis scambus
+	[ "40120111", 3  ], // Ephemeroptera Baetidae Baetis vernus
+	[ "40120501", 2  ], // Ephemeroptera Baetidae Alainites muticus
+	[ "40120601", 6  ], // Ephemeroptera Baetidae Labiobaetis atrebatinus
+	[ "40120701", 5  ], // Ephemeroptera Baetidae Nigrobaetis digitatus
+	[ "40120702", 4  ], // Ephemeroptera Baetidae Nigrobaetis niger
+	[ "40120201", 4  ], // Ephemeroptera Baetidae Centroptilum luteolum
+	[ "40120301", 1  ], // Ephemeroptera Baetidae Cloeon dipterum
+	[ "40120302", 2  ], // Ephemeroptera Baetidae Cloeon simile
+	[ "40120401", 6  ], // Ephemeroptera Baetidae Procloeon bifidum
+	[ "40120402", 5  ], // Ephemeroptera Baetidae Procloeon pennulatum
+	[ "40130101", 5  ], // Ephemeroptera Heptageniidae Rhithrogena germanica
+	[ "40130102", 2  ], // Ephemeroptera Heptageniidae Rhithrogena semicolorata
+	[ "40130601", 7  ], // Ephemeroptera Heptageniidae Kageronia fuscogrisea
+	[ "40130502", 2  ], // Ephemeroptera Heptageniidae Electrogena lateralis
+	[ "40130203", 10  ], // Ephemeroptera Heptageniidae Heptagenia longicauda
+	[ "40130204", 4  ], // Ephemeroptera Heptageniidae Heptagenia sulphurea
+	[ "40130401", 2  ], // Ephemeroptera Heptageniidae Ecdyonurus dispar
+	[ "40130402", 5  ], // Ephemeroptera Heptageniidae Ecdyonurus insignis
+	[ "40130403", 2  ], // Ephemeroptera Heptageniidae Ecdyonurus torrentis
+	[ "40130404", 2  ], // Ephemeroptera Heptageniidae Ecdyonurus venosus
+	[ "40150101", 10  ], // Ephemeroptera Arthropleidae Arthroplea congener
+	[ "40210101", 3  ], // Ephemeroptera Leptophlebiidae Leptophlebia marginata
+	[ "40210102", 3  ], // Ephemeroptera Leptophlebiidae Leptophlebia vespertina
+	[ "40210201", 3  ], // Ephemeroptera Leptophlebiidae Paraleptophlebia cincta
+	[ "40210202", 2  ], // Ephemeroptera Leptophlebiidae Paraleptophlebia submarginata
+	[ "40210203", 8  ], // Ephemeroptera Leptophlebiidae Paraleptophlebia werneri
+	[ "40210301", 2  ], // Ephemeroptera Leptophlebiidae Habrophlebia fusca
+	[ "40410102", 6  ], // Ephemeroptera Ephemerellidae Ephemerella notata
+	[ "40410201", 1  ], // Ephemeroptera Ephemerellidae Serratella ignita
+	[ "40310101", 9  ], // Ephemeroptera Potamanthidae Potamanthus luteus
+	[ "40320101", 1  ], // Ephemeroptera Ephemeridae Ephemera danica
+	[ "40320102", 9  ], // Ephemeroptera Ephemeridae Ephemera lineata
+	[ "40320103", 4  ], // Ephemeroptera Ephemeridae Ephemera vulgata
+	[ "40510101", 6  ], // Ephemeroptera Caenidae Brachycercus harrisellus
+	[ "40510206", 7  ], // Ephemeroptera Caenidae Caenis beskidensis
+	[ "40510201", 1  ], // Ephemeroptera Caenidae Caenis horaria
+	[ "40510202", 1  ], // Ephemeroptera Caenidae Caenis luctuosa
+	[ "40510203", 4  ], // Ephemeroptera Caenidae Caenis macrura
+	[ "40510207", 6  ], // Ephemeroptera Caenidae Caenis pseudorivulorum
+	[ "41110101", 4  ], // Plecoptera Taeniopterygidae Taeniopteryx nebulosa
+	[ "41110201", 7  ], // Plecoptera Taeniopterygidae Rhabdiopteryx acuminata
+	[ "41110301", 7  ], // Plecoptera Taeniopterygidae Brachyptera putata
+	[ "41110302", 3  ], // Plecoptera Taeniopterygidae Brachyptera risi
+	[ "41120103", 5  ], // Plecoptera Nemouridae Protonemura praecox
+	[ "41120102", 6  ], // Plecoptera Nemouridae Protonemura montana
+	[ "41120101", 6  ], // Plecoptera Nemouridae Protonemura meyeri
+	[ "41120201", 6  ], // Plecoptera Nemouridae Amphinemura standfussi
+	[ "41120202", 2  ], // Plecoptera Nemouridae Amphinemura sulcicollis
+	[ "41120301", 2  ], // Plecoptera Nemouridae Nemurella pictetii
+	[ "41120403", 1  ], // Plecoptera Nemouridae Nemoura cinerea
+	[ "41120404", 7  ], // Plecoptera Nemouridae Nemoura dubitans
+	[ "41120401", 4  ], // Plecoptera Nemouridae Nemoura avicularis
+	[ "41120402", 2  ], // Plecoptera Nemouridae Nemoura cambrica
+	[ "41120405", 5  ], // Plecoptera Nemouridae Nemoura erratica
+	[ "41130102", 4  ], // Plecoptera Leuctridae Leuctra geniculata
+	[ "41130104", 1  ], // Plecoptera Leuctridae Leuctra inermis
+	[ "41130103", 3  ], // Plecoptera Leuctridae Leuctra hippopus
+	[ "41130106", 4  ], // Plecoptera Leuctridae Leuctra nigra
+	[ "41130101", 1  ], // Plecoptera Leuctridae Leuctra fusca
+	[ "41130105", 6  ], // Plecoptera Leuctridae Leuctra moselyi
+	[ "41140102", 6  ], // Plecoptera Capniidae Capnia bifrons
+	[ "41140101", 5  ], // Plecoptera Capniidae Capnia atra
+	[ "41140103", 7  ], // Plecoptera Capniidae Capnia vidua
+	[ "41210101", 9  ], // Plecoptera Perlodidae Isogenus nubecula
+	[ "41210201", 3  ], // Plecoptera Perlodidae Perlodes microcephalus
+	[ "41210301", 3  ], // Plecoptera Perlodidae Diura bicaudata
+	[ "41210401", 2  ], // Plecoptera Perlodidae Isoperla grammatica
+	[ "41210402", 10  ], // Plecoptera Perlodidae Isoperla obscura
+	[ "41220101", 4  ], // Plecoptera Perlidae Dinocras cephalotes
+	[ "41220201", 3  ], // Plecoptera Perlidae Perla bipunctata
+	[ "41230301", 1  ], // Plecoptera Chloroperlidae Siphonoperla torrentium
+	[ "41230103", 4  ], // Plecoptera Chloroperlidae Chloroperla tripunctata
+	[ "41230201", 10  ], // Plecoptera Chloroperlidae Xanthoperla apicalis
+	[ "42110101", 5  ], // Odonata Platycnemididae Platycnemis pennipes
+	[ "42120101", 3  ], // Odonata Coenagrionidae Pyrrhosoma nymphula
+	[ "42120201", 1  ], // Odonata Coenagrionidae Ischnura elegans
+	[ "42120202", 7  ], // Odonata Coenagrionidae Ischnura pumilio
+	[ "42120301", 2  ], // Odonata Coenagrionidae Enallagma cyathigerum
+	[ "42120401", 10  ], // Odonata Coenagrionidae Coenagrion armatum
+	[ "42120402", 9  ], // Odonata Coenagrionidae Coenagrion hastulatum
+	[ "42120404", 8  ], // Odonata Coenagrionidae Coenagrion mercuriale
+	[ "42120405", 2  ], // Odonata Coenagrionidae Coenagrion puella
+	[ "42120406", 5  ], // Odonata Coenagrionidae Coenagrion pulchellum
+	[ "42120407", 10  ], // Odonata Coenagrionidae Coenagrion scitulum
+	[ "42120501", 6  ], // Odonata Coenagrionidae Ceriagrion tenellum
+	[ "42120601", 4  ], // Odonata Coenagrionidae Erythromma najas
+	[ "42130101", 9  ], // Odonata Lestidae Lestes dryas
+	[ "42130102", 4  ], // Odonata Lestidae Lestes sponsa
+	[ "42140101", 2  ], // Odonata Calopterygidae Calopteryx splendens
+	[ "42140102", 5  ], // Odonata Calopterygidae Calopteryx virgo
+	[ "42210101", 7  ], // Odonata Gomphidae Gomphus vulgatissimus
+	[ "42220101", 4  ], // Odonata Cordulegastridae Cordulegaster boltonii
+	[ "42230101", 5  ], // Odonata Aeshnidae Brachytron pratense
+	[ "42230201", 7  ], // Odonata Aeshnidae Aeshna caerulea
+	[ "42230202", 2  ], // Odonata Aeshnidae Aeshna cyanea
+	[ "42230203", 2  ], // Odonata Aeshnidae Aeshna grandis
+	[ "42230204", 10  ], // Odonata Aeshnidae Aeshna isosceles
+	[ "42230205", 4  ], // Odonata Aeshnidae Aeshna juncea
+	[ "42230206", 3  ], // Odonata Aeshnidae Aeshna mixta
+	[ "42230301", 5  ], // Odonata Aeshnidae Anax imperator
+	[ "42240101", 6  ], // Odonata Corduliidae Cordulia aenea
+	[ "42240201", 8  ], // Odonata Corduliidae Somatochlora arctica
+	[ "42240202", 7  ], // Odonata Corduliidae Somatochlora metallica
+	[ "42240301", 10  ], // Odonata Corduliidae Oxygastra curtisii
+	[ "42250101", 5  ], // Odonata Libellulidae Orthetrum cancellatum
+	[ "42250102", 5  ], // Odonata Libellulidae Orthetrum coerulescens
+	[ "42250201", 5  ], // Odonata Libellulidae Libellula depressa
+	[ "42250202", 8  ], // Odonata Libellulidae Libellula fulva
+	[ "42250203", 4  ], // Odonata Libellulidae Libellula quadrimaculata
+	[ "42250301", 7  ], // Odonata Libellulidae Sympetrum flaveolum
+	[ "42250302", 7  ], // Odonata Libellulidae Sympetrum fonscolombii
+	[ "42250303", 7  ], // Odonata Libellulidae Sympetrum nigrescens
+	[ "42250304", 5  ], // Odonata Libellulidae Sympetrum sanguineum
+	[ "42250305", 5  ], // Odonata Libellulidae Sympetrum danae
+	[ "42250306", 1  ], // Odonata Libellulidae Sympetrum striolatum
+	[ "42250307", 7  ], // Odonata Libellulidae Sympetrum vulgatum
+	[ "42250401", 7  ], // Odonata Libellulidae Leucorrhinia dubia
+	[ "43110101", 6  ], // Hemiptera Mesoveliidae Mesovelia furcata
+	[ "43120111", 7  ], // Hemiptera Hebridae Hebrus (Hebrus) pusillus
+	[ "43120121", 5  ], // Hemiptera Hebridae Hebrus (Hebrusella) ruficeps
+	[ "43210101", 8  ], // Hemiptera Hydrometridae Hydrometra gracilenta
+	[ "43210102", 2  ], // Hemiptera Hydrometridae Hydrometra stagnorum
+	[ "43220111", 2  ], // Hemiptera Veliidae Velia (Plesiovelia) caprai
+	[ "43220112", 5  ], // Hemiptera Veliidae Velia (Plesiovelia) saulii
+	[ "43220201", 7  ], // Hemiptera Veliidae Microvelia pygmaea
+	[ "43220202", 5  ], // Hemiptera Veliidae Microvelia reticulata
+	[ "43220203", 8  ], // Hemiptera Veliidae Microvelia buenoi
+	[ "43230112", 4  ], // Hemiptera Gerridae Gerris costae
+	[ "43230115", 5  ], // Hemiptera Gerridae Gerris lateralis
+	[ "43230117", 4  ], // Hemiptera Gerridae Gerris thoracicus
+	[ "43230113", 4  ], // Hemiptera Gerridae Gerris gibbifer
+	[ "43230111", 5  ], // Hemiptera Gerridae Gerris argentatus
+	[ "43230114", 1  ], // Hemiptera Gerridae Gerris lacustris
+	[ "43230116", 2  ], // Hemiptera Gerridae Gerris odontogaster
+	[ "43230301", 5  ], // Hemiptera Gerridae Aquarius najas
+	[ "43230302", 7  ], // Hemiptera Gerridae Aquarius paludum
+	[ "43230201", 6  ], // Hemiptera Gerridae Limnoporus rufoscutellatus
+	[ "43310101", 3  ], // Hemiptera Nepidae Nepa cinerea
+	[ "43310201", 5  ], // Hemiptera Nepidae Ranatra linearis
+	[ "43410101", 4  ], // Hemiptera Naucoridae Ilyocoris cimicoides
+	[ "43420101", 5  ], // Hemiptera Aphelocheiridae Aphelocheirus aestivalis
+	[ "43510101", 1  ], // Hemiptera Notonectidae Notonecta glauca
+	[ "43510104", 5  ], // Hemiptera Notonectidae Notonecta viridis
+	[ "43510103", 5  ], // Hemiptera Notonectidae Notonecta obliqua
+	[ "43510102", 5  ], // Hemiptera Notonectidae Notonecta maculata
+	[ "43520101", 4  ], // Hemiptera Pleidae Plea minutissima
+	[ "43610111", 6  ], // Hemiptera Corixidae Micronecta (Dichaetonecta) scholtzi
+	[ "43610121", 8  ], // Hemiptera Corixidae Micronecta (Micronecta) minutissima
+	[ "43610122", 4  ], // Hemiptera Corixidae Micronecta (Micronecta) poweri
+	[ "43610301", 4  ], // Hemiptera Corixidae Cymatia bonsdorffii
+	[ "43610302", 4  ], // Hemiptera Corixidae Cymatia coleoptrata
+	[ "43610401", 5  ], // Hemiptera Corixidae Glaenocorisa propinqua
+	[ "43610501", 3  ], // Hemiptera Corixidae Callicorixa praeusta
+	[ "43610502", 5  ], // Hemiptera Corixidae Callicorixa wollastoni
+	[ "43610602", 5  ], // Hemiptera Corixidae Corixa dentipes
+	[ "43610604", 1  ], // Hemiptera Corixidae Corixa punctata
+	[ "43610601", 6  ], // Hemiptera Corixidae Corixa affinis
+	[ "43610603", 5  ], // Hemiptera Corixidae Corixa panzeri
+	[ "43610605", 7  ], // Hemiptera Corixidae Corixa iberica
+	[ "43610702", 4  ], // Hemiptera Corixidae Hesperocorixa linnaei
+	[ "43610704", 2  ], // Hemiptera Corixidae Hesperocorixa sahlbergi
+	[ "43610701", 4  ], // Hemiptera Corixidae Hesperocorixa castanea
+	[ "43610703", 6  ], // Hemiptera Corixidae Hesperocorixa moesta
+	[ "43610801", 6  ], // Hemiptera Corixidae Arctocorisa carinata
+	[ "43610802", 5  ], // Hemiptera Corixidae Arctocorisa germari
+	[ "43610911", 1  ], // Hemiptera Corixidae Sigara (Sigara) dorsalis
+	[ "43610912", 7  ], // Hemiptera Corixidae Sigara (Sigara) striata
+	[ "43610921", 3  ], // Hemiptera Corixidae Sigara (Subsigara) distincta
+	[ "43610922", 1  ], // Hemiptera Corixidae Sigara (Subsigara) falleni
+	[ "43610923", 6  ], // Hemiptera Corixidae Sigara (Subsigara) fallenoidea
+	[ "43610924", 3  ], // Hemiptera Corixidae Sigara (Subsigara) fossarum
+	[ "43610925", 5  ], // Hemiptera Corixidae Sigara (Subsigara) scotti
+	[ "43610941", 2  ], // Hemiptera Corixidae Sigara (Vermicorixa) lateralis
+	[ "43610951", 2  ], // Hemiptera Corixidae Sigara (Pseudovermicorixa) nigrolineata
+	[ "43611101", 5  ], // Hemiptera Corixinae Paracorixa concinna
+	[ "43610971", 5  ], // Hemiptera Corixidae Sigara (Retrocorixa) limitata
+	[ "43610972", 5  ], // Hemiptera Corixidae Sigara (Retrocorixa) semistriata
+	[ "43610973", 4  ], // Hemiptera Corixidae Sigara (Retrocorixa) venusta
+	[ "43610981", 6  ], // Hemiptera Corixidae Sigara (Halicorixa) selecta
+	[ "43610982", 5  ], // Hemiptera Corixidae Sigara (Halicorixa) stagnalis
+	[ "45110101", 3  ], // Coleoptera Haliplidae Brychius elevatus
+	[ "45110201", 7  ], // Coleoptera Haliplidae Peltodytes caesus
+	[ "45110341", 7  ], // Coleoptera Haliplidae Haliplus (Haliplinus) apicalis
+	[ "45110321", 2  ], // Coleoptera Haliplidae Haliplus (Haliplus) confinis
+	[ "45110351", 4  ], // Coleoptera Haliplidae Haliplus (Liaphlus) flavicollis
+	[ "45110342", 2  ], // Coleoptera Haliplidae Haliplus (Haliplinus) fluviatilis
+	[ "45110352", 4  ], // Coleoptera Haliplidae Haliplus (Liaphlus) fulvus
+	[ "45110343", 10  ], // Coleoptera Haliplidae Haliplus (Haliplinus) furcatus
+	[ "45110344", 7  ], // Coleoptera Haliplidae Haliplus (Haliplinus) heydeni
+	[ "45110345", 4  ], // Coleoptera Haliplidae Haliplus (Haliplinus) immaculatus
+	[ "45110353", 7  ], // Coleoptera Haliplidae Haliplus (Liaphlus) laminatus
+	[ "45110331", 1  ], // Coleoptera Haliplidae Haliplus (Neohaliplus) lineatocollis
+	[ "45110346", 4  ], // Coleoptera Haliplidae Haliplus (Haliplinus) lineolatus
+	[ "45110354", 8  ], // Coleoptera Haliplidae Haliplus (Liaphlus) mucronatus
+	[ "45110322", 4  ], // Coleoptera Haliplidae Haliplus (Haliplus) obliquus
+	[ "45110347", 1  ], // Coleoptera Haliplidae Haliplus (Haliplinus) ruficollis
+	[ "45110355", 8  ], // Coleoptera Haliplidae Haliplus (Liaphlus) variegatus
+	[ "45110323", 8  ], // Coleoptera Haliplidae Haliplus (Haliplus) varius
+	[ "45110348", 3  ], // Coleoptera Haliplidae Haliplus (Haliplinus) sibiricus
+	[ "45120101", 4  ], // Coleoptera Paelobiidae Hygrobia hermanni
+	[ "45130101", 2  ], // Coleoptera Noteridae Noterus clavicornis
+	[ "45130102", 7  ], // Coleoptera Noteridae Noterus crassicornis
+	[ "45140101", 1  ], // Coleoptera Dytiscidae Laccophilus hyalinus
+	[ "45140102", 2  ], // Coleoptera Dytiscidae Laccophilus minutus
+	[ "45140103", 9  ], // Coleoptera Dytiscidae Laccophilus poecilus
+	[ "45140201", 8  ], // Coleoptera Dytiscidae Hydrovatus clypealis
+	[ "45140301", 2  ], // Coleoptera Dytiscidae Hyphydrus ovatus
+	[ "45140401", 7  ], // Coleoptera Dytiscidae Hydroglyphus geminus
+	[ "45140501", 8  ], // Coleoptera Dytiscidae Bidessus minutissimus
+	[ "45140502", 10  ], // Coleoptera Dytiscidae Bidessus unistriatus
+	[ "45140611", 7  ], // Coleoptera Dytiscidae Hygrotus (Hygrotus) decoratus
+	[ "45140612", 2  ], // Coleoptera Dytiscidae Hygrotus (Hygrotus) inaequalis
+	[ "45140613", 7  ], // Coleoptera Dytiscidae Hygrotus (Hygrotus) quinquelineatus
+	[ "45140614", 5  ], // Coleoptera Dytiscidae Hygrotus (Hygrotus) versicolor
+	[ "45140621", 7  ], // Coleoptera Dytiscidae Hygrotus (Coelambus) confluens
+	[ "45140622", 5  ], // Coleoptera Dytiscidae Hygrotus (Coelambus) impressopunctatus
+	[ "45140623", 8  ], // Coleoptera Dytiscidae Hygrotus (Coelambus) nigrolineatus
+	[ "45140624", 7  ], // Coleoptera Dytiscidae Hygrotus (Coelambus) novemlineatus
+	[ "45140625", 7  ], // Coleoptera Dytiscidae Hygrotus (Coelambus) parallellogrammus
+	[ "45140801", 2  ], // Coleoptera Dytiscidae Hydroporus angustatus
+	[ "45140803", 3  ], // Coleoptera Dytiscidae Hydroporus discretus
+	[ "45140805", 8  ], // Coleoptera Dytiscidae Hydroporus elongatulus
+	[ "45140806", 3  ], // Coleoptera Dytiscidae Hydroporus erythrocephalus
+	[ "45140807", 7  ], // Coleoptera Dytiscidae Hydroporus ferrugineus
+	[ "45140809", 8  ], // Coleoptera Dytiscidae Hydroporus glabriusculus
+	[ "45140811", 2  ], // Coleoptera Dytiscidae Hydroporus gyllenhalii
+	[ "45140812", 3  ], // Coleoptera Dytiscidae Hydroporus incognitus
+	[ "45140813", 7  ], // Coleoptera Dytiscidae Hydroporus longicornis
+	[ "45140814", 5  ], // Coleoptera Dytiscidae Hydroporus longulus
+	[ "45140815", 7  ], // Coleoptera Dytiscidae Hydroporus marginatus
+	[ "45140816", 5  ], // Coleoptera Dytiscidae Hydroporus melanarius
+	[ "45140817", 4  ], // Coleoptera Dytiscidae Hydroporus memnonius
+	[ "45140818", 6  ], // Coleoptera Dytiscidae Hydroporus morio
+	[ "45140819", 7  ], // Coleoptera Dytiscidae Hydroporus neglectus
+	[ "45140821", 3  ], // Coleoptera Dytiscidae Hydroporus nigrita
+	[ "45140822", 5  ], // Coleoptera Dytiscidae Hydroporus obscurus
+	[ "45140823", 7  ], // Coleoptera Dytiscidae Hydroporus obsoletus
+	[ "45140824", 1  ], // Coleoptera Dytiscidae Hydroporus palustris
+	[ "45140825", 2  ], // Coleoptera Dytiscidae Hydroporus planus
+	[ "45140826", 2  ], // Coleoptera Dytiscidae Hydroporus pubescens
+	[ "45140827", 9  ], // Coleoptera Dytiscidae Hydroporus rufifrons
+	[ "45140828", 9  ], // Coleoptera Dytiscidae Hydroporus scalesianus
+	[ "45140829", 2  ], // Coleoptera Dytiscidae Hydroporus striola
+	[ "45140831", 2  ], // Coleoptera Dytiscidae Hydroporus tessellatus
+	[ "45140832", 5  ], // Coleoptera Dytiscidae Hydroporus tristis
+	[ "45140833", 4  ], // Coleoptera Dytiscidae Hydroporus umbrosus
+	[ "45142901", 5  ], // Coleoptera Dytiscidae Suphrodytes dorsalis
+	[ "45140901", 7  ], // Coleoptera Dytiscidae Stictonectes lepidus
+	[ "45141001", 8  ], // Coleoptera Dytiscidae Graptodytes bilineatus
+	[ "45141002", 9  ], // Coleoptera Dytiscidae Graptodytes flavipes
+	[ "45141003", 7  ], // Coleoptera Dytiscidae Graptodytes granularis
+	[ "45141004", 3  ], // Coleoptera Dytiscidae Graptodytes pictus
+	[ "45141101", 6  ], // Coleoptera Dytiscidae Porhydrus lineatus
+	[ "45141201", 7  ], // Coleoptera Dytiscidae Deronectes latus
+	[ "45141311", 5  ], // Coleoptera Dytiscidae Nebrioporus (Nebrioporus) assimilis
+	[ "45141312", 7  ], // Coleoptera Dytiscidae Nebrioporus (Nebrioporus) depressus
+	[ "45141402", 7  ], // Coleoptera Dytiscidae Stictotarsus multilineatus
+	[ "45141313", 1  ], // Coleoptera Dytiscidae Nebrioporus (Nebrioporus) elegans
+	[ "45141401", 2  ], // Coleoptera Dytiscidae Stictotarsus duodecimpustulatus
+	[ "45141504", 8  ], // Coleoptera Dytiscidae Oreodytes alpinus
+	[ "45141501", 6  ], // Coleoptera Dytiscidae Oreodytes davisii
+	[ "45141502", 2  ], // Coleoptera Dytiscidae Oreodytes sanmarkii
+	[ "45141503", 3  ], // Coleoptera Dytiscidae Oreodytes septentrionalis
+	[ "45141601", 7  ], // Coleoptera Dytiscidae Scarodytes halensis
+	[ "45141701", 7  ], // Coleoptera Dytiscidae Laccornis oblongus
+	[ "45141901", 2  ], // Coleoptera Dytiscidae Platambus maculatus
+	[ "45142051", 4  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) affinis
+	[ "45142031", 6  ], // Coleoptera Dytiscidae Agabus (Acatodes) arcticus
+	[ "45142052", 7  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) biguttatus
+	[ "45142053", 1  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) bipustulatus
+	[ "45142054", 9  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) brunneus
+	[ "45142108", 7  ], // Coleoptera Dytiscidae Ilybius chalconatus
+	[ "45142032", 5  ], // Coleoptera Dytiscidae Agabus (Acatodes) congener
+	[ "45142055", 7  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) conspersus
+	[ "45142056", 1  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) didymus
+	[ "45142057", 5  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) guttatus
+	[ "45142041", 7  ], // Coleoptera Dytiscidae Agabus (Agabus) labiatus
+	[ "45142058", 7  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) melanarius
+	[ "45142109", 5  ], // Coleoptera Dytiscidae Ilybius montanus
+	[ "45142059", 1  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) nebulosus
+	[ "4514205A", 1  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) paludosus
+	[ "4514205B", 9  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) striolatus
+	[ "45142033", 1  ], // Coleoptera Dytiscidae Agabus (Acatodes) sturmii
+	[ "45142042", 7  ], // Coleoptera Dytiscidae Agabus (Agabus) uliginosus
+	[ "45142043", 9  ], // Coleoptera Dytiscidae Agabus (Agabus) undulatus
+	[ "4514205C", 7  ], // Coleoptera Dytiscidae Agabus (Gaurodytes) unguicularis
+	[ "45142101", 7  ], // Coleoptera Dytiscidae Ilybius aenescens
+	[ "45142102", 3  ], // Coleoptera Dytiscidae Ilybius ater
+	[ "45142103", 7  ], // Coleoptera Dytiscidae Ilybius fenestratus
+	[ "45142104", 1  ], // Coleoptera Dytiscidae Ilybius fuliginosus
+	[ "45142105", 7  ], // Coleoptera Dytiscidae Ilybius guttiger
+	[ "45142106", 5  ], // Coleoptera Dytiscidae Ilybius quadriguttatus
+	[ "45142107", 7  ], // Coleoptera Dytiscidae Ilybius subaeneus
+	[ "45142221", 6  ], // Coleoptera Dytiscidae Rhantus (Rhantus) bistriatus
+	[ "45142222", 5  ], // Coleoptera Dytiscidae Rhantus (Rhantus) exsoletus
+	[ "45142223", 7  ], // Coleoptera Dytiscidae Rhantus (Rhantus) frontalis
+	[ "45142211", 7  ], // Coleoptera Dytiscidae Rhantus (Nartus) grapii
+	[ "45142224", 7  ], // Coleoptera Dytiscidae Rhantus (Rhantus) suturalis
+	[ "45142301", 1  ], // Coleoptera Dytiscidae Colymbetes fuscus
+	[ "45142402", 7  ], // Coleoptera Dytiscidae Hydaticus seminiger
+	[ "45142403", 7  ], // Coleoptera Dytiscidae Hydaticus transversalis
+	[ "45142601", 7  ], // Coleoptera Dytiscidae Acilius canaliculatus
+	[ "45142602", 5  ], // Coleoptera Dytiscidae Acilius sulcatus
+	[ "45142501", 10  ], // Coleoptera Dytiscidae Graphoderus bilineatus
+	[ "45142502", 8  ], // Coleoptera Dytiscidae Graphoderus cinereus
+	[ "45142503", 10  ], // Coleoptera Dytiscidae Graphoderus zonatus
+	[ "45142701", 7  ], // Coleoptera Dytiscidae Dytiscus circumcinctus
+	[ "45142702", 7  ], // Coleoptera Dytiscidae Dytiscus circumflexus
+	[ "45142703", 7  ], // Coleoptera Dytiscidae Dytiscus dimidiatus
+	[ "45142704", 7  ], // Coleoptera Dytiscidae Dytiscus lapponicus
+	[ "45142705", 1  ], // Coleoptera Dytiscidae Dytiscus marginalis
+	[ "45142706", 4  ], // Coleoptera Dytiscidae Dytiscus semisulcatus
+	[ "45150201", 7  ], // Coleoptera Gyrinidae Gyrinus aeratus
+	[ "45150203", 3  ], // Coleoptera Gyrinidae Gyrinus caspius
+	[ "45150204", 7  ], // Coleoptera Gyrinidae Gyrinus distinctus
+	[ "45150205", 2  ], // Coleoptera Gyrinidae Gyrinus marinus
+	[ "45150206", 7  ], // Coleoptera Gyrinidae Gyrinus minutus
+	[ "45150208", 7  ], // Coleoptera Gyrinidae Gyrinus opacus
+	[ "45150202", 7  ], // Coleoptera Gyrinidae Gyrinus paykulli
+	[ "45150209", 1  ], // Coleoptera Gyrinidae Gyrinus substriatus
+	[ "45150211", 7  ], // Coleoptera Gyrinidae Gyrinus suffriani
+	[ "45150212", 7  ], // Coleoptera Gyrinidae Gyrinus urinator
+	[ "45150401", 3  ], // Coleoptera Gyrinidae Orectochilus villosus
+	[ "45340101", 7  ], // Coleoptera Georissidae Georissus crenulatus
+	[ "45370101", 10  ], // Coleoptera Spercheidae Spercheus emarginatus
+	[ "45360101", 7  ], // Coleoptera Hydrochidae Hydrochus angustatus
+	[ "45360102", 8  ], // Coleoptera Hydrochidae Hydrochus brevis
+	[ "45360103", 8  ], // Coleoptera Hydrochidae Hydrochus crenatus
+	[ "45360104", 8  ], // Coleoptera Hydrochidae Hydrochus elongatus
+	[ "45360105", 8  ], // Coleoptera Hydrochidae Hydrochus ignicollis
+	[ "45360107", 8  ], // Coleoptera Hydrochidae Hydrochus megaphallus
+	[ "45360106", 8  ], // Coleoptera Hydrochidae Hydrochus nitidicollis
+	[ "45330141", 1  ], // Coleoptera Helophoridae Helophorus (Megahelophorus) aequalis
+	[ "45330131", 7  ], // Coleoptera Helophoridae Helophorus (Trichohelophorus) alternans
+	[ "45330151", 7  ], // Coleoptera Helophoridae Helophorus (Atracthelophorus) arvernicus
+	[ "45330152", 1  ], // Coleoptera Helophoridae Helophorus (Atracthelophorus) brevipalpis
+	[ "45330161", 8  ], // Coleoptera Helophoridae Helophorus (Helophorus) dorsalis
+	[ "45330162", 2  ], // Coleoptera Helophoridae Helophorus (Helophorus) flavipes
+	[ "45330163", 7  ], // Coleoptera Helophoridae Helophorus (Helophorus) fulgidicollis
+	[ "45330142", 2  ], // Coleoptera Helophoridae Helophorus (Megahelophorus) grandis
+	[ "45330164", 5  ], // Coleoptera Helophoridae Helophorus (Helophorus) granularis
+	[ "45330165", 7  ], // Coleoptera Helophoridae Helophorus (Helophorus) griseus
+	[ "45330166", 9  ], // Coleoptera Helophoridae Helophorus (Helophorus) laticollis
+	[ "45330167", 8  ], // Coleoptera Helophoridae Helophorus (Helophorus) longitarsis
+	[ "45330168", 3  ], // Coleoptera Helophoridae Helophorus (Helophorus) minutus
+	[ "45330169", 7  ], // Coleoptera Helophoridae Helophorus (Helophorus) nanus
+	[ "45330111", 4  ], // Coleoptera Helophoridae Helophorus (Empleurus) nubilus
+	[ "4533016A", 3  ], // Coleoptera Helophoridae Helophorus (Helophorus) obscurus
+	[ "4533016B", 7  ], // Coleoptera Helophoridae Helophorus (Helophorus) strigifrons
+	[ "45330121", 8  ], // Coleoptera Helophoridae Helophorus (Cyphelophorus) tuberculatus
+	[ "45353001", 6  ], // Coleoptera Hydrophilidae Coelostoma orbiculare
+	[ "45353143", 8  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) bifenestratus
+	[ "45353144", 7  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) convexiusculus
+	[ "45353145", 7  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) depressus
+	[ "45353146", 8  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) granarius
+	[ "45353148", 1  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) impressus
+	[ "4535314A", 3  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) lateralis
+	[ "4535314B", 3  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) littoralis
+	[ "4535314E", 7  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) obsoletus
+	[ "4535314C", 3  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) marinus
+	[ "4535314D", 2  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) melanocephalus
+	[ "4535314H", 7  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) sternalis
+	[ "4535314K", 7  ], // Coleoptera Hydrophilidae Cercyon (Cercyon) tristis
+	[ "45353151", 7  ], // Coleoptera Hydrophilidae Cercyon (Dicyrtocercyon) ustulatus
+	[ "45351001", 10  ], // Coleoptera Hydrophilidae Paracymus aeneus
+	[ "45351002", 7  ], // Coleoptera Hydrophilidae Paracymus scutellaris
+	[ "45351101", 1  ], // Coleoptera Hydrophilidae Hydrobius fuscipes
+	[ "45351201", 7  ], // Coleoptera Hydrophilidae Limnoxenus niger
+	[ "45351301", 7  ], // Coleoptera Hydrophilidae Anacaena bipustulata
+	[ "45351302", 1  ], // Coleoptera Hydrophilidae Anacaena globulus
+	[ "45351303", 1  ], // Coleoptera Hydrophilidae Anacaena limbata
+	[ "45351304", 3  ], // Coleoptera Hydrophilidae Anacaena lutescens
+	[ "45351421", 7  ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) atratus
+	[ "45351422", 7  ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) ytenensis
+	[ "45351411", 5  ], // Coleoptera Hydrophilidae Laccobius (Laccobius) colon
+	[ "45351423", 2  ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) bipunctatus
+	[ "45351412", 2  ], // Coleoptera Hydrophilidae Laccobius (Laccobius) minutus
+	[ "45351425", 8  ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) simulatrix
+	[ "45351426", 7  ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) sinuatus
+	[ "45351427", 2  ], // Coleoptera Hydrophilidae Laccobius (Dimorpholaccobius) striatulus
+	[ "45351601", 7  ], // Coleoptera Hydrophilidae Helochares lividus
+	[ "45351602", 8  ], // Coleoptera Hydrophilidae Helochares obscurus
+	[ "45351603", 7  ], // Coleoptera Hydrophilidae Helochares punctatus
+	[ "45351701", 7  ], // Coleoptera Hydrophilidae Enochrus affinis
+	[ "45351702", 7  ], // Coleoptera Hydrophilidae Enochrus bicolor
+	[ "45351703", 7  ], // Coleoptera Hydrophilidae Enochrus coarctatus
+	[ "45351709", 5  ], // Coleoptera Hydrophilidae Enochrus fuscipennis
+	[ "45351711", 7  ], // Coleoptera Hydrophilidae Enochrus halophilus
+	[ "45351712", 8  ], // Coleoptera Hydrophilidae Enochrus nigritus
+	[ "45351705", 7  ], // Coleoptera Hydrophilidae Enochrus melanocephalus
+	[ "45351706", 7  ], // Coleoptera Hydrophilidae Enochrus ochropterus
+	[ "45351707", 7  ], // Coleoptera Hydrophilidae Enochrus quadripunctatus
+	[ "45351708", 3  ], // Coleoptera Hydrophilidae Enochrus testaceus
+	[ "45352001", 5  ], // Coleoptera Hydrophilidae Cymbiodyta marginellus
+	[ "45352101", 7  ], // Coleoptera Hydrophilidae Chaetarthria seminulum
+	[ "45352201", 10  ], // Coleoptera Hydrophilidae Hydrochara caraboides
+	[ "45352301", 8  ], // Coleoptera Hydrophilidae Hydrophilus piceus
+	[ "45352411", 7  ], // Coleoptera Hydrophilidae Berosus (Berosus) affinis
+	[ "45352412", 7  ], // Coleoptera Hydrophilidae Berosus (Berosus) luridus
+	[ "45352413", 7  ], // Coleoptera Hydrophilidae Berosus (Berosus) signaticollis
+	[ "45352421", 8  ], // Coleoptera Hydrophilidae Berosus (Enoplurus) fulvus
+	[ "45410131", 10  ], // Coleoptera Hydraenidae Ochthebius (Homalochthebius) aeneus
+	[ "45410121", 7  ], // Coleoptera Hydraenidae Ochthebius (Asiobates) auriculatus
+	[ "45410122", 7  ], // Coleoptera Hydraenidae Ochthebius (Asiobates) bicolon
+	[ "45410123", 3  ], // Coleoptera Hydraenidae Ochthebius (Asiobates) dilatatus
+	[ "45410501", 7  ], // Coleoptera Hydraenidae Enicocerus exsculptus
+	[ "45410151", 9  ], // Coleoptera Hydraenidae Ochthebius (Ochthebius) lenensis
+	[ "45410152", 7  ], // Coleoptera Hydraenidae Ochthebius (Ochthebius) marinus
+	[ "45410132", 1  ], // Coleoptera Hydraenidae Ochthebius (Homalochthebius) minimus
+	[ "45410141", 7  ], // Coleoptera Hydraenidae Ochthebius (Hymenodes) nanus
+	[ "45410142", 8  ], // Coleoptera Hydraenidae Ochthebius (Hymenodes) poweri
+	[ "45410143", 7  ], // Coleoptera Hydraenidae Ochthebius (Hymenodes) punctatus
+	[ "45410153", 7  ], // Coleoptera Hydraenidae Ochthebius (Ochthebius) pusillus
+	[ "45410154", 7  ], // Coleoptera Hydraenidae Ochthebius (Ochthebius) viridis
+	[ "45410201", 5  ], // Coleoptera Hydraenidae Hydraena britteni
+	[ "45410202", 1  ], // Coleoptera Hydraenidae Hydraena gracilis
+	[ "45410203", 7  ], // Coleoptera Hydraenidae Hydraena flavipes
+	[ "45410204", 7  ], // Coleoptera Hydraenidae Hydraena nigrita
+	[ "45410205", 9  ], // Coleoptera Hydraenidae Hydraena palustris
+	[ "45410206", 7  ], // Coleoptera Hydraenidae Hydraena pulchella
+	[ "45410207", 8  ], // Coleoptera Hydraenidae Hydraena pygmaea
+	[ "45410208", 1  ], // Coleoptera Hydraenidae Hydraena riparia
+	[ "45410209", 7  ], // Coleoptera Hydraenidae Hydraena rufipes
+	[ "45410211", 7  ], // Coleoptera Hydraenidae Hydraena testacea
+	[ "45410301", 7  ], // Coleoptera Hydraenidae Limnebius aluta
+	[ "45410302", 8  ], // Coleoptera Hydraenidae Limnebius crinifer
+	[ "45410303", 7  ], // Coleoptera Hydraenidae Limnebius nitidus
+	[ "45410304", 7  ], // Coleoptera Hydraenidae Limnebius papposus
+	[ "45410305", 1  ], // Coleoptera Hydraenidae Limnebius truncatellus
+	[ "45630101", 1  ], // Coleoptera Elmidae Elmis aenea
+	[ "45630201", 4  ], // Coleoptera Elmidae Esolus parallelepipedus
+	[ "45630301", 2  ], // Coleoptera Elmidae Limnius volckmari
+	[ "45630401", 8  ], // Coleoptera Elmidae Macronychus quadrituberculatus
+	[ "45630501", 9  ], // Coleoptera Elmidae Normandia nitens
+	[ "45630601", 8  ], // Coleoptera Elmidae Oulimnius major
+	[ "45630602", 7  ], // Coleoptera Elmidae Oulimnius rivularis
+	[ "45630603", 7  ], // Coleoptera Elmidae Oulimnius troglodytes
+	[ "45630604", 2  ], // Coleoptera Elmidae Oulimnius tuberculatus
+	[ "45630701", 7  ], // Coleoptera Elmidae Riolus cupreus
+	[ "45630702", 7  ], // Coleoptera Elmidae Riolus subviolaceus
+	[ "45630801", 9  ], // Coleoptera Elmidae Stenelmis canaliculata
+	[ "45620101", 7  ], // Coleoptera Dryopidae Pomatinus substriatus
+	[ "45620211", 8  ], // Coleoptera Dryopidae Dryops (Dryops) anglicanus
+	[ "45620212", 7  ], // Coleoptera Dryopidae Dryops (Dryops) auriculatus
+	[ "45620213", 3  ], // Coleoptera Dryopidae Dryops (Dryops) ernesti
+	[ "45620214", 8  ], // Coleoptera Dryopidae Dryops (Dryops) griseus
+	[ "45620215", 1  ], // Coleoptera Dryopidae Dryops (Dryops) luridus
+	[ "45620221", 7  ], // Coleoptera Dryopidae Dryops (Yrdops) nitidulus
+	[ "45620217", 7  ], // Coleoptera Dryopidae Dryops (Dryops) similaris
+	[ "45620216", 7  ], // Coleoptera Dryopidae Dryops (Dryops) striatellus
+	[ "45650108", 3  ], // Coleoptera Heteroceridae Heterocerus fenestratus
+	[ "45650101", 5  ], // Coleoptera Heteroceridae Heterocerus flexuosus
+	[ "45650201", 8  ], // Coleoptera Heteroceridae Augyles hispidulus
+	[ "45650107", 3  ], // Coleoptera Heteroceridae Heterocerus obsoletus
+	[ "45710201", 7  ], // Coleoptera Chrysomelidae Donacia aquatica
+	[ "45710202", 7  ], // Coleoptera Chrysomelidae Donacia bicolora
+	[ "45710203", 7  ], // Coleoptera Chrysomelidae Donacia cinerea
+	[ "45710204", 7  ], // Coleoptera Chrysomelidae Donacia clavipes
+	[ "45710205", 7  ], // Coleoptera Chrysomelidae Donacia crassipes
+	[ "45710206", 7  ], // Coleoptera Chrysomelidae Donacia dentata
+	[ "45710207", 7  ], // Coleoptera Chrysomelidae Donacia impressa
+	[ "45710208", 4  ], // Coleoptera Chrysomelidae Donacia marginata
+	[ "45710209", 9  ], // Coleoptera Chrysomelidae Donacia obscura
+	[ "45710211", 5  ], // Coleoptera Chrysomelidae Donacia semicuprea
+	[ "45710212", 5  ], // Coleoptera Chrysomelidae Donacia simplex
+	[ "45710213", 7  ], // Coleoptera Chrysomelidae Donacia sparganii
+	[ "45710214", 7  ], // Coleoptera Chrysomelidae Donacia thalassina
+	[ "45710215", 5  ], // Coleoptera Chrysomelidae Donacia versicolorea
+	[ "45710216", 5  ], // Coleoptera Chrysomelidae Donacia vulgaris
+	[ "45710305", 7  ], // Coleoptera Chrysomelidae Plateumaris affinis
+	[ "45710302", 7  ], // Coleoptera Chrysomelidae Plateumaris braccata
+	[ "45710303", 5  ], // Coleoptera Chrysomelidae Plateumaris discolor
+	[ "45710304", 3  ], // Coleoptera Chrysomelidae Plateumaris sericea
+	[ "45810501", 5  ], // Coleoptera Curculionidae Tanysphyrus lemnae
+	[ "45811301", 7  ], // Coleoptera Curculionidae Eubrychius velutus
+	[ "45811602", 7  ], // Coleoptera Curculionidae Phytobius leucogaster
+	[ "45812601", 7  ], // Coleoptera Curculionidae Pelenomus canaliculatus
+	[ "45812604", 7  ], // Coleoptera Curculionidae Pelenomus quadricorniger
+	[ "45812702", 8  ], // Coleoptera Curculionidae Neophytobius quadrinodosus
+	[ "45812301", 7  ], // Coleoptera Curculionidae Gymnetron beccabungae
+	[ "45812302", 7  ], // Coleoptera Curculionidae Gymnetron veronicae
+	[ "45812001", 5  ], // Coleoptera Curculionidae Poophagus sisymbrii
+	[ "45810671", 7  ], // Coleoptera Curculionidae Bagous (Hydronomus) alismatis
+	[ "45510103", 8  ], // Coleoptera Scirtidae Elodes elongata
+	[ "45510307", 8  ], // Coleoptera Scirtidae Cyphon pubescens
+	[ "45510401", 8  ], // Coleoptera Scirtidae Prionocyphon serricornis
+	[ "45510602", 8  ], // Coleoptera Scirtidae Scirtes orbicularis
+	[ "46110102", 1  ], // Megaloptera Sialidae Sialis lutaria
+	[ "46110101", 5  ], // Megaloptera Sialidae Sialis fuliginosa
+	[ "46110103", 7  ], // Megaloptera Sialidae Sialis nigripes
+	[ "47110101", 5  ], // Neuroptera Osmylidae Osmylus fulvicephalus
+	[ "47120102", 5  ], // Neuroptera Sisyridae Sisyra fuscata
+	[ "47120101", 7  ], // Neuroptera Sisyridae Sisyra dalii
+	[ "47120103", 5  ], // Neuroptera Sisyridae Sisyra terminalis
+	[ "48110101", 1  ], // Trichoptera Rhyacophilidae Rhyacophila dorsalis
+	[ "48110104", 7  ], // Trichoptera Rhyacophilidae Rhyacophila fasciata
+	[ "48110103", 4  ], // Trichoptera Rhyacophilidae Rhyacophila obliterata
+	[ "48110102", 3  ], // Trichoptera Rhyacophilidae Rhyacophila munda
+	[ "48120102", 4  ], // Trichoptera Glossosomatidae Glossosoma conformis
+	[ "48120101", 3  ], // Trichoptera Glossosomatidae Glossosoma boltoni
+	[ "48120103", 8  ], // Trichoptera Glossosomatidae Glossosoma intermedium
+	[ "48120202", 1  ], // Trichoptera Glossosomatidae Agapetus fuscipes
+	[ "48120203", 3  ], // Trichoptera Glossosomatidae Agapetus ochripes
+	[ "48120201", 3  ], // Trichoptera Glossosomatidae Agapetus delicatulus
+	[ "48210101", 2  ], // Trichoptera Philopotamidae Philopotamus montanus
+	[ "48210202", 2  ], // Trichoptera Philopotamidae Wormaldia occipitalis
+	[ "48210201", 5  ], // Trichoptera Philopotamidae Wormaldia mediana
+	[ "48210203", 5  ], // Trichoptera Philopotamidae Wormaldia subnigra
+	[ "48210301", 7  ], // Trichoptera Philopotamidae Chimarra marginata
+	[ "48240301", 3  ], // Trichoptera Polycentropodidae Neureclipsis bimaculata
+	[ "48240402", 2  ], // Trichoptera Polycentropodidae Plectrocnemia conspersa
+	[ "48240403", 3  ], // Trichoptera Polycentropodidae Plectrocnemia geniculata
+	[ "48240401", 8  ], // Trichoptera Polycentropodidae Plectrocnemia brevis
+	[ "48240501", 2  ], // Trichoptera Polycentropodidae Polycentropus flavomaculatus
+	[ "48240502", 5  ], // Trichoptera Polycentropodidae Polycentropus irroratus
+	[ "48240503", 5  ], // Trichoptera Polycentropodidae Polycentropus kingi
+	[ "48240201", 4  ], // Trichoptera Polycentropodidae Holocentropus dubius
+	[ "48240202", 3  ], // Trichoptera Polycentropodidae Holocentropus picicornis
+	[ "48240203", 4  ], // Trichoptera Polycentropodidae Holocentropus stagnalis
+	[ "48240103", 3  ], // Trichoptera Polycentropodidae Cyrnus trimaculatus
+	[ "48240102", 10  ], // Trichoptera Polycentropodidae Cyrnus insolutus
+	[ "48240101", 5  ], // Trichoptera Polycentropodidae Cyrnus flavidus
+	[ "48230101", 5  ], // Trichoptera Ecnomidae Ecnomus tenellus
+	[ "48220408", 1  ], // Trichoptera Psychomyiidae Tinodes waeneri
+	[ "48220403", 4  ], // Trichoptera Psychomyiidae Tinodes maclachlani
+	[ "48220401", 5  ], // Trichoptera Psychomyiidae Tinodes assimilis
+	[ "48220405", 9  ], // Trichoptera Psychomyiidae Tinodes pallidulus
+	[ "48220404", 7  ], // Trichoptera Psychomyiidae Tinodes maculicornis
+	[ "48220407", 7  ], // Trichoptera Psychomyiidae Tinodes unicolor
+	[ "48220406", 7  ], // Trichoptera Psychomyiidae Tinodes rostocki
+	[ "48220402", 7  ], // Trichoptera Psychomyiidae Tinodes dives
+	[ "48220101", 4  ], // Trichoptera Psychomyiidae Lype phaeopa
+	[ "48220102", 3  ], // Trichoptera Psychomyiidae Lype reducta
+	[ "48220201", 7  ], // Trichoptera Psychomyiidae Metalype fragilis
+	[ "48220301", 4  ], // Trichoptera Psychomyiidae Psychomyia pusilla
+	[ "48250207", 2  ], // Trichoptera Hydropsychidae Hydropsyche pellucidula
+	[ "48250201", 1  ], // Trichoptera Hydropsychidae Hydropsyche angustipennis
+	[ "48250209", 1  ], // Trichoptera Hydropsychidae Hydropsyche siltalai
+	[ "48250208", 10  ], // Trichoptera Hydropsychidae Hydropsyche saxonica
+	[ "48250203", 4  ], // Trichoptera Hydropsychidae Hydropsyche contubernalis
+	[ "48250202", 10  ], // Trichoptera Hydropsychidae Hydropsyche bulgaromanorum
+	[ "48250206", 4  ], // Trichoptera Hydropsychidae Hydropsyche instabilis
+	[ "48250205", 7  ], // Trichoptera Hydropsychidae Hydropsyche fulvipes
+	[ "48250204", 10  ], // Trichoptera Hydropsychidae Hydropsyche exocellata
+	[ "48250101", 4  ], // Trichoptera Hydropsychidae Cheumatopsyche lepida
+	[ "48250301", 4  ], // Trichoptera Hydropsychidae Diplectrona felix
+	[ "48130101", 1  ], // Trichoptera Hydroptilidae Agraylea multipunctata
+	[ "48130102", 5  ], // Trichoptera Hydroptilidae Agraylea sexmaculata
+	[ "48130201", 5  ], // Trichoptera Hydroptilidae Allotrichia pallicornis
+	[ "48130309", 4  ], // Trichoptera Hydroptilidae Hydroptila sparsa
+	[ "48130308", 3  ], // Trichoptera Hydroptilidae Hydroptila simulans
+	[ "48130302", 7  ], // Trichoptera Hydroptilidae Hydroptila cornuta
+	[ "48130304", 9  ], // Trichoptera Hydroptilidae Hydroptila lotensis
+	[ "48130301", 5  ], // Trichoptera Hydroptilidae Hydroptila angulata
+	[ "48130311", 7  ], // Trichoptera Hydroptilidae Hydroptila sylvestris
+	[ "48130305", 6  ], // Trichoptera Hydroptilidae Hydroptila martini
+	[ "48130306", 5  ], // Trichoptera Hydroptilidae Hydroptila occulta
+	[ "48130313", 2  ], // Trichoptera Hydroptilidae Hydroptila tineoides
+	[ "48130307", 6  ], // Trichoptera Hydroptilidae Hydroptila pulchricornis
+	[ "48130303", 3  ], // Trichoptera Hydroptilidae Hydroptila forcipata
+	[ "48130315", 2  ], // Trichoptera Hydroptilidae Hydroptila vectis
+	[ "48130312", 10  ], // Trichoptera Hydroptilidae Hydroptila tigurina
+	[ "48130314", 7  ], // Trichoptera Hydroptilidae Hydroptila valesiaca
+	[ "48130602", 4  ], // Trichoptera Hydroptilidae Ithytrichia lamellaris
+	[ "48130601", 8  ], // Trichoptera Hydroptilidae Ithytrichia clavata
+	[ "48130701", 5  ], // Trichoptera Hydroptilidae Orthotrichia angustella
+	[ "48130703", 10  ], // Trichoptera Hydroptilidae Orthotrichia tragetti
+	[ "48130702", 5  ], // Trichoptera Hydroptilidae Orthotrichia costalis
+	[ "48130403", 3  ], // Trichoptera Hydroptilidae Oxyethira flavicornis
+	[ "48130408", 10  ], // Trichoptera Hydroptilidae Oxyethira tristella
+	[ "48130407", 6  ], // Trichoptera Hydroptilidae Oxyethira simplex
+	[ "48130402", 3  ], // Trichoptera Hydroptilidae Oxyethira falcata
+	[ "48130404", 4  ], // Trichoptera Hydroptilidae Oxyethira frici
+	[ "48130401", 10  ], // Trichoptera Hydroptilidae Oxyethira distinctella
+	[ "48130406", 8  ], // Trichoptera Hydroptilidae Oxyethira sagittifera
+	[ "48130405", 8  ], // Trichoptera Hydroptilidae Oxyethira mirabilis
+	[ "48130501", 8  ], // Trichoptera Hydroptilidae Tricholeiochiton fagesii
+	[ "48310301", 10  ], // Trichoptera Phryganeidae Hagenella clathrata
+	[ "48310502", 5  ], // Trichoptera Phryganeidae Phryganea grandis
+	[ "48310501", 2  ], // Trichoptera Phryganeidae Phryganea bipunctata
+	[ "48310401", 4  ], // Trichoptera Phryganeidae Oligotricha striata
+	[ "48310105", 3  ], // Trichoptera Phryganeidae Agrypnia varia
+	[ "48310102", 5  ], // Trichoptera Phryganeidae Agrypnia obsoleta
+	[ "48310104", 10  ], // Trichoptera Phryganeidae Agrypnia picta
+	[ "48310103", 5  ], // Trichoptera Phryganeidae Agrypnia pagetana
+	[ "48310601", 5  ], // Trichoptera Phryganeidae Trichostegia minor
+	[ "48340101", 9  ], // Trichoptera Limnephilidae Ironoquia dubia
+	[ "483B0104", 5  ], // Trichoptera Apataniidae Apatania wallengreni
+	[ "483B0101", 7  ], // Trichoptera Apataniidae Apatania auricula
+	[ "483B0102", 5  ], // Trichoptera Apataniidae Apatania muliebris
+	[ "48340301", 1  ], // Trichoptera Limnephilidae Drusus annulatus
+	[ "48340401", 4  ], // Trichoptera Limnephilidae Ecclisopteryx guttulata
+	[ "48341726", 3  ], // Trichoptera Limnephilidae Limnephilus rhombicus
+	[ "48341712", 2  ], // Trichoptera Limnephilidae Limnephilus flavicornis
+	[ "48341729", 7  ], // Trichoptera Limnephilidae Limnephilus subcentralis
+	[ "48341705", 7  ], // Trichoptera Limnephilidae Limnephilus borealis
+	[ "48341722", 3  ], // Trichoptera Limnephilidae Limnephilus marmoratus
+	[ "48341725", 4  ], // Trichoptera Limnephilidae Limnephilus politus
+	[ "48341731", 9  ], // Trichoptera Limnephilidae Limnephilus tauricus
+	[ "48341724", 10  ], // Trichoptera Limnephilidae Limnephilus pati
+	[ "48341728", 4  ], // Trichoptera Limnephilidae Limnephilus stigma
+	[ "48341703", 5  ], // Trichoptera Limnephilidae Limnephilus binotatus
+	[ "48341708", 5  ], // Trichoptera Limnephilidae Limnephilus decipiens
+	[ "48341719", 1  ], // Trichoptera Limnephilidae Limnephilus lunatus
+	[ "48341721", 2  ], // Trichoptera Limnephilidae Limnephilus luridus
+	[ "48341717", 6  ], // Trichoptera Limnephilidae Limnephilus ignavus
+	[ "48341714", 7  ], // Trichoptera Limnephilidae Limnephilus fuscinervis
+	[ "48341709", 7  ], // Trichoptera Limnephilidae Limnephilus elegans
+	[ "48341715", 4  ], // Trichoptera Limnephilidae Limnephilus griseus
+	[ "48341704", 5  ], // Trichoptera Limnephilidae Limnephilus bipunctatus
+	[ "48341701", 3  ], // Trichoptera Limnephilidae Limnephilus affinis
+	[ "48341718", 3  ], // Trichoptera Limnephilidae Limnephilus incisus
+	[ "48341716", 4  ], // Trichoptera Limnephilidae Limnephilus hirsutus
+	[ "48341706", 3  ], // Trichoptera Limnephilidae Limnephilus centralis
+	[ "48341727", 2  ], // Trichoptera Limnephilidae Limnephilus sparsus
+	[ "48341702", 3  ], // Trichoptera Limnephilidae Limnephilus auricula
+	[ "48341732", 3  ], // Trichoptera Limnephilidae Limnephilus vittatus
+	[ "48341723", 6  ], // Trichoptera Limnephilidae Limnephilus nigriceps
+	[ "48341711", 2  ], // Trichoptera Limnephilidae Limnephilus extricatus
+	[ "48341713", 5  ], // Trichoptera Limnephilidae Limnephilus fuscicornis
+	[ "48341707", 4  ], // Trichoptera Limnephilidae Limnephilus coenosus
+	[ "48341602", 10  ], // Trichoptera Limnephilidae Grammotaulius nitidus
+	[ "48341601", 4  ], // Trichoptera Limnephilidae Grammotaulius nigropunctatus
+	[ "48341501", 3  ], // Trichoptera Limnephilidae Glyphotaelius pellucidus
+	[ "48341801", 8  ], // Trichoptera Limnephilidae Nemotaulius punctatolineatus
+	[ "48341401", 2  ], // Trichoptera Limnephilidae Anabolia nervosa
+	[ "48341402", 7  ], // Trichoptera Limnephilidae Anabolia brevipennis
+	[ "48342001", 5  ], // Trichoptera Limnephilidae Rhadicoleptus alpestris
+	[ "48341102", 2  ], // Trichoptera Limnephilidae Potamophylax latipennis
+	[ "48341101", 2  ], // Trichoptera Limnephilidae Potamophylax cingulatus
+	[ "48341103", 6  ], // Trichoptera Limnephilidae Potamophylax rotundipennis
+	[ "48340602", 2  ], // Trichoptera Limnephilidae Halesus radiatus
+	[ "48340601", 3  ], // Trichoptera Limnephilidae Halesus digitatus
+	[ "48340801", 5  ], // Trichoptera Limnephilidae Melampophylax mucoreus
+	[ "48341201", 3  ], // Trichoptera Limnephilidae Stenophylax permistus
+	[ "48341202", 5  ], // Trichoptera Limnephilidae Stenophylax vibex
+	[ "48341001", 2  ], // Trichoptera Limnephilidae Micropterna lateralis
+	[ "48341002", 1  ], // Trichoptera Limnephilidae Micropterna sequax
+	[ "48340902", 5  ], // Trichoptera Limnephilidae Mesophylax impunctatus
+	[ "48340901", 8  ], // Trichoptera Limnephilidae Mesophylax aspersus
+	[ "48340501", 4  ], // Trichoptera Limnephilidae Allogamus auricollis
+	[ "48340701", 5  ], // Trichoptera Limnephilidae Hydatophylax infumatus
+	[ "48341301", 3  ], // Trichoptera Limnephilidae Chaetopteryx villosa
+	[ "48390101", 2  ], // Trichoptera Molannidae Molanna angustata
+	[ "48390102", 5  ], // Trichoptera Molannidae Molanna albicans
+	[ "48360102", 4  ], // Trichoptera Beraeidae Beraea pullata
+	[ "48360101", 3  ], // Trichoptera Beraeidae Beraea maurus
+	[ "48360301", 8  ], // Trichoptera Beraeidae Ernodes articularis
+	[ "48360201", 5  ], // Trichoptera Beraeidae Beraeodes minutus
+	[ "48380101", 3  ], // Trichoptera Odontoceridae Odontocerum albicorne
+	[ "483A0201", 5  ], // Trichoptera Leptoceridae Ceraclea albimacula
+	[ "483A0205", 4  ], // Trichoptera Leptoceridae Ceraclea nigronervosa
+	[ "483A0204", 5  ], // Trichoptera Leptoceridae Ceraclea fulva
+	[ "483A0206", 7  ], // Trichoptera Leptoceridae Ceraclea senilis
+	[ "483A0202", 4  ], // Trichoptera Leptoceridae Ceraclea annulicornis
+	[ "483A0203", 3  ], // Trichoptera Leptoceridae Ceraclea dissimilis
+	[ "483A0102", 1  ], // Trichoptera Leptoceridae Athripsodes aterrimus
+	[ "483A0104", 1  ], // Trichoptera Leptoceridae Athripsodes cinereus
+	[ "483A0101", 4  ], // Trichoptera Leptoceridae Athripsodes albifrons
+	[ "483A0103", 5  ], // Trichoptera Leptoceridae Athripsodes bilineatus
+	[ "483A0105", 6  ], // Trichoptera Leptoceridae Athripsodes commutatus
+	[ "483A0403", 6  ], // Trichoptera Leptoceridae Mystacides nigra
+	[ "483A0401", 2  ], // Trichoptera Leptoceridae Mystacides azurea
+	[ "483A0402", 1  ], // Trichoptera Leptoceridae Mystacides longicornis
+	[ "483A0701", 2  ], // Trichoptera Leptoceridae Triaenodes bicolor
+	[ "483A0801", 7  ], // Trichoptera Leptoceridae Ylodes conspersus
+	[ "483A0803", 8  ], // Trichoptera Leptoceridae Ylodes simulans
+	[ "483A0802", 8  ], // Trichoptera Leptoceridae Ylodes reuteri
+	[ "483A0601", 8  ], // Trichoptera Leptoceridae Erotesis baltica
+	[ "483A0502", 3  ], // Trichoptera Leptoceridae Adicella reducta
+	[ "483A0501", 8  ], // Trichoptera Leptoceridae Adicella filicornis
+	[ "483A0904", 2  ], // Trichoptera Leptoceridae Oecetis ochracea
+	[ "483A0901", 5  ], // Trichoptera Leptoceridae Oecetis furva
+	[ "483A0902", 3  ], // Trichoptera Leptoceridae Oecetis lacustris
+	[ "483A0903", 8  ], // Trichoptera Leptoceridae Oecetis notata
+	[ "483A0905", 4  ], // Trichoptera Leptoceridae Oecetis testacea
+	[ "483A0303", 5  ], // Trichoptera Leptoceridae Leptocerus tineiformis
+	[ "483A0302", 9  ], // Trichoptera Leptoceridae Leptocerus lusitanicus
+	[ "483A0301", 8  ], // Trichoptera Leptoceridae Leptocerus interruptus
+	[ "483A1002", 8  ], // Trichoptera Leptoceridae Setodes punctatus
+	[ "483A1001", 8  ], // Trichoptera Leptoceridae Setodes argentipunctellus
+	[ "48350101", 3  ], // Trichoptera Goeridae Goera pilosa
+	[ "48350202", 2  ], // Trichoptera Goeridae Silo pallipes
+	[ "48350201", 5  ], // Trichoptera Goeridae Silo nigricornis
+	[ "48330101", 3  ], // Trichoptera Lepidostomatidae Crunoecia irrorata
+	[ "48330301", 2  ], // Trichoptera Lepidostomatidae Lepidostoma hirtum
+	[ "48330201", 6  ], // Trichoptera Lepidostomatidae Lasiocephala basalis
+	[ "48320101", 6  ], // Trichoptera Brachycentridae Brachycentrus subnubilus
+	[ "48370201", 1  ], // Trichoptera Sericostomatidae Sericostoma personatum
+	[ "48370101", 6  ], // Trichoptera Sericostomatidae Notidobia ciliaris
+	[ "50135501", 9  ], // Diptera Limoniidae Arctoconopa melampodia
+	[ "50133911", 7  ], // Diptera Limoniidae Cheilotrichia (Cheilotrichia) imbuta
+	[ "50131811", 7  ], // Diptera Limoniidae Dactylolabis (Dactylolabis) sexmaculata
+	[ "50131812", 7  ], // Diptera Limoniidae Dactylolabis (Dactylolabis) transversa
+	[ "50140522", 7  ], // Diptera Pediciidae Dicranota (Paradicranota) gracilipes
+	[ "50140512", 7  ], // Diptera Pediciidae Dicranota (Dicranota) guerini
+	[ "50140524", 7  ], // Diptera Pediciidae Dicranota (Paradicranota) robusta
+	[ "50140526", 8  ], // Diptera Pediciidae Dicranota (Paradicranota) simulans
+	[ "50134161", 9  ], // Diptera Limoniidae Erioptera (Mesocyphona) bivittata
+	[ "50134137", 9  ], // Diptera Limoniidae Erioptera (Erioptera) limbata
+	[ "50134139", 9  ], // Diptera Limoniidae Erioptera (Erioptera) meijerei
+	[ "5013413A", 7  ], // Diptera Limoniidae Erioptera (Erioptera) nielseni
+	[ "5013413B", 8  ], // Diptera Limoniidae Erioptera (Erioptera) verralli
+	[ "5013413C", 8  ], // Diptera Limoniidae Erioptera (Erioptera) sordida
+	[ "50133151", 8  ], // Diptera Limoniidae Gonomyia (Prolipophleps) abbreviata
+	[ "50133221", 10  ], // Diptera Limoniidae Ellipteroides (Protogonomyia) alboscutellatus
+	[ "50133141", 7  ], // Diptera Limoniidae Gonomyia (Gonomyia) bifida
+	[ "50133311", 9  ], // Diptera Limoniidae Idiocera (Idiocera) bradleyi
+	[ "50133315", 10  ], // Diptera Limoniidae Idiocera (Idiocera) sziladyi
+	[ "50133142", 7  ], // Diptera Limoniidae Gonomyia (Gonomyia) conoviensis
+	[ "50133314", 10  ], // Diptera Limoniidae Idiocera (Idiocera) sexguttata
+	[ "50130915", 7  ], // Diptera Limoniidae Helius (Helius) pallirostris
+	[ "50132411", 7  ], // Diptera Limoniidae Phylidorea (Phylidorea) abdominalis
+	[ "50132413", 10  ], // Diptera Limoniidae Phylidorea (Phylidorea) heterogyna
+	[ "50132051", 9  ], // Diptera Limoniidae Limnophila (Limnophila) pictipennis
+	[ "50135334", 7  ], // Diptera Limoniidae Molophilus (Molophilus) bihamatus
+	[ "50135336", 7  ], // Diptera Limoniidae Molophilus (Molophilus) corniger
+	[ "50135338", 8  ], // Diptera Limoniidae Molophilus (Molophilus) czizeki
+	[ "5013533B", 8  ], // Diptera Limoniidae Molophilus (Molophilus) lackschewitzianus
+	[ "5013533D", 7  ], // Diptera Limoniidae Molophilus (Molophilus) niger
+	[ "5013533K", 7  ], // Diptera Limoniidae Molophilus (Molophilus) propinquus
+	[ "50132901", 7  ], // Diptera Limoniidae Neolimnophila carteri
+	[ "50132902", 7  ], // Diptera Limoniidae Neolimnophila placida
+	[ "50110505", 8  ], // Diptera Tipulidae Nephrotoma crocata
+	[ "50130701", 7  ], // Diptera Limoniidae Orimarga juvenilis
+	[ "50130702", 8  ], // Diptera Limoniidae Orimarga virgo
+	[ "50134811", 9  ], // Diptera Limoniidae Ormosia (Ormosia) aciculata
+	[ "50134813", 9  ], // Diptera Limoniidae Ormosia (Ormosia) bicornis
+	[ "50134819", 7  ], // Diptera Limoniidae Ormosia (Ormosia) staegeriana
+	[ "50135412", 9  ], // Diptera Limoniidae Paradelphomyia (Oxyrhiza) ecalcarata
+	[ "50135413", 7  ], // Diptera Limoniidae Paradelphomyia (Oxyrhiza) fuscula
+	[ "50135414", 7  ], // Diptera Limoniidae Paradelphomyia (Oxyrhiza) nielseni
+	[ "50120201", 7  ], // Diptera Cylindrotomidae Phalacrocera replicata
+	[ "50132622", 7  ], // Diptera Limoniidae Pilaria fuscipennis
+	[ "50132623", 7  ], // Diptera Limoniidae Pilaria meridiana
+	[ "50132624", 7  ], // Diptera Limoniidae Pilaria scutellata
+	[ "50110101", 9  ], // Diptera Tipulidae Prionocera pubescens
+	[ "50110102", 9  ], // Diptera Tipulidae Prionocera subserricornis
+	[ "50133622", 8  ], // Diptera Limoniidae Rhabdomastix (Sacandaga) laeta
+	[ "50133631", 9  ], // Diptera Limoniidae Rhabdomastix (Lurdia) inclinata
+	[ "50135001", 8  ], // Diptera Limoniidae Scleroprocta pentagonalis
+	[ "50135002", 7  ], // Diptera Limoniidae Scleroprocta sororcula
+	[ "50135121", 10  ], // Diptera Limoniidae Tasiocera (Dasymolophilus) collini
+	[ "50135122", 10  ], // Diptera Limoniidae Tasiocera (Dasymolophilus) fuscescens
+	[ "50135123", 10  ], // Diptera Limoniidae Tasiocera (Dasymolophilus) jenkinsoni
+	[ "50135127", 7  ], // Diptera Limoniidae Tasiocera (Dasymolophilus) robusta
+	[ "50130601", 7  ], // Diptera Limoniidae Thaumastoptera calceata
+	[ "50110381", 9  ], // Diptera Tipulidae Tipula (Lindnerina) bistilata
+	[ "50110332", 7  ], // Diptera Tipulidae Tipula (Savtshenkia) cheethami
+	[ "501103A1", 8  ], // Diptera Tipulidae Tipula (Yamatotipula) coerulescens
+	[ "50110333", 8  ], // Diptera Tipulidae Tipula (Savtshenkia) gimmerthali
+	[ "50110334", 8  ], // Diptera Tipulidae Tipula (Savtshenkia) grisescens
+	[ "50110335", 8  ], // Diptera Tipulidae Tipula (Savtshenkia) limbata
+	[ "501103A4", 8  ], // Diptera Tipulidae Tipula (Yamatotipula) marginella
+	[ "5011033A", 10  ], // Diptera Tipulidae Tipula (Savtshenkia) serrulifera
+	[ "50110372", 10  ], // Diptera Tipulidae Tipula (Mediotipula) siebkei
+	[ "50110352", 7  ], // Diptera Tipulidae Tipula (Pterelachisus) truncorum
+	[ "50120101", 8  ], // Diptera Cylindrotomidae Triogma trisulcata
+	[ "50310101", 5  ], // Diptera Dixidae Dixa dilatata
+	[ "50310102", 7  ], // Diptera Dixidae Dixa maculata
+	[ "50310103", 4  ], // Diptera Dixidae Dixa nebulosa
+	[ "50310104", 5  ], // Diptera Dixidae Dixa nubilipennis
+	[ "50310105", 5  ], // Diptera Dixidae Dixa puberula
+	[ "50310106", 4  ], // Diptera Dixidae Dixa submaculata
+	[ "50310201", 4  ], // Diptera Dixidae Dixella aestivalis
+	[ "50310202", 4  ], // Diptera Dixidae Dixella amphibia
+	[ "50310203", 7  ], // Diptera Dixidae Dixella attica
+	[ "50310204", 3  ], // Diptera Dixidae Dixella autumnalis
+	[ "50310205", 7  ], // Diptera Dixidae Dixella filicornis
+	[ "50310209", 9  ], // Diptera Dixidae Dixella graeca
+	[ "50310206", 4  ], // Diptera Dixidae Dixella martinii
+	[ "50310207", 7  ], // Diptera Dixidae Dixella obscura
+	[ "50310208", 7  ], // Diptera Dixidae Dixella serotina
+	[ "50330734", 10  ], // Diptera Culicidae Ochlerotatus (Ochlerotatus) communis
+	[ "50330736", 8  ], // Diptera Culicidae Ochlerotatus (Ochlerotatus) dorsalis
+	[ "50330737", 9  ], // Diptera Culicidae Ochlerotatus (Ochlerotatus) flavescens
+	[ "50330738", 10  ], // Diptera Culicidae Ochlerotatus (Ochlerotatus) leucomelas
+	[ "5033073A", 8  ], // Diptera Culicidae Ochlerotatus (Ochlerotatus) sticticus
+	[ "50330111", 10  ], // Diptera Culicidae Anopheles (Anopheles) algeriensis
+	[ "50331131", 10  ], // Diptera Culicidae Culiseta (Allotheobaldia) longiareolata
+	[ "50330501", 8  ], // Diptera Culicidae Orthopodomyia pulcripalpis
+	[ "50340101", 6  ], // Diptera Thaumaleidae Thaumalea testacea
+	[ "50340102", 8  ], // Diptera Thaumaleidae Thaumalea truncata
+	[ "50340103", 6  ], // Diptera Thaumaleidae Thaumalea verralli
+	[ "50351624", 9  ], // Diptera Ceratopogonidae Dasyhelea (Dasyhelea) saxicola
+	[ "50360101", 5  ], // Diptera Simuliidae Prosimulium hirtipes
+	[ "50360102", 7  ], // Diptera Simuliidae Prosimulium latimucro
+	[ "50360103", 7  ], // Diptera Simuliidae Prosimulium tomosvaryi
+	[ "50360201", 7  ], // Diptera Simuliidae Metacnephia amphora
+	[ "50360311", 6  ], // Diptera Simuliidae Simulium (Hellichiella) latipes
+	[ "50360321", 6  ], // Diptera Simuliidae Simulium (Nevermannia) angustitarse
+	[ "50360327", 4  ], // Diptera Simuliidae Simulium (Nevermannia) lundstromi
+	[ "50360322", 5  ], // Diptera Simuliidae Simulium (Nevermannia) armoricanum
+	[ "50360324", 4  ], // Diptera Simuliidae Simulium (Nevermannia) cryophilum
+	[ "5036032A", 6  ], // Diptera Simuliidae Simulium (Nevermannia) juxtacrenobium
+	[ "50360329", 7  ], // Diptera Simuliidae Simulium (Nevermannia) urbanum
+	[ "50360325", 5  ], // Diptera Simuliidae Simulium (Nevermannia) dunfellense
+	[ "50360323", 5  ], // Diptera Simuliidae Simulium (Nevermannia) costatum
+	[ "50360341", 4  ], // Diptera Simuliidae Simulium (Eusimulium) angustipes
+	[ "50360343", 4  ], // Diptera Simuliidae Simulium (Eusimulium) velutinum
+	[ "50360342", 5  ], // Diptera Simuliidae Simulium (Eusimulium) aureum
+	[ "50360352", 3  ], // Diptera Simuliidae Simulium (Wilhelmia) lineatum
+	[ "50360353", 5  ], // Diptera Simuliidae Simulium (Wilhelmia) pseudequinum
+	[ "50360351", 2  ], // Diptera Simuliidae Simulium (Wilhelmia) equinum
+	[ "50360361", 3  ], // Diptera Simuliidae Simulium (Boophthora) erythrocephalum
+	[ "50360386", 1  ], // Diptera Simuliidae Simulium (Simulium) ornatum
+	[ "50360383", 5  ], // Diptera Simuliidae Simulium (Simulium) intermedium
+	[ "50360389", 5  ], // Diptera Simuliidae Simulium (Simulium) trifasciatum
+	[ "50360381", 3  ], // Diptera Simuliidae Simulium (Simulium) argyreatum
+	[ "5036038B", 4  ], // Diptera Simuliidae Simulium (Simulium) variegatum
+	[ "5036038A", 4  ], // Diptera Simuliidae Simulium (Simulium) tuberosum
+	[ "50360382", 6  ], // Diptera Simuliidae Simulium (Simulium) rostratum
+	[ "50360384", 7  ], // Diptera Simuliidae Simulium (Simulium) morsitans
+	[ "50360387", 5  ], // Diptera Simuliidae Simulium (Simulium) posticatum
+	[ "50360388", 5  ], // Diptera Simuliidae Simulium (Simulium) reptans
+	[ "50360385", 3  ], // Diptera Simuliidae Simulium (Simulium) noelleri
+	[ "50610101", 7  ], // Diptera Stratiomyidae Beris clavipes
+	[ "50610102", 7  ], // Diptera Stratiomyidae Beris fuscipes
+	[ "50610501", 10  ], // Diptera Stratiomyidae Odontomyia angulata
+	[ "50610502", 9  ], // Diptera Stratiomyidae Odontomyia argentata
+	[ "50610503", 10  ], // Diptera Stratiomyidae Odontomyia hydroleon
+	[ "50610504", 9  ], // Diptera Stratiomyidae Odontomyia ornata
+	[ "50610505", 7  ], // Diptera Stratiomyidae Odontomyia tigrina
+	[ "50610301", 9  ], // Diptera Stratiomyidae Oxycera analis
+	[ "50610302", 8  ], // Diptera Stratiomyidae Oxycera dives
+	[ "50610313", 10  ], // Diptera Stratiomyidae Oxycera leonina
+	[ "50610305", 7  ], // Diptera Stratiomyidae Oxycera morrisii
+	[ "50610307", 7  ], // Diptera Stratiomyidae Oxycera pardalina
+	[ "50610309", 7  ], // Diptera Stratiomyidae Oxycera pygmaea
+	[ "50610311", 9  ], // Diptera Stratiomyidae Oxycera terminata
+	[ "50610601", 10  ], // Diptera Stratiomyidae Stratiomys chamaeleon
+	[ "50610603", 9  ], // Diptera Stratiomyidae Stratiomys longicornis
+	[ "50610604", 7  ], // Diptera Stratiomyidae Stratiomys potamida
+	[ "50610401", 7  ], // Diptera Stratiomyidae Vanoyia tenuicornis
+	[ "50640201", 8  ], // Diptera Athericidae Atrichops crassipes
+	[ "50630303", 10  ], // Diptera Tabanidae Atylotus plebeius
+	[ "50630103", 9  ], // Diptera Tabanidae Chrysops sepulcralis
+	[ "50630203", 8  ], // Diptera Tabanidae Haematopota grandis
+	[ "50630504", 7  ], // Diptera Tabanidae Tabanus cordiger
+	[ "50630505", 8  ], // Diptera Tabanidae Tabanus glaucopis
+	[ "50711201", 7  ], // Diptera Empididae Chelifera angusta
+	[ "50711202", 7  ], // Diptera Empididae Chelifera aperticauda
+	[ "50711203", 10  ], // Diptera Empididae Chelifera astigma
+	[ "50711204", 7  ], // Diptera Empididae Chelifera concinnicauda
+	[ "50711207", 7  ], // Diptera Empididae Chelifera monostigma
+	[ "50711213", 7  ], // Diptera Empididae Chelifera subangusta
+	[ "50711722", 8  ], // Diptera Empididae Clinocera nivalis
+	[ "50711802", 8  ], // Diptera Empididae Kowarzia tenella
+	[ "50711724", 7  ], // Diptera Empididae Clinocera wesmaeli
+	[ "50711503", 8  ], // Diptera Empididae Dolichocephala ocellata
+	[ "50711401", 7  ], // Diptera Empididae Dryodromia testacea
+	[ "50711301", 7  ], // Diptera Empididae Hemerodromia adulatoria
+	[ "50711303", 7  ], // Diptera Empididae Hemerodromia laudatoria
+	[ "50711304", 9  ], // Diptera Empididae Hemerodromia melangyna
+	[ "50730102", 7  ], // Diptera Hybotidae Stilpon lunatus
+	[ "50730104", 7  ], // Diptera Hybotidae Stilpon sublunatus
+	[ "50712041", 10  ], // Diptera Empididae Wiedemannia (Philolutra) simplex
+	[ "50712021", 10  ], // Diptera Empididae Wiedemannia (Pseudowiedemannia) lamellata
+	[ "50712031", 7  ], // Diptera Empididae Wiedemannia (Chamaedipsia) lota
+	[ "50712042", 8  ], // Diptera Empididae Wiedemannia (Philolutra) phantasma
+	[ "50722201", 10  ], // Diptera Dolichopodidae Acropsilus niger
+	[ "50721101", 8  ], // Diptera Dolichopodidae Aphrosylus mitis
+	[ "50722012", 7  ], // Diptera Dolichopodidae Campsicnemus compeditus
+	[ "50722015", 8  ], // Diptera Dolichopodidae Campsicnemus magius
+	[ "50722016", 7  ], // Diptera Dolichopodidae Campsicnemus marginatus
+	[ "50722017", 7  ], // Diptera Dolichopodidae Campsicnemus pumilio
+	[ "50722019", 7  ], // Diptera Dolichopodidae Campsicnemus pusillus
+	[ "50721803", 7  ], // Diptera Dolichopodidae Chrysotus monochaetus
+	[ "50721804", 7  ], // Diptera Dolichopodidae Chrysotus suavis
+	[ "50720111", 8  ], // Diptera Dolichopodidae Dolichopus (Dolichopus) arbustorum
+	[ "50720113", 9  ], // Diptera Dolichopodidae Dolichopus (Dolichopus) cilifemoratus
+	[ "50720908", 8  ], // Diptera Dolichopodidae Hydrophorus viridis
+	[ "50721205", 7  ], // Diptera Dolichopodidae Rhaphium fractum
+	[ "50721312", 8  ], // Diptera Dolichopodidae Syntormon macula
+	[ "50721311", 7  ], // Diptera Dolichopodidae Syntormon filiger
+	[ "50721313", 9  ], // Diptera Dolichopodidae Syntormon mikii
+	[ "50721319", 7  ], // Diptera Dolichopodidae Syntormon zelleri
+	[ "50721601", 8  ], // Diptera Dolichopodidae Systenus bipartitus
+	[ "50721602", 7  ], // Diptera Dolichopodidae Systenus leucurus
+	[ "50721603", 7  ], // Diptera Dolichopodidae Systenus pallipes
+	[ "50721604", 7  ], // Diptera Dolichopodidae Systenus scholtzii
+	[ "50721605", 8  ], // Diptera Dolichopodidae Systenus tener
+	[ "50722401", 8  ], // Diptera Dolichopodidae Telmaturgus tumidulus
+	[ "50810602", 8  ], // Diptera Syrphidae Anasimyia interpuncta
+	[ "50810604", 7  ], // Diptera Syrphidae Anasimyia lunulata
+	[ "50811401", 7  ], // Diptera Syrphidae Melanogaster aerosa
+	[ "50811013", 9  ], // Diptera Syrphidae Eristalis (Eoseristalis) cryptarum
+	[ "50811018", 7  ], // Diptera Syrphidae Eristalis (Eoseristalis) rupium
+	[ "50810501", 9  ], // Diptera Syrphidae Helophilus groenlandicus
+	[ "50810202", 7  ], // Diptera Syrphidae Lejogaster tarsata
+	[ "50810701", 9  ], // Diptera Syrphidae Lejops vittata
+	[ "50810901", 7  ], // Diptera Syrphidae Mallota cimbiciformis
+	[ "50810301", 7  ], // Diptera Syrphidae Orthonevra brevicornis
+	[ "50810302", 7  ], // Diptera Syrphidae Orthonevra geniculata
+	[ "50810801", 9  ], // Diptera Syrphidae Parhelophilus consimilis
+	[ "50820501", 8  ], // Diptera Sciomyzidae Antichaeta analis
+	[ "50820502", 9  ], // Diptera Sciomyzidae Antichaeta brevipennis
+	[ "50820101", 7  ], // Diptera Sciomyzidae Colobaea bifasciella
+	[ "50820102", 7  ], // Diptera Sciomyzidae Colobaea distincta
+	[ "50820103", 9  ], // Diptera Sciomyzidae Colobaea pectoralis
+	[ "50820104", 7  ], // Diptera Sciomyzidae Colobaea punctata
+	[ "50820601", 7  ], // Diptera Sciomyzidae Dictya umbrarum
+	[ "50820203", 9  ], // Diptera Sciomyzidae Pherbellia argyra
+	[ "50820204", 7  ], // Diptera Sciomyzidae Pherbellia brunnipes
+	[ "50820209", 7  ], // Diptera Sciomyzidae Pherbellia griseola
+	[ "50821601", 7  ], // Diptera Sciomyzidae Ditaeniella grisescens
+	[ "50820213", 7  ], // Diptera Sciomyzidae Pherbellia nana
+	[ "50821202", 9  ], // Diptera Sciomyzidae Psacadina vittigera
+	[ "50821203", 9  ], // Diptera Sciomyzidae Psacadina zernyi
+	[ "50820302", 7  ], // Diptera Sciomyzidae Pteromicra glabricula
+	[ "50820303", 9  ], // Diptera Sciomyzidae Pteromicra leucopeza
+	[ "50820304", 9  ], // Diptera Sciomyzidae Pteromicra pectorosa
+	[ "50821303", 7  ], // Diptera Sciomyzidae Renocera striata
+	[ "50820401", 9  ], // Diptera Sciomyzidae Sciomyza dryomyzina
+	[ "50820402", 7  ], // Diptera Sciomyzidae Sciomyza simplex
+	[ "50821504", 8  ], // Diptera Sciomyzidae Tetanocera freyi
+	[ "50840121", 7  ], // Diptera Scathophagidae Acanthocnema (Clinoceroides) glaucescens
+	[ "50840112", 8  ], // Diptera Scathophagidae Acanthocnema (Acanthocnema) nigrimana
+	[ "50850501", 7  ], // Diptera Muscidae Lispe caesia
+	[ "50850502", 9  ], // Diptera Muscidae Lispe consanguinea
+	[ "50850511", 7  ], // Diptera Muscidae Lispe uliginosa
+	[ "50850101", 8  ], // Diptera Muscidae Phaonia exoleta
 ])
 
 export const scoresBmwp = new Map<TaxonCode, ScoreBmwp>([
@@ -3298,94 +3315,94 @@ export const scoresBmwp = new Map<TaxonCode, ScoreBmwp>([
 ])
 
 export const scoresAwic = new Map<TaxonCode, ScoreAwic>([
-	[ "50310100", { score:10 }], // Diptera Dixidae Dixa
-	[ "41220101", { score:10 }], // Plecoptera Perlidae Dinocras cephalotes
-	[ "40120201", { score:9  }], // Ephemeroptera Baetidae Centroptilum luteolum
-	[ "36110101", { score:9  }], // Isopoda Asellidae Asellus aquaticus
-	[ "40120501", { score:9  }], // Ephemeroptera Baetidae Alainites muticus
-	[ "40320101", { score:9  }], // Ephemeroptera Ephemeridae Ephemera danica
-	[ "22120401", { score:9  }], // Hirudinea Glossiphoniidae Glossiphonia complanata
-	[ "48250206", { score:9  }], // Trichoptera Hydropsychidae Hydropsyche instabilis
-	[ "40210202", { score:9  }], // Ephemeroptera Leptophlebiidae Paraleptophlebia submarginata
-	[ "40210301", { score:9  }], // Ephemeroptera Leptophlebiidae Habrophlebia fusca
-	[ "48330101", { score:9  }], // Trichoptera Lepidostomatidae Crunoecia irrorata
-	[ "48210200", { score:9  }], // Trichoptera Philopotamidae Wormaldia
-	[ "501103A5", { score:8  }], // Diptera Tipulidae Tipula (Yamatotipula) montium
-	[ "41220201", { score:8  }], // Plecoptera Perlidae Perla bipunctata
-	[ "37140206", { score:8  }], // Amphipoda Gammaridae Gammarus pulex
-	[ "22120701", { score:8  }], // Hirudinea Glossiphoniidae Helobdella stagnalis
-	[ "48380101", { score:8  }], // Trichoptera Odontoceridae Odontocerum albicorne
-	[ "40130502", { score:8  }], // Ephemeroptera Heptageniidae Electrogena lateralis
-	[ "483A0103", { score:8  }], // Trichoptera Leptoceridae Athripsodes bilineatus
-	[ "48120200", { score:8  }], // Trichoptera Glossosomatidae Agapetus
-	[ "48210101", { score:8  }], // Trichoptera Philopotamidae Philopotamus montanus
-	[ "45630201", { score:8  }], // Coleoptera Elmidae Esolus parallelepipedus
-	[ "40510205", { score:8  }], // Ephemeroptera Caenidae Caenis robusta
-	[ "48120100", { score:8  }], // Trichoptera Glossosomatidae Glossosoma
-	[ "40130400", { score:8  }], // Ephemeroptera Heptageniidae Ecdyonurus
-	[ "40130100", { score:8  }], // Ephemeroptera Heptageniidae Rhithrogena
-	[ "40120107", { score:8  }], // Ephemeroptera Baetidae Baetis rhodani
-	[ "48220100", { score:8  }], // Trichoptera Psychomyiidae Lype
-	[ "16231101", { score:8  }], // Gastropoda Planorbidae Ancylus fluviatilis
-	[ "41130102", { score:8  }], // Plecoptera Leuctridae Leuctra geniculata
-	[ "40120702", { score:8  }], // Ephemeroptera Baetidae Nigrobaetis niger
-	[ "48350202", { score:8  }], // Trichoptera Goeridae Silo pallipes
-	[ "483A0400", { score:8  }], // Trichoptera Leptoceridae Mystacides
-	[ "16140301", { score:7  }], // Gastropoda Hydrobiidae Potamopyrgus antipodarum
-	[ "45410202", { score:7  }], // Coleoptera Hydraenidae Hydraena gracilis
-	[ "05110201", { score:7  }], // Tricladida Planariidae Polycelis felina
-	[ "40410201", { score:7  }], // Ephemeroptera Ephemerellidae Serratella ignita
-	[ "40510204", { score:7  }], // Ephemeroptera Caenidae Caenis rivulorum
-	[ "17130200", { score:7  }], // Bivalvia Sphaeriidae Pisidium
-	[ "50350000", { score:7  }], // Diptera Ceratopogonidae
-	[ "41210201", { score:7  }], // Plecoptera Perlodidae Perlodes microcephalus
-	[ "45510000", { score:7  }], // Coleoptera Scirtidae
-	[ "40120108", { score:7  }], // Ephemeroptera Baetidae Baetis scambus
-	[ "48110102", { score:7  }], // Trichoptera Rhyacophilidae Rhyacophila munda
-	[ "48370201", { score:7  }], // Trichoptera Sericostomatidae Sericostoma personatum
-	[ "24000000", { score:7  }], // Hydracarina
-	[ "22230101", { score:7  }], // Hirudinea Erpobdellidae Erpobdella octoculata
-	[ "48250301", { score:7  }], // Trichoptera Hydropsychidae Diplectrona felix
-	[ "41130101", { score:7  }], // Plecoptera Leuctridae Leuctra fusca
-	[ "45630101", { score:7  }], // Coleoptera Elmidae Elmis aenea
-	[ "40120111", { score:7  }], // Ephemeroptera Baetidae Baetis vernus
-	[ "48330301", { score:6  }], // Trichoptera Lepidostomatidae Lepidostoma hirtum
-	[ "45630301", { score:6  }], // Coleoptera Elmidae Limnius volckmari
-	[ "45150000", { score:6  }], // Coleoptera Gyrinidae
-	[ "50710000", { score:6  }], // Diptera Empididae
-	[ "40130204", { score:6  }], // Ephemeroptera Heptageniidae Heptagenia sulphurea
-	[ "50640100", { score:6  }], // Diptera Athericidae Atherix
-	[ "48250207", { score:6  }], // Trichoptera Hydropsychidae Hydropsyche pellucidula
-	[ "48250209", { score:6  }], // Trichoptera Hydropsychidae Hydropsyche siltalai
-	[ "45140000", { score:6  }], // Coleoptera Dytiscidae
-	[ "37130101", { score:6  }], // Amphipoda Crangonyctidae Crangonyx pseudogracilis
-	[ "50630Z00", { score:6  }], // Diptera Tabanidae Tabanus group
-	[ "50130000", { score:6  }], // Diptera Limoniidaek
-	[ "41120103", { score:6  }], // Plecoptera Nemouridae Protonemura praecox
-	[ "41110302", { score:6  }], // Plecoptera Taeniopterygidae Brachyptera risi
-	[ "41210401", { score:5  }], // Plecoptera Perlodidae Isoperla grammatica
-	[ "20000000", { score:5  }], // Oligochaeta
-	[ "48340000", { score:5  }], // Trichoptera Limnephilidae
-	[ "48130000", { score:5  }], // Trichoptera Hydroptilidae
-	[ "45630600", { score:5  }], // Coleoptera Elmidae Oulimnius
-	[ "05110401", { score:5  }], // Tricladida Planariidae Crenobia alpina
-	[ "46110102", { score:5  }], // Megaloptera Sialidae Sialis lutaria
-	[ "50400000", { score:5  }], // Diptera Chironomidae
-	[ "42220101", { score:5  }], // Odonata Cordulegastridae Cordulegaster boltonii
-	[ "41230103", { score:5  }], // Plecoptera Chloroperlidae Chloroperla tripunctata
-	[ "483A0905", { score:5  }], // Trichoptera Leptoceridae Oecetis testacea
-	[ "48110101", { score:5  }], // Trichoptera Rhyacophilidae Rhyacophila dorsalis
-	[ "41230301", { score:5  }], // Plecoptera Chloroperlidae Siphonoperla torrentium
-	[ "50360000", { score:5  }], // Diptera Simuliidae
-	[ "41130104", { score:5  }], // Plecoptera Leuctridae Leuctra inermis
-	[ "48240000", { score:5  }], // Trichoptera Polycentropodidae
-	[ "41120400", { score:5  }], // Plecoptera Nemouridae Nemoura
-	[ "41120202", { score:5  }], // Plecoptera Nemouridae Amphinemura sulcicollis
-	[ "41130106", { score:5  }], // Plecoptera Leuctridae Leuctra nigra
-	[ "05110301", { score:4  }], // Tricladida Planariidae Phagocata vitta
-	[ "41120101", { score:4  }], // Plecoptera Nemouridae Protonemura meyeri
-	[ "41130103", { score:4  }], // Plecoptera Leuctridae Leuctra hippopus
-	[ "40210101", { score:3  }], // Ephemeroptera Leptophlebiidae Leptophlebia marginata
-	[ "41210301", { score:3  }], // Plecoptera Perlodidae Diura bicaudata
-	[ "41120301", { score:1  }], // Plecoptera Nemouridae Nemurella pictetii
+	[ "50310100", 10], // Diptera Dixidae Dixa
+	[ "41220101", 10], // Plecoptera Perlidae Dinocras cephalotes
+	[ "40120201", 9 ], // Ephemeroptera Baetidae Centroptilum luteolum
+	[ "36110101", 9 ], // Isopoda Asellidae Asellus aquaticus
+	[ "40120501", 9 ], // Ephemeroptera Baetidae Alainites muticus
+	[ "40320101", 9 ], // Ephemeroptera Ephemeridae Ephemera danica
+	[ "22120401", 9 ], // Hirudinea Glossiphoniidae Glossiphonia complanata
+	[ "48250206", 9 ], // Trichoptera Hydropsychidae Hydropsyche instabilis
+	[ "40210202", 9 ], // Ephemeroptera Leptophlebiidae Paraleptophlebia submarginata
+	[ "40210301", 9 ], // Ephemeroptera Leptophlebiidae Habrophlebia fusca
+	[ "48330101", 9 ], // Trichoptera Lepidostomatidae Crunoecia irrorata
+	[ "48210200", 9 ], // Trichoptera Philopotamidae Wormaldia
+	[ "501103A5", 8 ], // Diptera Tipulidae Tipula (Yamatotipula) montium
+	[ "41220201", 8 ], // Plecoptera Perlidae Perla bipunctata
+	[ "37140206", 8 ], // Amphipoda Gammaridae Gammarus pulex
+	[ "22120701", 8 ], // Hirudinea Glossiphoniidae Helobdella stagnalis
+	[ "48380101", 8 ], // Trichoptera Odontoceridae Odontocerum albicorne
+	[ "40130502", 8 ], // Ephemeroptera Heptageniidae Electrogena lateralis
+	[ "483A0103", 8 ], // Trichoptera Leptoceridae Athripsodes bilineatus
+	[ "48120200", 8 ], // Trichoptera Glossosomatidae Agapetus
+	[ "48210101", 8 ], // Trichoptera Philopotamidae Philopotamus montanus
+	[ "45630201", 8 ], // Coleoptera Elmidae Esolus parallelepipedus
+	[ "40510205", 8 ], // Ephemeroptera Caenidae Caenis robusta
+	[ "48120100", 8 ], // Trichoptera Glossosomatidae Glossosoma
+	[ "40130400", 8 ], // Ephemeroptera Heptageniidae Ecdyonurus
+	[ "40130100", 8 ], // Ephemeroptera Heptageniidae Rhithrogena
+	[ "40120107", 8 ], // Ephemeroptera Baetidae Baetis rhodani
+	[ "48220100", 8 ], // Trichoptera Psychomyiidae Lype
+	[ "16231101", 8 ], // Gastropoda Planorbidae Ancylus fluviatilis
+	[ "41130102", 8 ], // Plecoptera Leuctridae Leuctra geniculata
+	[ "40120702", 8 ], // Ephemeroptera Baetidae Nigrobaetis niger
+	[ "48350202", 8 ], // Trichoptera Goeridae Silo pallipes
+	[ "483A0400", 8 ], // Trichoptera Leptoceridae Mystacides
+	[ "16140301", 7 ], // Gastropoda Hydrobiidae Potamopyrgus antipodarum
+	[ "45410202", 7 ], // Coleoptera Hydraenidae Hydraena gracilis
+	[ "05110201", 7 ], // Tricladida Planariidae Polycelis felina
+	[ "40410201", 7 ], // Ephemeroptera Ephemerellidae Serratella ignita
+	[ "40510204", 7 ], // Ephemeroptera Caenidae Caenis rivulorum
+	[ "17130200", 7 ], // Bivalvia Sphaeriidae Pisidium
+	[ "50350000", 7 ], // Diptera Ceratopogonidae
+	[ "41210201", 7 ], // Plecoptera Perlodidae Perlodes microcephalus
+	[ "45510000", 7 ], // Coleoptera Scirtidae
+	[ "40120108", 7 ], // Ephemeroptera Baetidae Baetis scambus
+	[ "48110102", 7 ], // Trichoptera Rhyacophilidae Rhyacophila munda
+	[ "48370201", 7 ], // Trichoptera Sericostomatidae Sericostoma personatum
+	[ "24000000", 7 ], // Hydracarina
+	[ "22230101", 7 ], // Hirudinea Erpobdellidae Erpobdella octoculata
+	[ "48250301", 7 ], // Trichoptera Hydropsychidae Diplectrona felix
+	[ "41130101", 7 ], // Plecoptera Leuctridae Leuctra fusca
+	[ "45630101", 7 ], // Coleoptera Elmidae Elmis aenea
+	[ "40120111", 7 ], // Ephemeroptera Baetidae Baetis vernus
+	[ "48330301", 6 ], // Trichoptera Lepidostomatidae Lepidostoma hirtum
+	[ "45630301", 6 ], // Coleoptera Elmidae Limnius volckmari
+	[ "45150000", 6 ], // Coleoptera Gyrinidae
+	[ "50710000", 6 ], // Diptera Empididae
+	[ "40130204", 6 ], // Ephemeroptera Heptageniidae Heptagenia sulphurea
+	[ "50640100", 6 ], // Diptera Athericidae Atherix
+	[ "48250207", 6 ], // Trichoptera Hydropsychidae Hydropsyche pellucidula
+	[ "48250209", 6 ], // Trichoptera Hydropsychidae Hydropsyche siltalai
+	[ "45140000", 6 ], // Coleoptera Dytiscidae
+	[ "37130101", 6 ], // Amphipoda Crangonyctidae Crangonyx pseudogracilis
+	[ "50630Z00", 6 ], // Diptera Tabanidae Tabanus group
+	[ "50130000", 6 ], // Diptera Limoniidaek
+	[ "41120103", 6 ], // Plecoptera Nemouridae Protonemura praecox
+	[ "41110302", 6 ], // Plecoptera Taeniopterygidae Brachyptera risi
+	[ "41210401", 5 ], // Plecoptera Perlodidae Isoperla grammatica
+	[ "20000000", 5 ], // Oligochaeta
+	[ "48340000", 5 ], // Trichoptera Limnephilidae
+	[ "48130000", 5 ], // Trichoptera Hydroptilidae
+	[ "45630600", 5 ], // Coleoptera Elmidae Oulimnius
+	[ "05110401", 5 ], // Tricladida Planariidae Crenobia alpina
+	[ "46110102", 5 ], // Megaloptera Sialidae Sialis lutaria
+	[ "50400000", 5 ], // Diptera Chironomidae
+	[ "42220101", 5 ], // Odonata Cordulegastridae Cordulegaster boltonii
+	[ "41230103", 5 ], // Plecoptera Chloroperlidae Chloroperla tripunctata
+	[ "483A0905", 5 ], // Trichoptera Leptoceridae Oecetis testacea
+	[ "48110101", 5 ], // Trichoptera Rhyacophilidae Rhyacophila dorsalis
+	[ "41230301", 5 ], // Plecoptera Chloroperlidae Siphonoperla torrentium
+	[ "50360000", 5 ], // Diptera Simuliidae
+	[ "41130104", 5 ], // Plecoptera Leuctridae Leuctra inermis
+	[ "48240000", 5 ], // Trichoptera Polycentropodidae
+	[ "41120400", 5 ], // Plecoptera Nemouridae Nemoura
+	[ "41120202", 5 ], // Plecoptera Nemouridae Amphinemura sulcicollis
+	[ "41130106", 5 ], // Plecoptera Leuctridae Leuctra nigra
+	[ "05110301", 4 ], // Tricladida Planariidae Phagocata vitta
+	[ "41120101", 4 ], // Plecoptera Nemouridae Protonemura meyeri
+	[ "41130103", 4 ], // Plecoptera Leuctridae Leuctra hippopus
+	[ "40210101", 3 ], // Ephemeroptera Leptophlebiidae Leptophlebia marginata
+	[ "41210301", 3 ], // Plecoptera Perlodidae Diura bicaudata
+	[ "41120301", 1 ], // Plecoptera Nemouridae Nemurella pictetii
 ])

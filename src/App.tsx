@@ -39,6 +39,8 @@ const reducer = (state:State = persistPreviousState(), action:any): State => {
       // still not 100% sure it's the best thing to do...
       const taxaFound = new Map(state.taxaFound);
       const tx:FoundTaxon = action.taxon;
+      tx.countAdult = tx.countAdult || 0;
+      tx.countChild = tx.countChild || 0;
       taxaFound.set(tx.code, tx);
       return { taxaFound };
     }
@@ -58,7 +60,7 @@ const reducer = (state:State = persistPreviousState(), action:any): State => {
         Math.max(countNew === undefined
           ? countOld
           : countNew,
-          0)
+          0) || 0
       )
       tx.countAdult = newCount(tx.countAdult, action.newCount.adult);
       tx.countChild = newCount(tx.countChild, action.newCount.child);

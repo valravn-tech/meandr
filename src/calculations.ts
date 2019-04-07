@@ -1,5 +1,6 @@
 import { FoundTaxon, TaxonCode, taxonLevel, TaxonLvl } from './alltaxa';
 import {
+    PartialScorePsi,
     ScoreAwic,
     ScoreBmwp,
     ScoreCci,
@@ -12,6 +13,9 @@ import {
     scoresCci,
     scoresCciCommunity,
     scoresDehli,
+    ScoreSingleLife,
+    ScoreSinglePsi,
+    ScoreSingleWhpt,
     scoresLifeFamily,
     scoresLifeGroups,
     scoresLifeSpecies,
@@ -46,6 +50,22 @@ interface ScoreInfoLvl {
     info:ScoreInfo,
     lvl:TaxonLvl,
 }
+
+export interface SingleTaxonInfo {
+    code: TaxonCode,
+    countAdult: number,
+    countChild: number,
+    bmwp    ?: ScoreBmwp,
+    whpt    ?: ScoreSingleWhpt,
+    psiFam  ?: ScoreSinglePsi,
+    psiSpc  ?: ScoreSinglePsi,
+    cci     ?: ScoreCci,
+    lifeFam ?: ScoreSingleLife,
+    lifeSpc ?: ScoreSingleLife,
+    awic    ?: ScoreAwic,
+    dehli   ?: ScoreDehli,
+}
+
 
 const div0 = (dividend:number, divisor:number):number => ((divisor) ? dividend /divisor : 0);
 
@@ -118,25 +138,25 @@ const logAbundanceWhpt = (count: number): number => {
 }
 
 // TODO: separate to species/family calculation
-export const calcSingleAwic = (foundTaxon:FoundTaxon): number | undefined => {
+export const calcSingleAwic = (foundTaxon:FoundTaxon): ScoreAwic | undefined => {
     const awic = taxonFromMapAtAnyLevel(foundTaxon, scoresAwic);
     return (awic && totalCount(foundTaxon))
-        ? (awic.info as ScoreAwic).score
+        ? (awic.info as ScoreAwic)
         : undefined;
 }
 
 // TODO: add checkboxes for different score options
-export const calcSingleBmwp = (foundTaxon:FoundTaxon): number | undefined => {
+export const calcSingleBmwp = (foundTaxon:FoundTaxon): ScoreBmwp | undefined => {
     const bmwp = taxonFromMapAtAnyLevel(foundTaxon, scoresBmwp);
     return (bmwp)
-        ? (bmwp.info as ScoreBmwp).score_orig
+        ? (bmwp.info as ScoreBmwp)
         : undefined;
 }
 
-export const calcSingleCci = (foundTaxon:FoundTaxon): number | undefined => {
+export const calcSingleCci = (foundTaxon:FoundTaxon): ScoreCci | undefined => {
     const cci = taxonFromMapAtAnyLevel(foundTaxon, scoresCci);
     return (cci && totalCount(foundTaxon))
-        ? (cci.info as ScoreCci).score
+        ? (cci.info as ScoreCci)
         : undefined;
 }
 
@@ -147,41 +167,31 @@ export const calcSingleCci = (foundTaxon:FoundTaxon): number | undefined => {
 //      - Taeniopterigidae
 //      - Philopotamidae
 //      - Nemouridae
-export const calcSingleDehli = (foundTaxon:FoundTaxon): number | undefined => {
+export const calcSingleDehli = (foundTaxon:FoundTaxon): ScoreDehli | undefined => {
     const dehli = taxonFromMapAtAnyLevel(foundTaxon, scoresDehli);
     return (dehli && totalCount(foundTaxon))
-        ? (dehli.info as ScoreDehli).score
+        ? (dehli.info as ScoreDehli)
         : undefined;    
 }
  
-const calcSingleLife = (foundTaxon:FoundTaxon, scoresTable:Map<string, ScoreLife>): number | undefined => {
+const calcSingleLife = (foundTaxon:FoundTaxon, scoresTable:Map<string, ScoreLife>): ScoreSingleLife | undefined => {
     const life = taxonFromMapAtAnyLevel(foundTaxon, scoresTable);
     if (life && totalCount(foundTaxon)) {
         const iScore = logAbundance(totalCount(foundTaxon)) - 1;
         const flow = (life.info as ScoreLife).flow
-        return scoresLifeGroups[flow].scores[iScore];
+        return { score:scoresLifeGroups[flow].scores[iScore], flow }
     }
     else
     {   return undefined;    }
 }
 
-export const calcSingleLifeFam = (foundTaxon:FoundTaxon): number | undefined =>
+export const calcSingleLifeFam = (foundTaxon:FoundTaxon): ScoreSingleLife | undefined =>
 (   calcSingleLife(foundTaxon, scoresLifeFamily)   )
 
-export const calcSingleLifeSpc = (foundTaxon:FoundTaxon): number | undefined =>
+export const calcSingleLifeSpc = (foundTaxon:FoundTaxon): ScoreSingleLife | undefined =>
 (   calcSingleLife(foundTaxon, scoresLifeSpecies)   )
 
-interface PartialScorePSI {
-    AB: number,
-    AD: number,
-}
-
-interface SingleScorePSI {
-    fssr: string,
-    score: number,
-}
-
-export const calcSinglePsi = (foundTaxon:FoundTaxon, scores:Map<string, ScorePsi>): SingleScorePSI | undefined => {
+export const calcSinglePsi = (foundTaxon:FoundTaxon, scores:Map<string, ScorePsi>): ScoreSinglePsi | undefined => {
     const psi = taxonFromMapAtAnyLevel(foundTaxon, scores);
     if(! (psi && totalCount(foundTaxon)) )
     {   return undefined;    }
@@ -193,13 +203,13 @@ export const calcSinglePsi = (foundTaxon:FoundTaxon, scores:Map<string, ScorePsi
     }
 }
 
-export const calcSinglePsiFam = (foundTaxon:FoundTaxon): SingleScorePSI | undefined =>
+export const calcSinglePsiFam = (foundTaxon:FoundTaxon): ScoreSinglePsi | undefined =>
 (   calcSinglePsi(foundTaxon, scoresPsiFamily)   )
 
-export const calcSinglePsiSpc = (foundTaxon:FoundTaxon): SingleScorePSI | undefined =>
+export const calcSinglePsiSpc = (foundTaxon:FoundTaxon): ScoreSinglePsi | undefined =>
 (   calcSinglePsi(foundTaxon, scoresPsiSpecies)   )
 
-export const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
+export const calcSingleWhpt = (foundTaxon:FoundTaxon): ScoreSingleWhpt | undefined => {
     const whpt = taxonFromMapAtAnyLevel(foundTaxon, scoresWhpt);
     const iScore = logAbundanceWhpt(totalCount(foundTaxon)) - 1;
     return (whpt && iScore >= 0)
@@ -207,7 +217,7 @@ export const calcSingleWhpt = (foundTaxon:FoundTaxon): number | undefined => {
         : undefined;
 }
 
-export const psiSingleToPartial = (single: SingleScorePSI | undefined): PartialScorePSI | undefined => (
+export const psiSingleToPartial = (single: ScoreSinglePsi | undefined): PartialScorePsi | undefined => (
     (single)
     ? {
         AB: (single.fssr === 'A' || single.fssr === 'B')
@@ -261,21 +271,22 @@ export const calcAwic = (foundTaxa: FoundTaxon[]): ScoreCount => (
     }, zeroScoreCount)
 )
 
+// TODO: all bmwp types
 export const calcBmwp = (foundTaxa: FoundTaxon[]): ScoreCount => calcScore(foundTaxa, scoresBmwp,
     (acc: ScoreCount, taxon: FoundTaxon) => {
-        const taxonScore = calcSingleBmwp(taxon);
-        return (taxonScore)
-            ? { score: acc.score + taxonScore, count: acc.count + 1 }
+        const bmwp = calcSingleBmwp(taxon);
+        return (bmwp)
+            ? { score: acc.score + bmwp.score_orig, count: acc.count + 1 }
             : acc;
     }, zeroScoreCount);
 
 export const calcCci = (foundTaxa: FoundTaxon[]): { score:number, count:number } => {
     const cci = calcScore(foundTaxa, scoresCci, (acc, taxon) => {
-        const taxonScore = calcSingleCci(taxon);
-        return (taxonScore) ? {
+        const singleCci = calcSingleCci(taxon);
+        return (singleCci) ? {
                 count: acc.count + 1,
-                max: Math.max(taxonScore, acc.max),
-                sum: acc.sum + taxonScore,
+                max: Math.max(singleCci, acc.max),
+                sum: acc.sum + singleCci,
             } : acc;
     }, { max:0, sum:0, count:0 });
 
@@ -298,9 +309,9 @@ export const calcDehli = (foundTaxa: FoundTaxon[]): ScoreCount => {
 
 const calcLife = (foundTaxa: FoundTaxon[], scores: Map<string, ScoreLife>): ScoreCount => {
     const partial:ScoreCount = calcScore(foundTaxa, scores, (acc, taxon) => {
-        const taxonScore = calcSingleLife(taxon, scores);
-        return (taxonScore)
-            ? { score: acc.score + taxonScore, count: acc.count + 1 }
+        const life = calcSingleLife(taxon, scores);
+        return (life)
+            ? { score: acc.score + life.score, count: acc.count + 1 }
             : acc;
     }, zeroScoreCount);
     return { score:div0(partial.score, partial.count), count:partial.count };
@@ -313,7 +324,7 @@ export const calcLifeSpc = (foundTaxa: FoundTaxon[]): ScoreCount =>
 
 export const calcPsi = (foundTaxa: FoundTaxon[], scores: Map<string, ScorePsi>): ScoreCount => {
     const partial = calcScore(foundTaxa, scores, (acc, taxon) => {
-        const taxonScore: PartialScorePSI | undefined = psiSingleToPartial(calcSinglePsi(taxon, scores));
+        const taxonScore: PartialScorePsi | undefined = psiSingleToPartial(calcSinglePsi(taxon, scores));
         return (taxonScore) ? {
                 count: acc.count + 1,
                 score: { AB: acc.score.AB + taxonScore.AB,    AD: acc.score.AD + taxonScore.AD },
@@ -403,3 +414,18 @@ export const calcLqi = ( bmwp:number, aspt:number, type:string): {score:number, 
       /*score >= 1.0*/ { index:'I',   interpretation:'Very Poor Quality' };
     return { score, index, interpretation }
 }
+
+export const singleTaxonInfo = (taxon: FoundTaxon): SingleTaxonInfo => ({
+    awic    : calcSingleAwic   (taxon),
+    bmwp    : calcSingleBmwp   (taxon),
+    cci     : calcSingleCci    (taxon),
+    code: taxon.code,
+    countAdult: taxon.countAdult,
+    countChild: taxon.countChild,
+    dehli   : calcSingleDehli  (taxon),
+    lifeFam : calcSingleLifeFam(taxon),
+    lifeSpc : calcSingleLifeSpc(taxon),
+    psiFam  : calcSinglePsiFam (taxon),
+    psiSpc  : calcSinglePsiSpc (taxon),
+    whpt    : calcSingleWhpt   (taxon),
+})

@@ -21,16 +21,8 @@ import {
     calcLqi,
     calcPsiFam,
     calcPsiSpc,
-    calcSingleAwic,
-    calcSingleBmwp,
-    calcSingleCci,
-    calcSingleDehli,
-    calcSingleLifeFam,
-    calcSingleLifeSpc,
-    calcSinglePsiFam,
-    calcSinglePsiSpc,
-    calcSingleWhpt,
     calcWhpt,
+    singleTaxonInfo,
 } from './calculations'
 
 interface AdultAndChildCounts {
@@ -48,7 +40,7 @@ const cmp = <T extends {}>(a:T, b:T) => (
     0
 );  
 
-const taxonFullName = (taxon: TaxonCode): string => {
+export const taxonFullName = (taxon: TaxonCode): string => {
     const lvl = taxonLevel(taxon);
     const tx = allTaxa.get(taxon) as Taxon;
     return (
@@ -112,21 +104,19 @@ const TaxaAutocompleteOptions: React.SFC<{
     )
 }
 
-
 // tslint:disable-next-line:one-variable-per-declaration
 const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:AdultOrChildCounts) => void  }> = (props) => {
     const changeAdultCount = (value:number) => {   props.setCount({ adult:value });   }
     const changeChildCount = (value:number) => {   props.setCount({ child:value });   }
+    const possibleScore = (score?:number, scoreText?: string) => (
+        <td>{(score !== undefined)
+            ? scoreText || score
+            : '-'}</td>
+    )
     
-    const bmwp    = calcSingleBmwp   (props.taxon);
-    const whpt    = calcSingleWhpt   (props.taxon);
-    const psiFam  = calcSinglePsiFam (props.taxon);
-    const psiSpc  = calcSinglePsiSpc (props.taxon);
-    const cci     = calcSingleCci    (props.taxon);
-    const lifeFam = calcSingleLifeFam(props.taxon);
-    const lifeSpc = calcSingleLifeSpc(props.taxon);
-    const awic    = calcSingleAwic   (props.taxon);
-    const dehli   = calcSingleDehli  (props.taxon);
+    const {
+        bmwp, whpt, psiFam, psiSpc, cci, lifeFam, lifeSpc, awic, dehli
+    } = singleTaxonInfo(props.taxon);
 
     return (
         <tr>
@@ -140,15 +130,15 @@ const TaxonFound: React.SFC<{taxon: FoundTaxon, setCount: (count:AdultOrChildCou
                 onChange={changeChildCount}
             /></td>
 
-            <td>{ (bmwp)                  ? bmwp                               : '-' }</td>
-            <td>{ (whpt    !== undefined) ? whpt                               : '-' }</td>
-            <td>{ (psiFam  !== undefined) ? `${psiFam.score} (${psiFam.fssr})` : '-' }</td>
-            <td>{ (psiSpc  !== undefined) ? `${psiSpc.score} (${psiSpc.fssr})` : '-' }</td>
-            <td>{ (cci     !== undefined) ? cci                                : '-' }</td>
-            <td>{ (lifeFam !== undefined) ? lifeFam                            : '-' }</td>
-            <td>{ (lifeSpc !== undefined) ? lifeSpc                            : '-' }</td>
-            <td>{ (awic    !== undefined) ? awic                               : '-' }</td>
-            <td>{ (dehli   !== undefined) ? dehli                              : '-' }</td>
+            {possibleScore(bmwp && bmwp.score_orig)}
+            {possibleScore(whpt)}
+            {possibleScore(psiFam && psiFam.score, (p => p && `${p.score} (${p.fssr})`)(psiFam))}
+            {possibleScore(psiSpc && psiSpc.score, (p => p && `${p.score} (${p.fssr})`)(psiSpc))}
+            {possibleScore(cci)}
+            {possibleScore(lifeFam && lifeFam.score)}
+            {possibleScore(lifeSpc && lifeSpc.score)}
+            {possibleScore(awic)}
+            {possibleScore(dehli)}
         </tr>
     )
 }
