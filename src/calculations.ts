@@ -257,9 +257,8 @@ export const calcScore = <T extends {}>(foundTaxa: FoundTaxon[], scores: Map<str
     return scoringTaxa.reduce(reducer, init);
 }
 
-export const calcAspt = (foundTaxa:FoundTaxon[]): number => {
-    const bmwp = calcBmwp(foundTaxa);
-    return div0(bmwp.score, bmwp.count);
+export const calcAspt = (score:number, count:number): number => {
+    return div0(score, count);
 }
 
 export const calcAwic = (foundTaxa: FoundTaxon[]): ScoreCount => (

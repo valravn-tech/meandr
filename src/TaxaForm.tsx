@@ -177,25 +177,27 @@ const TaxaFoundList: React.SFC<{taxaFound: Map<TaxonCode, FoundTaxon>, setCount:
 
 
 const TaxaScore: React.SFC<{taxaFound:FoundTaxon[]}> = (p) => {
-    const bmwp    = calcBmwp   (p.taxaFound);
-    const aspt    = calcAspt   (p.taxaFound);
-    const lqi     = calcLqi    (bmwp.score, aspt, "standard");
-    const whpt    = calcWhpt   (p.taxaFound)
-    const psiFam  = calcPsiFam (p.taxaFound)
-    const psiSpc  = calcPsiSpc (p.taxaFound)
-    const cci     = calcCci    (p.taxaFound)
-    const lifeFam = calcLifeFam(p.taxaFound)
-    const lifeSpc = calcLifeSpc(p.taxaFound)
-    const awic    = calcAwic   (p.taxaFound)
-    const dehli   = calcDehli  (p.taxaFound)
+    const bmwp     = calcBmwp   (p.taxaFound);
+    const bmwpAspt = calcAspt(bmwp.score, bmwp.count)
+    const lqi      = calcLqi    (bmwp.score, bmwpAspt, "standard");
+    const whpt     = calcWhpt   (p.taxaFound)
+    const whptAspt = calcAspt(whpt.score, whpt.count)
+    const psiFam   = calcPsiFam (p.taxaFound)
+    const psiSpc   = calcPsiSpc (p.taxaFound)
+    const cci      = calcCci    (p.taxaFound)
+    const lifeFam  = calcLifeFam(p.taxaFound)
+    const lifeSpc  = calcLifeSpc(p.taxaFound)
+    const awic     = calcAwic   (p.taxaFound)
+    const dehli    = calcDehli  (p.taxaFound)
     return (
         <div>
             <h2>Scores</h2>
             <dl>
-                <dt>BMWP                   ({bmwp.count})</dt>   <dd>{bmwp   .score.toFixed(2)}</dd>
-                <dt>ASPT                   ({bmwp.count})</dt>   <dd>{aspt         .toFixed(2)}</dd>
+                <dt>BMWP                   ({bmwp.count})</dt>   <dd>{bmwp   .score.toFixed(2)}
+                <dt>ASPT</dt>                                    <dd>{bmwpAspt     .toFixed(2)}</dd></dd>
                 <dt>LQI                    ({bmwp.count})</dt>   <dd>{lqi    .score.toFixed(2)} ({lqi.index} - <em>{lqi.interpretation}</em>)</dd>
-                <dt>WHPT                   ({whpt.count})</dt>   <dd>{whpt   .score.toFixed(2)}</dd>
+                <dt>WHPT                   ({whpt.count})</dt>   <dd>{whpt   .score.toFixed(2)}
+                <dt>ASPT</dt>                                    <dd>{whptAspt     .toFixed(2)}</dd></dd>
                 <dt>PSI<sub>family</sub>   ({psiFam.count})</dt> <dd>{psiFam .score.toFixed(2)}%</dd>
                 <dt>PSI<sub>species</sub>  ({psiSpc.count})</dt> <dd>{psiSpc .score.toFixed(2)}%</dd>
                 <dt>CCI                    ({cci.count})</dt>    <dd>{cci    .score.toFixed(2)}</dd>
