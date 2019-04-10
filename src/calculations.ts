@@ -69,14 +69,14 @@ export interface SingleTaxonInfo {
 
 const div0 = (dividend:number, divisor:number):number => ((divisor) ? dividend /divisor : 0);
 
-const nextTaxonLevel = (lvl: TaxonLvl | undefined): TaxonLvl | undefined => (
+export const nextTaxonLevel = (lvl: TaxonLvl | undefined): TaxonLvl | undefined => (
     lvl === 'species' ? 'genus' :
     lvl === 'genus'   ? 'family' :
     lvl === 'family'  ? 'major_group' :
     undefined
 )
 
-const taxonGetCodeForLevel = (taxon: TaxonCode, lvl: TaxonLvl) => {
+export const taxonGetCodeForLevel = (taxon: TaxonCode, lvl: TaxonLvl) => {
     const offset = (
         lvl === 'species'     ? 8 :
         lvl === 'genus'       ? 6 :

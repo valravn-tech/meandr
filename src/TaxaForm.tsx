@@ -67,18 +67,21 @@ const TaxaAutocompleteOptions: React.SFC<{
     isFocused: boolean,
     taxaMatching: TaxonCode[],
     taxaFound: Map<TaxonCode, FoundTaxon>,
-}> = (props) => {
-    const listTaxon = (code: TaxonCode, selected: boolean) => {
+} | any> = (props) => {
+    const listTaxon = (code: TaxonCode, index: number) => {
         const taxonMatch = props.taxaFound.get(code);
         const taxonCount = taxonMatch ? `${taxonMatch.countAdult}/${taxonMatch.countChild}`  : 0;
         const focusedStyle: React.CSSProperties   = { backgroundColor:'#226', color:'white', fontWeight:'bold' };
         const unfocusedStyle: React.CSSProperties = { backgroundColor:'#555', color:'white', fontWeight:'bold' };
-        const style = (selected)
+        const style = (index === props.iSelect)
             ? (props.isFocused ? focusedStyle : unfocusedStyle)
             : undefined;
+        const clickFocus = () => {
+            // props.dispatch({type:"AUTOCOMPLETE_SELECT", index})
+        }
 
         const result = (
-            <tr key={code} style={style}>
+            <tr key={code} onClick={clickFocus} style={style}>
                 <td><TaxonName taxonCode={code} /></td>
                 <td>{taxonCount || undefined}</td>
             </tr>
@@ -86,8 +89,8 @@ const TaxaAutocompleteOptions: React.SFC<{
         return result;
     };
 
-    const listTaxa = (taxa: TaxonCode[]) =>
-    (   taxa.map(taxon => listTaxon(taxon, false))   );
+    const listTaxa = (taxa: TaxonCode[], iStart:number) =>
+    (   taxa.map((taxon, i) => listTaxon(taxon, iStart + i))   );
 
     const taxaBefore  = props.taxaMatching.slice(0, props.iSelect);   // \
     const selectTaxon = props.taxaMatching[props.iSelect];            //  |- could be useful utility if common pattern
@@ -96,9 +99,9 @@ const TaxaAutocompleteOptions: React.SFC<{
     return (
         <table>
             <tbody>
-                {listTaxa(taxaBefore)}
-                {listTaxon(selectTaxon, true)}
-                {listTaxa(taxaAfter)}
+                {listTaxa(taxaBefore, 0)}
+                {listTaxon(selectTaxon, taxaBefore.length)}
+                {listTaxa(taxaAfter, taxaBefore.length + 1)}
             </tbody>
         </table>
     )
@@ -249,14 +252,14 @@ export class TaxaForm extends React.Component<any, {
     taxaMatching:        TaxonCode[],
 }> {
     private searchBox = React.createRef<HTMLInputElement>();
-    private taxonRemoveText = ['Remove Taxon', 'Remove Taxa'];
-    private taxonAddText    = ['Add Taxon', 'Add Taxa'];
+    private taxonRemoveText = 'Remove Taxon';
+    private taxonAddText    = 'Add Taxon';
     private addCounts:AdultAndChildCounts = { adult: 1, child: 0 };
 
 
     public componentWillMount() {
         this.setState({
-            buttonText: this.taxonAddText[0],
+            buttonText: this.taxonAddText,
             iPreselect: 0,
             search: '',
             taxaMatching: [] as TaxonCode[],
@@ -291,7 +294,7 @@ export class TaxaForm extends React.Component<any, {
             // NOTE: avoids adding for invalid search
             if (this.state.search.length && iPreselect >= 0) {
                 const code = this.state.taxaMatching[iPreselect];
-                const shouldRemove = this.state.buttonText === this.taxonRemoveText[this.taxonTextI()];
+                const shouldRemove = this.state.buttonText === this.taxonRemoveText;
 
                 const tx:FoundTaxon | undefined = this.props.taxaFound.get(code);
                 if (tx) {
@@ -333,8 +336,8 @@ export class TaxaForm extends React.Component<any, {
 
         const setButtonText = (e: React.KeyboardEvent) => {
             const buttonText: string = (e.shiftKey)
-                ? this.taxonRemoveText[this.taxonTextI()]
-                : this.taxonAddText[this.taxonTextI()];
+                ? this.taxonRemoveText
+                : this.taxonAddText;
             if (this.state.buttonText !== buttonText) { this.setState({ buttonText }); }
         }
 
@@ -422,8 +425,6 @@ export class TaxaForm extends React.Component<any, {
            node.select()
         }
     }
-
-    private taxonTextI = ():number => (+((this.addCounts.adult + this.addCounts.child) > 1));
 }
 
 export default connect(mapState)(TaxaForm) 

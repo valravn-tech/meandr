@@ -3,8 +3,9 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { FoundTaxon, TaxonCode } from './alltaxa';
 import './App.css';
-// import { NewCodes } from './makeCodes';
 import FileOptions from './file'
+// import { NewCodes } from './makeCodes';
+import { GenParents } from './makeParents';
 import TaxaForm from './TaxaForm'
 
 export interface State {
@@ -20,7 +21,7 @@ const persistPreviousState = ():State => {
   }
 }
 
-const die = (s:string) => { throw new Error("s") }
+const die = (s:string) => { throw new Error(s) }
 
 const reducer = (state:State = persistPreviousState(), action:any): State => {
   switch(action.type) {
@@ -91,6 +92,7 @@ class App extends React.Component {
         <TaxaForm />
         {/* <hr/> */}
         {/* <NewCodes /> */}
+        { <GenParents/> }
       </Provider>
     );
   }

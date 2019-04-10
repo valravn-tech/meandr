@@ -7,6 +7,13 @@ export interface Taxon {
 
 // NOTE: 8-digit code splits into 4 2-digit chunks (for group, family, genus, species in order)
 // ..00 is 'unspecified'
+// Chunk | Taxa included
+//     1 | Class - Subclass
+//     2 | Order - Family
+//     3 | Genus
+//     4 | Species - Subspecies
+
+
 // TODO: make type unique via `&` tag or extended type
 export type TaxonCode = string;
 
