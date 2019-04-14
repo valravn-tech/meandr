@@ -37,65 +37,61 @@ export const GenParents: React.SFC<{}> = (props) => {
         }
         const parent = taxonGetCodeForLevel(code, parentLvl)
         assert(parent);
-        return '"'+parent+'"' || "undefined";
+        return "'"+parent+"'" || "undefined";
     }
 
     const candidateCodes = (taxa: TaxonCode[], lvl:string) => (<div>
-        <h3 id={'candidates_'+lvl}>Candidates for {lvl}</h3>
+        <h3 id={'candidates_'+lvl}>// Candidates for {lvl}</h3>
+        <table>
         {taxa
             .map(code => {
                 const i = codeILastNon0(code) as number;
                 const pCode = strSplice(code, i, 1, '0');
                 return { code, i, pCode };
             })
-            .filter(info => (
-                isOdd(info.i)
-                && info.pCode !== "00000000"
-                && taxonLevel(info.code) === lvl
-                && codeILastNon0(info.pCode) === info.i - 1
-                && allTaxa.get(info.pCode) !== undefined
-            ))
-            .map((info, i, arr) => {
+            .filter(info => {
                 const taxonGet = (code:TaxonCode):Taxon => (allTaxa.get(code) as Taxon);
-                const candidateRating = (code:TaxonCode, pCode:TaxonCode):string => {
-                    let rating = "";
-                    switch(lvl) {
-                        case 'species': {
-                            if (taxonGet(info.pCode).species !== "") // e.g. "50830140"
-                            { rating += "subspecies"}
-                        } break;
-
-                        default: {
-                            rating += "other";
-                        } break;
-                    }
-                    return rating
-                };
+                return (
+                    isOdd(info.i)
+                    && info.pCode !== "00000000"
+                    && taxonLevel(info.code) === lvl
+                    && codeILastNon0(info.pCode) === info.i - 1
+                    && allTaxa.get(info.pCode) !== undefined
+                    && ( lvl === 'family'
+                        || (lvl === 'species' && taxonGet(info.pCode).species === "") // e.g. "50830140"
+                    )
+                )
+            })
+            .map((info, i, arr) => {
                 const isNewParent = i === 0 || info.pCode !== arr[i - 1].pCode;
-                const pad = { padding: "0 .4rem", borderTop: isNewParent ? "black solid 1px" : undefined };
-                return <tr key={info.code}>
-                    <td style={pad}>{i + 1}</td>
-                    <td style={pad}>{isNewParent && info.pCode}</td>
-                    <td style={pad}>{isNewParent && taxonFullName(info.pCode)}</td>
-                    <td style={pad}>{info.code}</td>
-                    <td style={pad}>{taxonFullName(info.code)}</td>
-                    <td style={pad}>{candidateRating(info.code, info.pCode)}</td>
-                </tr>
+                return <tbody key={info.code}><tr>
+                    <td>{isNewParent && "// " + taxonFullName(info.pCode)}</td>
+                    </tr>
+                    <tr>
+                        <td/>
+                        <td>.set('{info.code}',</td>
+                        <td>'{info.pCode}')</td>
+                        <td>// {taxonFullName(info.code)}</td>
+                    </tr>
+                </tbody>
             })}
+            </table>
     </div>)
 
     return (<div>
-        <h2>Candidates for change</h2>
+        <h2>// Rule-based parents<br/>
+            /////////////////////</h2>
+        <p>{"export const taxaParents = new Map<TaxonCode, TaxonCode>(["}</p>
+            { codes.map(code => <span key={code}>{
+                `['${code}', ${parentCode(code)}], // ${taxonFullName(code)}`
+            }<br/></span>) }
+        <p>])</p>
+
+        <h2>// Candidates for change<br/>
+            ////////////////////////</h2>
         <p>{candidateCodes(codes, 'major_group')}</p>
         <p>{candidateCodes(codes, 'family')}</p>
         <p>{candidateCodes(codes, 'genus')}</p>
         <p>{candidateCodes(codes, 'species')}</p>
-
-        <h2>Rule-based parents</h2>
-        <p>{"export const taxaParents = new Map<TaxonCode, TaxonCode>(["}</p>
-            { codes.map(code => <span key={code}>{
-                `[${code}, ${parentCode(code)}], // ${taxonFullName(code)}`
-            }<br/></span>) }
-        <p>])</p>
     </div>)
 }
