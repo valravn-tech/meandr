@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import { FoundTaxon, TaxonCode } from './alltaxa';
+import { allTaxa, FoundTaxon, TaxonCode } from './alltaxa';
 import './App.css';
 import FileOptions from './file'
-// import { NewCodes } from './makeCodes';
-import { GenParents } from './makeParents';
+import { RepeatCodes } from './makeCodes';
+// import { GenParents } from './makeParents';
 import TaxaForm from './TaxaForm'
 
 export interface State {
@@ -92,7 +92,8 @@ class App extends React.Component {
         <TaxaForm />
         {/* <hr/> */}
         {/* <NewCodes /> */}
-        { <GenParents/> }
+        <RepeatCodes taxa={Array.from(allTaxa.keys()) } />
+        {/* <GenParents/> */}
       </Provider>
     );
   }

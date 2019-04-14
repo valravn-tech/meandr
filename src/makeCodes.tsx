@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { allTaxa, Taxon, TaxonCode, taxonLevel } from './alltaxa'
+import { taxonFullName } from './TaxaForm';
 
 interface ScoringTaxonToPrint {
 	code:     TaxonCode,
@@ -4129,5 +4130,20 @@ export const NewCodes: React.SFC<{}> = () => (
 		<CciCodes   /> <hr />
 		<BmwpCodes  /> <hr />
 		<AwicCodes  /> <hr />
+	</div>
+)
+
+export const RepeatCodes: React.SFC<{taxa: TaxonCode[]}> = (p) => (
+	<div>{
+		p.taxa.map((taxon, i) => {
+			const name = taxonFullName(taxon);
+			for(const [iTest, testTaxon] of Array.from(p.taxa.entries())) {
+				if (name === taxonFullName(testTaxon) && iTest !== i)
+				{   return <p>{`${taxon} (${name}) - ${testTaxon} (${taxonFullName(testTaxon)})`}</p> }
+			}
+			return undefined;
+		})
+		.filter(t => t !== undefined)
+		}
 	</div>
 )
