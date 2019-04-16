@@ -1,7 +1,8 @@
+import { TaxonCode } from './alltaxa'
 // Rule-based parents
 /////////////////////
 
-export const taxaParents = new Map<TaxonCode, TaxonCode>([
+export const taxaParents = new Map<TaxonCode, TaxonCode | undefined>([
     ['01000000', undefined], // Protozoa
     ['01100000', '01000000'], // Protozoa Mastigophora
     ['01200000', '01000000'], // Protozoa Opalinata
@@ -6371,7 +6372,7 @@ export const taxaParents = new Map<TaxonCode, TaxonCode>([
     ['508X0000', '50000000'], // Diptera Anthomyiidae
     ['508Z0000', '50000000'], // Diptera Lonchopteridae
 ])
-
+/*
 // Candidates for change
 ////////////////////////
 
@@ -8461,4 +8462,4 @@ export const taxaParents = new Map<TaxonCode, TaxonCode>([
 // Diptera Scathophagidae Acanthocnema (Acanthocnema)
 	.set('50840112',	'50840110')	// Diptera Scathophagidae Acanthocnema (Acanthocnema) nigrimana
 // Diptera Scathophagidae Acanthocnema (Clinoceroides)
-	.set('50840121',	'50840120')	// Diptera Scathophagidae Acanthocnema (Clinoceroides) glaucescens
+    .set('50840121',	'50840120')	// Diptera Scathophagidae Acanthocnema (Clinoceroides) glaucescens

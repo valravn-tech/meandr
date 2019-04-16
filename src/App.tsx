@@ -10,29 +10,38 @@ import TaxaForm from './TaxaForm'
 
 export interface State {
   taxaFound: Map<TaxonCode, FoundTaxon>,
+
+  scoring: {
+    bmwp: string,
+    lqi: string,
+  }
 }
 
 // TODO (internals): should this use the TAXA_SET_ALL action?
-const persistPreviousState = ():State => {
+const persistPreviousStateOrInit = ():State => {
   const savedFoundStr = localStorage.getItem("taxaFound");
   const savedFound = savedFoundStr ? JSON.parse(savedFoundStr) : undefined;
   return {
+    scoring: {
+      bmwp: "standard",
+      lqi: "standard",
+    },
     taxaFound: new Map(savedFound),
   }
 }
 
 const die = (s:string) => { throw new Error(s) }
 
-const reducer = (state:State = persistPreviousState(), action:any): State => {
+const reducer = (state:State = persistPreviousStateOrInit(), action:any): State => {
   switch(action.type) {
     case "TAXA_CLEAR": {
       const taxaFound = new Map<TaxonCode,FoundTaxon>();
-      return { taxaFound };
+      return { ...state, taxaFound };
     }
 
     case "TAXA_SET_ALL": {
       const taxaFound = action.taxaFound;
-      return { taxaFound };
+      return { ...state, taxaFound };
     }
 
     case "TAXON_ADD": {
@@ -43,13 +52,13 @@ const reducer = (state:State = persistPreviousState(), action:any): State => {
       tx.countAdult = tx.countAdult || 0;
       tx.countChild = tx.countChild || 0;
       taxaFound.set(tx.code, tx);
-      return { taxaFound };
+      return { ...state, taxaFound };
     }
       
     case "TAXON_REMOVE": {
       const taxaFound = new Map(state.taxaFound);
       taxaFound.delete(action.code);
-      return { taxaFound };
+      return { ...state, taxaFound };
     }
       
     case "TAXON_SET_COUNT": {
@@ -73,7 +82,20 @@ const reducer = (state:State = persistPreviousState(), action:any): State => {
       { taxaFound.delete(action.code); }
       else
       { taxaFound.set(action.code, tx); }
-      return { taxaFound };
+      return { ...state, taxaFound };
+    }
+
+    case "SCORING_OPTION_TOGGLE": {
+      const scoring = { ...state.scoring };
+      switch(action.category) {
+        case 'bmwp': scoring.bmwp = action.value; break;
+        case 'lqi': scoring.lqi = action.value; break;
+      }
+      // scoring[action.category] = action.value;
+      const newState = { ...state, scoring }
+      // assert(newState.scoring.bmwp)
+      // assert(newState.scoring.lqi)
+      return newState;
     }
       
     default:

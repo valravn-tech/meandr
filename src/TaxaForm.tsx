@@ -177,7 +177,24 @@ const TaxaFoundList: React.SFC<{taxaFound: Map<TaxonCode, FoundTaxon>, setCount:
     </table>
 )
 
+const mapStateToScoring = (state:State) => ({ scoring: state.scoring })
 
+const ScoreOptionsConnected: React.SFC<{category:string, names:string[]} | any> = (p) => {
+    const selected = p.scoring[p.category];
+    return <div>{
+        p.names.map((name:string) => {
+            const changeAction = (evt: React.FormEvent<HTMLInputElement>) => {
+                p.dispatch({ type: 'SCORING_OPTION_TOGGLE', category:p.category, name })
+            }
+            
+            return <label key={name}>
+                <input type="radio" checked={selected === name} value={name} onChange={changeAction} />
+                {name}
+                </label>;
+        })
+    }</div>
+}
+const ScoreOptions = connect(mapStateToScoring)(ScoreOptionsConnected);
 
 const TaxaScore: React.SFC<{taxaFound:FoundTaxon[]}> = (p) => {
     const bmwp     = calcBmwp   (p.taxaFound);
@@ -197,8 +214,15 @@ const TaxaScore: React.SFC<{taxaFound:FoundTaxon[]}> = (p) => {
             <h2>Scores</h2>
             <dl>
                 <dt>BMWP                   ({bmwp.count})</dt>   <dd>{bmwp   .score.toFixed(2)}
-                <dt>ASPT</dt>                                    <dd>{bmwpAspt     .toFixed(2)}</dd></dd>
-                <dt>LQI                    ({bmwp.count})</dt>   <dd>{lqi    .score.toFixed(2)} ({lqi.index} - <em>{lqi.interpretation}</em>)</dd>
+                    <dl>
+                        <dt>ASPT</dt>                                    <dd>{bmwpAspt     .toFixed(2)}</dd>
+                        <ScoreOptions category="bmwp" names={["standard", "revised", "riffle", "riffle and pool", "pool"]}/>
+                    </dl>
+                </dd>
+                <dt>LQI                    ({bmwp.count})</dt>   <dd>
+                    {lqi    .score.toFixed(2)} ({lqi.index} - <em>{lqi.interpretation}</em>)
+                    <ScoreOptions category="lqi" names={["standard", "enhanced"]}/>
+                </dd>
                 <dt>WHPT                   ({whpt.count})</dt>   <dd>{whpt   .score.toFixed(2)}
                 <dt>ASPT</dt>                                    <dd>{whptAspt     .toFixed(2)}</dd></dd>
                 <dt>PSI<sub>family</sub>   ({psiFam.count})</dt> <dd>{psiFam .score.toFixed(2)}%</dd>
